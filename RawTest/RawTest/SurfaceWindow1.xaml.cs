@@ -3,6 +3,7 @@ using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 using System.Windows;
@@ -22,7 +23,7 @@ using Microsoft.Surface.Core;
 using Emgu.CV;
 using Emgu.Util;
 using Emgu.CV.Structure;
-
+using System.Diagnostics;
 
 namespace RawTest
 {
@@ -38,14 +39,14 @@ namespace RawTest
         private bool imageAvailable;
         private ColorPalette pal;
         private Bitmap frame;
-        private int i;
+        //private int i;
 
         /// <summary>
         /// Default constructor.
         /// </summary>
         public SurfaceWindow1()
         {
-            i = 0;
+            //i = 0;
             InitializeComponent();
             InitializeSurfaceInput();
             // Add handlers for Application activation events
@@ -176,23 +177,84 @@ namespace RawTest
                                   ptr);
 
             Convert8bppBMPToGrayscale(frame);
-            Image<Gray, byte> flipper = new Image<Gray, byte>(frame);
-            flipper = processImage(flipper); 
-            iCapturedFrame.Source = Bitmap2BitmapImage(flipper.ToBitmap());
-            if (i < 40)
-            {
-                flipper.Save("capture-" + i + ".bmp");
-                i++;
-            }
+            
+            //convert the bitmap into an EmguCV image <Gray,byte>
+            Image<Gray, byte> imageFrame = new Image<Gray, byte>(frame);
+            //process the frame for tracking the blob
+            imageFrame = processFrame(imageFrame); 
+            
+            iCapturedFrame.Source = Bitmap2BitmapImage(imageFrame.ToBitmap());
+            
+            /* save the first 40 images captured
+             * 
+             * if (i < 40) 
+             * {               
+             * flipper.Save("capture-" + i + ".bmp"); 
+             * i++;
+             * }   
+             */
+            
             imageAvailable = false;
             EnableRawImage();
         }
 
-        private Image<Gray, byte> processImage(Image<Gray, byte> image)
+        private Image<Gray, byte> processFrame(Image<Gray, byte> image)
         {
+            
+
             image._Flip(Emgu.CV.CvEnum.FLIP.VERTICAL);
+            
+            image = image.ThresholdBinary(new Gray(250), new Gray(255)); //Show just the very bright things
+
+            Contour<System.Drawing.Point> contours = image.FindContours(Emgu.CV.CvEnum.CHAIN_APPROX_METHOD.CV_CHAIN_APPROX_SIMPLE,
+            Emgu.CV.CvEnum.RETR_TYPE.CV_RETR_LIST);
+            CircleF[] contourCircles = FindPossibleCircles(contours);
+
             return image;
         }
+
+        private CircleF[] FindPossibleCircles(Contour<System.Drawing.Point> contours)
+        {
+            if (contours == null)
+                return null;
+
+            ResetContoursNavigation(ref contours);
+
+            IList<CircleF> circles = new List<CircleF>();
+            for (; contours.HNext != null; contours = contours.HNext)
+            {
+                if (contours.Area >= 10 && contours.Area <= 50)
+                {
+                    circles.Add(new CircleF(
+                      new PointF(contours.BoundingRectangle.Left + contours.BoundingRectangle.Width / 2,
+                        contours.BoundingRectangle.Top + contours.BoundingRectangle.Height / 2),
+                        contours.BoundingRectangle.Width / 2));
+                    Console.WriteLine("Pen");
+                }
+
+            }
+
+            if (contours.Area >= 10 && contours.Area <= 50)
+            {
+                circles.Add(new CircleF(
+                  new PointF(contours.BoundingRectangle.Left + contours.BoundingRectangle.Width / 2,
+                    contours.BoundingRectangle.Top + contours.BoundingRectangle.Height / 2),
+                    contours.BoundingRectangle.Width / 2));
+                Console.WriteLine("Pen");
+            }
+            return circles.ToArray();
+        }
+
+        private static void ResetContoursNavigation(ref Contour<System.Drawing.Point> contours)
+        {
+            if (contours == null)
+                return;
+
+            //go back to the begining
+            while (contours.HPrev != null)
+                contours = contours.HPrev;
+        }
+
         /// <summary>
         /// Convert RGB Bitmap to a GrayScale Bitmap
         /// </summary>
@@ -226,7 +288,6 @@ namespace RawTest
             return bImg;
         }
 
-        
-
     }
+        
 }
