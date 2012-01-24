@@ -9,7 +9,7 @@
   </s:SurfaceWindow.Resources>
 
   <Grid Background="{StaticResource WindowBackground}" >
-      <Image x:Name="iCapturedFrame" Width="384" Margin="2"
-           HorizontalAlignment="Right" VerticalAlignment="Bottom"/>
+      <Image x:Name="iCapturedFrame"
+           HorizontalAlignment="Left" VerticalAlignment="Top"/>
   </Grid>
 </s:SurfaceWindow>

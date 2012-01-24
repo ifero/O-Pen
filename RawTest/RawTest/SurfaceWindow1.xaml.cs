@@ -19,6 +19,9 @@ using Microsoft.Surface;
 using Microsoft.Surface.Presentation;
 using Microsoft.Surface.Presentation.Controls;
 using Microsoft.Surface.Core;
+using Emgu.CV;
+using Emgu.Util;
+using Emgu.CV.Structure;
 
 
 namespace RawTest
@@ -35,12 +38,14 @@ namespace RawTest
         private bool imageAvailable;
         private ColorPalette pal;
         private Bitmap frame;
+        private int i;
 
         /// <summary>
         /// Default constructor.
         /// </summary>
         public SurfaceWindow1()
         {
+            i = 0;
             InitializeComponent();
             InitializeSurfaceInput();
             // Add handlers for Application activation events
@@ -161,18 +166,7 @@ namespace RawTest
                 return;
 
             DisableRawImage();
-        
-            ShowInWPF();
 
-            imageAvailable = false;
-            EnableRawImage();
-        }
-
-        /// <summary>
-        /// Show the Raw Image of the Surface's Camera on Surface Screen
-        /// </summary>
-        private void ShowInWPF()
-        {
             GCHandle h = GCHandle.Alloc(normalizedImage, GCHandleType.Pinned);
             IntPtr ptr = h.AddrOfPinnedObject();
             frame = new Bitmap(imageMetrics.Width,
@@ -180,10 +174,25 @@ namespace RawTest
                                   imageMetrics.Stride,
                                   System.Drawing.Imaging.PixelFormat.Format8bppIndexed,
                                   ptr);
+
             Convert8bppBMPToGrayscale(frame);
-            iCapturedFrame.Source = Bitmap2BitmapImage(frame);
+            Image<Gray, byte> flipper = new Image<Gray, byte>(frame);
+            flipper = processImage(flipper); 
+            iCapturedFrame.Source = Bitmap2BitmapImage(flipper.ToBitmap());
+            if (i < 40)
+            {
+                flipper.Save("capture-" + i + ".bmp");
+                i++;
+            }
+            imageAvailable = false;
+            EnableRawImage();
         }
 
+        private Image<Gray, byte> processImage(Image<Gray, byte> image)
+        {
+            image._Flip(Emgu.CV.CvEnum.FLIP.VERTICAL);
+            return image;
+        }
         /// <summary>
         /// Convert RGB Bitmap to a GrayScale Bitmap
         /// </summary>
@@ -216,5 +225,8 @@ namespace RawTest
             bImg.EndInit();
             return bImg;
         }
+
+        
+
     }
 }
