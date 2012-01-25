@@ -8,8 +8,13 @@
     <ImageBrush x:Key="WindowBackground" Stretch="None" Opacity="0.6" ImageSource="pack://application:,,,/Resources/WindowBackground.jpg"/>
   </s:SurfaceWindow.Resources>
 
-  <Grid Background="{StaticResource WindowBackground}" >
-      <Image x:Name="iCapturedFrame"
-           HorizontalAlignment="Left" VerticalAlignment="Top"/>
-  </Grid>
+  <Grid Background="{StaticResource WindowBackground}" Height="756.591" Width="1016.565">
+      <Image x:Name="iCapturedFrame" Width="384" Margin="2"
+               HorizontalAlignment="Right" VerticalAlignment="Bottom"/>
+        <s:SurfaceInkCanvas x:Name="paintBoard"
+             Background="WhiteSmoke" UsesContactShape="True" Margin="0,0,389.961,12"
+              PreviewContactDown="onContactDown"
+        />
+
+    </Grid>
 </s:SurfaceWindow>

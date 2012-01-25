@@ -39,6 +39,7 @@ namespace RawTest
         private bool imageAvailable;
         private ColorPalette pal;
         private Bitmap frame;
+        CircleF[] contourCircles;
         //private int i;
 
         /// <summary>
@@ -191,24 +192,47 @@ namespace RawTest
              * {               
              * flipper.Save("capture-" + i + ".bmp"); 
              * i++;
-             * }   
+             * }  
+             * 
              */
             
             imageAvailable = false;
             EnableRawImage();
         }
 
+        private void onContactDown(object s, Microsoft.Surface.Presentation.ContactEventArgs e)
+        {
+            e.Handled = true;
+            //foreach (CircleF circle in contourCircles)
+            //{
+            //    if (e.Contact.GetCenterPosition(this) - new System.Drawing.Point(circle.Center)
+            //}
+            
+        }
+
         private Image<Gray, byte> processFrame(Image<Gray, byte> image)
         {
             
 
-            image._Flip(Emgu.CV.CvEnum.FLIP.VERTICAL);
+            // image._Flip(Emgu.CV.CvEnum.FLIP.VERTICAL);
             
             image = image.ThresholdBinary(new Gray(250), new Gray(255)); //Show just the very bright things
 
             Contour<System.Drawing.Point> contours = image.FindContours(Emgu.CV.CvEnum.CHAIN_APPROX_METHOD.CV_CHAIN_APPROX_SIMPLE,
             Emgu.CV.CvEnum.RETR_TYPE.CV_RETR_LIST);
-            CircleF[] contourCircles = FindPossibleCircles(contours);
+            contourCircles = FindPossibleCircles(contours);
+
+            /*Testing blob detection.
+             * 
+             *if (contourCircles != null)
+             *{
+             *    foreach (CircleF circle in contourCircles)
+             *    {
+             *        image.Draw(circle, new Gray(100), 1);
+             *    }
+             *}
+             *
+             */
 
             return image;
         }
@@ -229,7 +253,6 @@ namespace RawTest
                       new PointF(contours.BoundingRectangle.Left + contours.BoundingRectangle.Width / 2,
                         contours.BoundingRectangle.Top + contours.BoundingRectangle.Height / 2),
                         contours.BoundingRectangle.Width / 2));
-                    Console.WriteLine("Pen");
                 }
 
             }
@@ -240,7 +263,8 @@ namespace RawTest
                   new PointF(contours.BoundingRectangle.Left + contours.BoundingRectangle.Width / 2,
                     contours.BoundingRectangle.Top + contours.BoundingRectangle.Height / 2),
                     contours.BoundingRectangle.Width / 2));
-                Console.WriteLine("Pen");
+                Console.WriteLine("Pen: {0},{1}",contours.BoundingRectangle.Left,contours.BoundingRectangle.Top);
+                
             }
             return circles.ToArray();
         }
