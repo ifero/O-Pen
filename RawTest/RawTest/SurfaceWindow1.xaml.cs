@@ -39,7 +39,9 @@ namespace RawTest
         private bool imageAvailable;
         private ColorPalette pal;
         private Bitmap frame;
+        private static double scaleValue = 1.333333333;
         CircleF[] contourCircles;
+        bool isPen;
         //private int i;
 
         /// <summary>
@@ -48,6 +50,7 @@ namespace RawTest
         public SurfaceWindow1()
         {
             //i = 0;
+            isPen = false;
             InitializeComponent();
             InitializeSurfaceInput();
             // Add handlers for Application activation events
@@ -203,11 +206,29 @@ namespace RawTest
         private void onContactDown(object s, Microsoft.Surface.Presentation.ContactEventArgs e)
         {
             e.Handled = true;
-            //foreach (CircleF circle in contourCircles)
-            //{
-            //    if (e.Contact.GetCenterPosition(this) - new System.Drawing.Point(circle.Center)
-            //}
-            
+            if (isPen)
+            {
+                if (contourCircles != null)
+                {
+                    Console.WriteLine("touch: x:{0} y:{1}", (int)e.Contact.GetPosition(this).X, (int)e.Contact.GetPosition(this).Y);
+                    foreach (CircleF circle in contourCircles)
+                    {
+                        Console.WriteLine("pen  : x:{0} y:{1}", (int)(circle.Center.X * scaleValue), (int)(circle.Center.Y * scaleValue));
+                        if ((System.Math.Abs(((int)e.Contact.GetCenterPosition(this).X - (int)(circle.Center.X * scaleValue))) < 10) &&
+                            (System.Math.Abs(((int)e.Contact.GetCenterPosition(this).Y - (int)(circle.Center.Y * scaleValue))) < 10))
+                        {
+                            
+                            Console.WriteLine("xxx");
+                        }
+                    }
+                }
+            }
+        }
+
+        private void onContactUp(object s, Microsoft.Surface.Presentation.ContactEventArgs e)
+        {
+            e.Handled = true;
+            isPen = false;
         }
 
         private Image<Gray, byte> processFrame(Image<Gray, byte> image)
@@ -240,7 +261,10 @@ namespace RawTest
         private CircleF[] FindPossibleCircles(Contour<System.Drawing.Point> contours)
         {
             if (contours == null)
+            {
+                isPen = false;
                 return null;
+            }
 
             ResetContoursNavigation(ref contours);
 
@@ -250,9 +274,10 @@ namespace RawTest
                 if (contours.Area >= 10 && contours.Area <= 50)
                 {
                     circles.Add(new CircleF(
-                      new PointF(contours.BoundingRectangle.Left + contours.BoundingRectangle.Width / 2,
-                        contours.BoundingRectangle.Top + contours.BoundingRectangle.Height / 2),
+                      new PointF(contours.BoundingRectangle.Left + (contours.BoundingRectangle.Width / 2),
+                        contours.BoundingRectangle.Top + (contours.BoundingRectangle.Height / 2)),
                         contours.BoundingRectangle.Width / 2));
+                    isPen = true;
                 }
 
             }
@@ -263,8 +288,7 @@ namespace RawTest
                   new PointF(contours.BoundingRectangle.Left + contours.BoundingRectangle.Width / 2,
                     contours.BoundingRectangle.Top + contours.BoundingRectangle.Height / 2),
                     contours.BoundingRectangle.Width / 2));
-                Console.WriteLine("Pen: {0},{1}",contours.BoundingRectangle.Left,contours.BoundingRectangle.Top);
-                
+                isPen = true;
             }
             return circles.ToArray();
         }

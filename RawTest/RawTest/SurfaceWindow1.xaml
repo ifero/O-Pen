@@ -7,14 +7,10 @@
   <s:SurfaceWindow.Resources>
     <ImageBrush x:Key="WindowBackground" Stretch="None" Opacity="0.6" ImageSource="pack://application:,,,/Resources/WindowBackground.jpg"/>
   </s:SurfaceWindow.Resources>
-
-  <Grid Background="{StaticResource WindowBackground}" Height="756.591" Width="1016.565">
-      <Image x:Name="iCapturedFrame" Width="384" Margin="2"
-               HorizontalAlignment="Right" VerticalAlignment="Bottom"/>
-        <s:SurfaceInkCanvas x:Name="paintBoard"
-             Background="WhiteSmoke" UsesContactShape="True" Margin="0,0,389.961,12"
-              PreviewContactDown="onContactDown"
-        />
-
-    </Grid>
+    <Canvas Background="{StaticResource WindowBackground}">
+        <InkCanvas x:Name="inkBoard" Background="WhiteSmoke" s:Contacts.PreviewContactDown="onContactDown" s:Contacts.PreviewContactUp="onContactUp"
+                            s:Contacts.PreviewContactChanged="onContactDown"/>
+        <Image x:Name="iCapturedFrame" Width="369.963" Margin="2"
+               HorizontalAlignment="Right" VerticalAlignment="Bottom" Height="369.963" Canvas.Left="630.037" Canvas.Top="358.037" />
+    </Canvas>
 </s:SurfaceWindow>
