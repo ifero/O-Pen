@@ -217,6 +217,8 @@ namespace InkCanvasTest
                             (System.Math.Abs(((int)e.Contact.GetCenterPosition(this).Y - (int)(circle.Center.Y * scaleValue))) < 10))
                         {
                             e.Handled = false;
+                            inkBoard.DefaultDrawingAttributes.Height = circle.Radius;
+                            inkBoard.DefaultDrawingAttributes.Width = circle.Radius;
                             Console.WriteLine("xxx");
                         }
                     }
@@ -270,13 +272,14 @@ namespace InkCanvasTest
             IList<CircleF> circles = new List<CircleF>();
             for (; contours.HNext != null; contours = contours.HNext)
             {
-                if (contours.Area >= 5 && contours.Area <= 50)
+                if (contours.Area >= 1 && contours.Area <= 50)
                 {
                     circles.Add(new CircleF(
                       new PointF(contours.BoundingRectangle.Left + (contours.BoundingRectangle.Width / 2),
                         contours.BoundingRectangle.Top + (contours.BoundingRectangle.Height / 2)),
                         contours.BoundingRectangle.Width / 2));
                     isPen = true;
+                    
                 }
 
             }

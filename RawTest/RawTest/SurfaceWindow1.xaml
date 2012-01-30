@@ -8,9 +8,13 @@
     <ImageBrush x:Key="WindowBackground" Stretch="None" Opacity="0.6" ImageSource="pack://application:,,,/Resources/WindowBackground.jpg"/>
   </s:SurfaceWindow.Resources>
     <Canvas Background="{StaticResource WindowBackground}">
-        <s:SurfaceInkCanvas x:Name="inkBoard" Background="WhiteSmoke" s:Contacts.PreviewContactDown="onContactDown" 
-                            s:Contacts.PreviewContactUp="onContactUp" s:Contacts.ContactChanged="onContactDown"
-                            s:Contacts.PreviewContactChanged="onContactDown" Height="730" Width="626.604" />
+        <s:SurfaceInkCanvas x:Name="inkBoard" Background="WhiteSmoke" 
+                            s:Contacts.PreviewContactDown="onContactDown" 
+                            s:Contacts.PreviewContactUp="onContactUp" 
+                            s:Contacts.ContactChanged="onContactDown"
+                            s:Contacts.PreviewContactChanged="onContactDown" 
+                            Height="730" Width="626.604" 
+                            UsesContactShape="False"/>
         <Image x:Name="iCapturedFrame" Width="369.963" Margin="2"
                HorizontalAlignment="Right" VerticalAlignment="Bottom" Height="369.963" Canvas.Left="630.037" Canvas.Top="358.037" />
     </Canvas>
