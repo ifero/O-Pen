@@ -20,6 +20,7 @@ using Microsoft.Surface;
 using Microsoft.Surface.Presentation;
 using Microsoft.Surface.Presentation.Controls;
 using Microsoft.Surface.Core;
+using Microsoft.Surface.Presentation.Manipulations;
 using Emgu.CV;
 using Emgu.Util;
 using Emgu.CV.Structure;
@@ -204,23 +205,26 @@ namespace InkCanvasTest
 
         private void onContactDown(object s, Microsoft.Surface.Presentation.ContactEventArgs e)
         {
+            StringBuilder sb = new StringBuilder();
             e.Handled = true;
             if (isPen)
             {
                 if (contourCircles != null)
                 {
-                    Console.WriteLine("touch: x:{0} y:{1}", (int)e.Contact.GetPosition(this).X, (int)e.Contact.GetPosition(this).Y);
+                    sb.AppendLine(string.Format(System.Globalization.CultureInfo.InvariantCulture,
+                        "Captured X:{0} Y:{1}",(int)e.Contact.GetPosition(this).X, (int)e.Contact.GetPosition(this).Y));
                     foreach (CircleF circle in contourCircles)
                     {
-                        Console.WriteLine("pen  : x:{0} y:{1}", (int)(circle.Center.X * scaleValue), (int)(circle.Center.Y * scaleValue));
+                        sb.AppendLine(string.Format(System.Globalization.CultureInfo.InvariantCulture,
+                            "Image     X:{0} Y:{1}",(int)(circle.Center.X * scaleValue), (int)(circle.Center.Y * scaleValue)));
                         if ((System.Math.Abs(((int)e.Contact.GetCenterPosition(this).X - (int)(circle.Center.X * scaleValue))) < 10) &&
                             (System.Math.Abs(((int)e.Contact.GetCenterPosition(this).Y - (int)(circle.Center.Y * scaleValue))) < 10))
                         {
                             e.Handled = false;
                             inkBoard.DefaultDrawingAttributes.Height = circle.Radius;
                             inkBoard.DefaultDrawingAttributes.Width = circle.Radius;
-                            Console.WriteLine("xxx");
                         }
+                        info.Text = sb.ToString();
                     }
                 }
             }
@@ -244,6 +248,9 @@ namespace InkCanvasTest
             Emgu.CV.CvEnum.RETR_TYPE.CV_RETR_LIST);
             contourCircles = FindPossibleCircles(contours);
 
+            //ContactEventArgs cea = new Microsoft.Surface.Presentation.ContactEventArgs();
+            //onContactDown(this, new Microsoft.Surface.Presentation.ContactEventArgs());
+
             /*Testing blob detection.
              * 
              *if (contourCircles != null)
@@ -255,7 +262,6 @@ namespace InkCanvasTest
              *}
              *
              */
-
             return image;
         }
 
