@@ -192,7 +192,7 @@ namespace InkCanvasTest
              * 
              * if (i < 40) 
              * {               
-             * flipper.Save("capture-" + i + ".bmp"); 
+             * imageFrame.Save("capture-" + i + ".bmp"); 
              * i++;
              * }  
              * 
