@@ -2,6 +2,7 @@ using System;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
+using System.IO.Ports;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
@@ -42,6 +43,7 @@ namespace InkCanvasTest
         private Bitmap frame;
         private static double scaleValue = 1.333333333;
         CircleF[] contourCircles;
+        private SerialPort sp;
         bool isPen;
         //private int i;
 
@@ -54,6 +56,16 @@ namespace InkCanvasTest
             isPen = false;
             InitializeComponent();
             InitializeSurfaceInput();
+            try
+            {
+                sp = new SerialPort("COM5", 115200);
+                sp.Open();
+                sp.ReadTimeout = 100;
+            }
+            catch (System.Exception ex)
+            {
+                Console.WriteLine(ex);
+            }
             // Add handlers for Application activation events
             AddActivationHandlers();
         }
@@ -147,6 +159,20 @@ namespace InkCanvasTest
 
         void target_FrameReceived(object sender, FrameReceivedEventArgs e)
         {
+            if (sp.IsOpen)
+            {
+                if (sp.BytesToRead != 0)
+                {
+                    try
+                    {
+                        Console.Write(sp.ReadLine());
+                    }
+                    catch (System.Exception ex)
+                    {
+                        Console.WriteLine(ex);
+                    }
+                }
+            }
             imageAvailable = false;
             int paddingLeft, paddingRight;
             if (normalizedImage == null)
