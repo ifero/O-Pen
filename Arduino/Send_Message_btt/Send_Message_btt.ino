@@ -11,8 +11,7 @@ void setup() {
 void loop() {
   if( Serial.available() )         // if data is available to read
   {
-    val = Serial.read();
-    Serial.write(val);    // read it and store it in 'val'
+    val = Serial.read();    // read it and store it in 'val'
   }
   if( val == 'H' )                     // if 'H' was received
   {
