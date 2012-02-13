@@ -1,11 +1,11 @@
 //use 1M Ω resistor, parallel to vibratorSensor
 //use 10K Ω resistor attached to ground and force sensor and force sensor also to 5V
 
-const int vibrationSensor = A0;
-const int lightSensor = A1;
+const int vibrationSensor = A1;
+const int lightSensor = A0;
 const int threshold = 255;
 int sensorReading = 0;
-int lightReading = 0
+int lightReading = 0;
 
 
 void setup() {
@@ -18,10 +18,9 @@ void loop(){
   sensorReading = analogRead(vibrationSensor);
   if (sensorReading > 0)
   {
-    Serial.print("Force: ");
     Serial.print(sensorReading);
-    Serial.print(" Light: ");
-    Serial.print(lightSensor);
+    Serial.print(".");
+    Serial.println(lightReading);
   }
   if(sensorReading > threshold)
   {
