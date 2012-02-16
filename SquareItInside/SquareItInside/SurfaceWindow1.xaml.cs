@@ -62,8 +62,7 @@ namespace SquareItInside
             // Set up the TouchTarget object for the entire SurfaceWindow object.
             touchTarget.EnableInput();
             EnableRawImage();
-            // Attach an event handler for the FrameReceived event.
-            touchTarget.FrameReceived += new EventHandler<FrameReceivedEventArgs>(OnTouchTargetFrameReceived);
+            
         }
 
         private void OnTouchTargetFrameReceived(object sender, Microsoft.Surface.Core.FrameReceivedEventArgs e)
@@ -109,11 +108,11 @@ namespace SquareItInside
             Convert8bppBMPToGrayscale(frame);
 
             //convert the bitmap into an EmguCV image <Gray,byte>
-            Image<Gray, byte> imageFrame = new Image<Gray, byte>(frame);
+            //Image<Gray, byte> imageFrame = new Image<Gray, byte>(frame);
             //process the frame for tracking the blob
-            imageFrame = processFrame(imageFrame);
+            //imageFrame = processFrame(imageFrame);
 
-            iCapturedFrame.Source = Bitmap2BitmapImage(imageFrame.ToBitmap());
+            iCapturedFrame.Source = Bitmap2BitmapImage(frame);
 
             imageAvailable = false;
             EnableRawImage();
@@ -224,7 +223,8 @@ namespace SquareItInside
         private void EnableRawImage()
         {
             touchTarget.EnableImage(Microsoft.Surface.Core.ImageType.Normalized);
-            touchTarget.FrameReceived += OnTouchTargetFrameReceived;
+            // Attach an event handler for the FrameReceived event.
+            touchTarget.FrameReceived += new EventHandler<FrameReceivedEventArgs>(OnTouchTargetFrameReceived); ;
         }
 
         private void DisableRawImage()
