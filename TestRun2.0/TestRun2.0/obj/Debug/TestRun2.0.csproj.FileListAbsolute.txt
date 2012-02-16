@@ -1,0 +1,17 @@
+C:\AndreaInternship\TestRun2.0\TestRun2.0\bin\Debug\Resources\icon.png
+C:\AndreaInternship\TestRun2.0\TestRun2.0\bin\Debug\TestRun2.0.xml
+C:\AndreaInternship\TestRun2.0\TestRun2.0\bin\Debug\TestRun2.0.exe
+C:\AndreaInternship\TestRun2.0\TestRun2.0\bin\Debug\TestRun2.0.pdb
+C:\AndreaInternship\TestRun2.0\TestRun2.0\obj\Debug\ResolveAssemblyReference.cache
+C:\AndreaInternship\TestRun2.0\TestRun2.0\obj\Debug\SurfaceWindow1.baml
+C:\AndreaInternship\TestRun2.0\TestRun2.0\obj\Debug\App.baml
+C:\AndreaInternship\TestRun2.0\TestRun2.0\obj\Debug\SurfaceWindow1.g.cs
+C:\AndreaInternship\TestRun2.0\TestRun2.0\obj\Debug\App.g.cs
+C:\AndreaInternship\TestRun2.0\TestRun2.0\obj\Debug\TestRun2.0_Content.g.cs
+C:\AndreaInternship\TestRun2.0\TestRun2.0\obj\Debug\TestRun2.0_MarkupCompile.cache
+C:\AndreaInternship\TestRun2.0\TestRun2.0\obj\Debug\TestRun2.0.g.resources
+C:\AndreaInternship\TestRun2.0\TestRun2.0\obj\Debug\TestRun2._0.Properties.Resources.resources
+C:\AndreaInternship\TestRun2.0\TestRun2.0\obj\Debug\GenerateResource.read.1.tlog
+C:\AndreaInternship\TestRun2.0\TestRun2.0\obj\Debug\GenerateResource.write.1.tlog
+C:\AndreaInternship\TestRun2.0\TestRun2.0\obj\Debug\TestRun2.0.exe
+C:\AndreaInternship\TestRun2.0\TestRun2.0\obj\Debug\TestRun2.0.pdb

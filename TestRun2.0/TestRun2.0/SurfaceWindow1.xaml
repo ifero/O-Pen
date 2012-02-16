@@ -1,0 +1,39 @@
+﻿<s:SurfaceWindow x:Class="TestRun2._0.SurfaceWindow1"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:s="http://schemas.microsoft.com/surface/2008"
+    Title="TestRun2._0"
+    >
+  <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="90" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+
+        <s:SurfaceButton 
+            Name="SurfaceButtonAddImplicit"
+            Content="Add Item (Implicit)"
+            Grid.Column="0" Grid.Row="0" 
+            Height="80" Width="160" />
+
+        <s:SurfaceButton 
+            Name="SurfaceButtonAddExplicit"
+            Content="Add Item (Explicit)"
+            Grid.Column="1" Grid.Row="0" 
+            Height="80" Width="160" />
+
+        <s:ScatterView Name="MyScatterView" Grid.Column="0" Grid.Row="1" Grid.ColumnSpan="2">
+            <!-- This will be automatically wrapped in a ScatterViewItem control-->
+            <Rectangle Width="142" Height="112" Margin="8" Fill="Blue"/>
+            <!-- This is explicitly placed inside a ScatterViewItem control-->
+            <s:ScatterViewItem Deceleration="25.25">
+                <Label Content="1. Pizza"/>
+            </s:ScatterViewItem>
+        </s:ScatterView>
+
+    </Grid>
+</s:SurfaceWindow>
