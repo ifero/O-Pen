@@ -37,7 +37,6 @@ namespace SquareItInside
         System.Drawing.Imaging.ColorPalette pal;
         bool imageAvailable;
         private Bitmap frame;
-        private ImageMetrics imageMetrics;
         private CircleF[] contourCircles;
         bool isPen;
 
@@ -101,9 +100,9 @@ namespace SquareItInside
 
             GCHandle h = GCHandle.Alloc(normalizedImage, GCHandleType.Pinned);
             IntPtr ptr = h.AddrOfPinnedObject();
-            frame = new Bitmap(imageMetrics.Width,
-                                  imageMetrics.Height,
-                                  imageMetrics.Stride,
+            frame = new Bitmap(normalizedMetrics.Width,
+                                  normalizedMetrics.Height,
+                                  normalizedMetrics.Stride,
                                   System.Drawing.Imaging.PixelFormat.Format8bppIndexed,
                                   ptr);
 
