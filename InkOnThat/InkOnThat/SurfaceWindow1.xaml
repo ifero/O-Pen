@@ -1,0 +1,19 @@
+﻿<s:SurfaceWindow x:Class="InkOnThat.SurfaceWindow1"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:s="http://schemas.microsoft.com/surface/2008"
+    Title="InkOnThat"
+    >
+  <Grid>
+        <Image x:Name="iCapturedFrame" Width="369.963" Margin="2"
+               HorizontalAlignment="Right" VerticalAlignment="Bottom" Height="369.963" Canvas.Left="630.037" Canvas.Top="358.037" />
+        <s:SurfaceInkCanvas x:Name="inkBoard" Background="Black"
+                            HorizontalAlignment="Left" VerticalAlignment="Top"
+                            TouchDown="onContactDown" 
+                            TouchUp="onContactUp" 
+                            TouchMove="onContactDown"
+                            PreviewTouchMove="onContactDown"  
+                            UsesTouchShape="False"/>
+        <TextBlock x:Name="info" Height="163.317" HorizontalAlignment="Right" VerticalAlignment="Top" Width="196.647" />
+    </Grid>
+</s:SurfaceWindow>

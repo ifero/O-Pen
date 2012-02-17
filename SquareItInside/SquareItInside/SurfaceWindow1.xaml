@@ -7,5 +7,13 @@
   <Grid>
         <Image x:Name="iCapturedFrame" Width="369.963" Margin="2"
                HorizontalAlignment="Right" VerticalAlignment="Bottom" Height="369.963" Canvas.Left="630.037" Canvas.Top="358.037" />
-  </Grid>
+        <s:SurfaceInkCanvas x:Name="inkBoard" Background="WhiteSmoke" 
+                            TouchDown="onContactDown" 
+                            TouchUp="onContactUp" 
+                            TouchMove="onContactDown"
+                            PreviewTouchMove="onContactDown" 
+                            Height="730" Width="626.604" 
+                            UsesTouchShape="False"/>
+        <TextBlock x:Name="info" Height="163.317" Canvas.Left="703.263" Canvas.Top="73.326" Width="196.647" />
+    </Grid>
 </s:SurfaceWindow>

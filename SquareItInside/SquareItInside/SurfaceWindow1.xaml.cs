@@ -47,7 +47,7 @@ namespace SquareItInside
         {
             isPen = false;
             InitializeComponent();
-
+            AutoOrientsOnStartup = false;
             // Add handlers for window availability events
             AddWindowAvailabilityHandlers();
 
@@ -62,7 +62,8 @@ namespace SquareItInside
             // Set up the TouchTarget object for the entire SurfaceWindow object.
             touchTarget.EnableInput();
             EnableRawImage();
-            
+            // Attach an event handler for the FrameReceived event.
+            touchTarget.FrameReceived += new EventHandler<FrameReceivedEventArgs>(OnTouchTargetFrameReceived);
         }
 
         private void OnTouchTargetFrameReceived(object sender, Microsoft.Surface.Core.FrameReceivedEventArgs e)
@@ -95,27 +96,17 @@ namespace SquareItInside
             if (!imageAvailable)
                 return;
 
-            DisableRawImage();
-
-            GCHandle h = GCHandle.Alloc(normalizedImage, GCHandleType.Pinned);
-            IntPtr ptr = h.AddrOfPinnedObject();
-            frame = new Bitmap(normalizedMetrics.Width,
-                                  normalizedMetrics.Height,
-                                  normalizedMetrics.Stride,
-                                  System.Drawing.Imaging.PixelFormat.Format8bppIndexed,
-                                  ptr);
-
-            Convert8bppBMPToGrayscale(frame);
-
-            //convert the bitmap into an EmguCV image <Gray,byte>
-            //Image<Gray, byte> imageFrame = new Image<Gray, byte>(frame);
+            // Surface image (byte array) to EmguCV image
+            Image<Gray, Byte> imageFrame = new Image<Gray, byte>(normalizedMetrics.Width, normalizedMetrics.Height) { Bytes = normalizedImage };
+            
             //process the frame for tracking the blob
-            //imageFrame = processFrame(imageFrame);
-
-            iCapturedFrame.Source = Bitmap2BitmapImage(frame);
-
+            imageFrame = processFrame(imageFrame);
+            
+            iCapturedFrame.Source = Bitmap2BitmapImage(imageFrame.ToBitmap());
+            //imageFrame.Dispose();
             imageAvailable = false;
-            EnableRawImage();
+
+
         }
 
         /// <summary>
@@ -161,7 +152,7 @@ namespace SquareItInside
         {
             //TODO: enable audio, animations here
             // Enable a normalized image to be obtained.
-            touchTarget.EnableImage(ImageType.Normalized);
+            touchTarget.EnableImage(Microsoft.Surface.Core.ImageType.Normalized);
         }
 
         /// <summary>
@@ -213,8 +204,10 @@ namespace SquareItInside
             MemoryStream ms = new MemoryStream();
             bitmap.Save(ms, System.Drawing.Imaging.ImageFormat.Bmp);
             BitmapImage bImg = new System.Windows.Media.Imaging.BitmapImage();
+            ms.Position = 0;
             bImg.BeginInit();
-            bImg.StreamSource = new MemoryStream(ms.ToArray());
+            ms.Seek(0, SeekOrigin.Begin);
+            bImg.StreamSource = ms;
             bImg.EndInit();
             return bImg;
         }
@@ -222,9 +215,8 @@ namespace SquareItInside
 
         private void EnableRawImage()
         {
-            touchTarget.EnableImage(Microsoft.Surface.Core.ImageType.Normalized);
-            // Attach an event handler for the FrameReceived event.
-            touchTarget.FrameReceived += new EventHandler<FrameReceivedEventArgs>(OnTouchTargetFrameReceived); ;
+                touchTarget.EnableImage(Microsoft.Surface.Core.ImageType.Normalized);
+                touchTarget.FrameReceived += new EventHandler<FrameReceivedEventArgs>(OnTouchTargetFrameReceived);
         }
 
         private void DisableRawImage()
@@ -235,10 +227,6 @@ namespace SquareItInside
 
         private Image<Gray, byte> processFrame(Image<Gray, byte> image)
         {
-
-
-            // image._Flip(Emgu.CV.CvEnum.FLIP.VERTICAL);
-
             image = image.ThresholdBinary(new Gray(250), new Gray(255)); //Show just the very bright things
 
             Contour<System.Drawing.Point> contours = image.FindContours(Emgu.CV.CvEnum.CHAIN_APPROX_METHOD.CV_CHAIN_APPROX_SIMPLE,
@@ -306,6 +294,41 @@ namespace SquareItInside
             //go back to the begining
             while (contours.HPrev != null)
                 contours = contours.HPrev;
+        }
+
+        private void onContactDown(object s, System.Windows.Input.TouchEventArgs e)
+        {
+            StringBuilder sb = new StringBuilder();
+            e.Handled = true;
+            if (isPen)
+            {
+                if (contourCircles != null)
+                {
+                    sb.AppendLine(string.Format(System.Globalization.CultureInfo.InvariantCulture,
+                        "Captured X:{0} Y:{1}", (int)e.TouchDevice.GetPosition(this).X, (int)e.TouchDevice.GetPosition(this).Y));
+                    foreach (CircleF circle in contourCircles)
+                    {
+                        sb.AppendLine(string.Format(System.Globalization.CultureInfo.InvariantCulture,
+                            "Image     X:{0} Y:{1}", (int)(circle.Center.X * 2), (int)(circle.Center.Y * 2 - 15)));
+                        if ((System.Math.Abs(((int)e.TouchDevice.GetCenterPosition(this).X - (int)(circle.Center.X * 2))) < 10) &&
+                            (System.Math.Abs(((int)e.TouchDevice.GetCenterPosition(this).Y - (int)(circle.Center.Y * 2 -15))) < 10))
+                        {
+                            e.Handled = false;
+                            inkBoard.DefaultDrawingAttributes.Height = circle.Radius;
+                            inkBoard.DefaultDrawingAttributes.Width = circle.Radius;
+                            inkBoard.DefaultDrawingAttributes.Color = System.Windows.Media.Colors.Black;
+                            inkBoard.DefaultDrawingAttributes.FitToCurve = false;
+                        }
+                        info.Text = sb.ToString();
+                    }
+                }
+            }
+        }
+
+        private void onContactUp(object s, System.Windows.Input.TouchEventArgs e)
+        {
+            e.Handled = true;
+            isPen = false;
         }
     }
 }
