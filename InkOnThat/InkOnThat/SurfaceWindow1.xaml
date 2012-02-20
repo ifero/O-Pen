@@ -20,7 +20,7 @@
                             MaxWidth="1700"
             UsesTouchShape="False"/>
         <s:SurfaceButton x:Name="erase_Button" Click="onEraseClick" Canvas.Top="0" Canvas.Left="1710" Width="200" Height="100">Erase/Ink</s:SurfaceButton>
-        <s:SurfaceButton x:Name="new_board" Click="onClearClick" Canvas.Top="120" Canvas.Left="1710" Width="200" Height="100">New</s:SurfaceButton>
+        <s:SurfaceButton x:Name="new_board" Click="onClearClick" Canvas.Top="120" Canvas.Left="1710" Width="200" Height="100">Clear</s:SurfaceButton>
                            
         <!--<TextBlock x:Name="info" Height="163.317" HorizontalAlignment="Right" VerticalAlignment="Top" Width="196.647" />-->
     </Canvas>
