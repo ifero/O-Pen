@@ -45,6 +45,8 @@ namespace InkOnThat
         {
             isPen = false;
             InitializeComponent();
+            inkBoard.ReleaseAllCaptures();
+
             AutoOrientsOnStartup = false;
             // Add handlers for window availability events
             AddWindowAvailabilityHandlers();
@@ -101,6 +103,21 @@ namespace InkOnThat
             imageFrame = processFrame(imageFrame);
 
             iCapturedFrame.Source = Bitmap2BitmapImage(imageFrame.ToBitmap());
+
+            //if (contourCircles != null)
+            //{
+            //    foreach (CircleF circle in contourCircles)
+            //    {
+            //       pt = new System.Windows.Point((int)(circle.Center.X * 2), (int)(circle.Center.Y * 2 - 15));
+            //       tPoint = new System.Windows.Input.TouchPoint(touchTarget, pt, new Rect(pt, new System.Windows.Size(circle.Radius, circle.Radius)), TouchAction.Down);
+            //       inkBoard.DefaultDrawingAttributes.Height = circle.Radius;
+            //       inkBoard.DefaultDrawingAttributes.Width = circle.Radius;
+            //       inkBoard.DefaultDrawingAttributes.Color = System.Windows.Media.Colors.WhiteSmoke;
+            //       inkBoard.DefaultDrawingAttributes.FitToCurve = false;
+                    
+                  
+            //    }
+            //}
             //imageFrame.Dispose();
             imageAvailable = false;
 
@@ -234,17 +251,16 @@ namespace InkOnThat
             //ContactEventArgs cea = new Microsoft.Surface.Presentation.ContactEventArgs();
             //onContactDown(this, new Microsoft.Surface.Presentation.ContactEventArgs());
 
-            /*Testing blob detection.
-             * 
-             *if (contourCircles != null)
-             *{
-             *    foreach (CircleF circle in contourCircles)
-             *    {
-             *        image.Draw(circle, new Gray(100), 1);
-             *    }
-             *}
-             *
-             */
+            //Testing blob detection.
+              
+             if (contourCircles != null)
+             {
+                 foreach (CircleF circle in contourCircles)
+                 {
+                     image.Draw(circle, new Gray(100), 20);
+                 }
+             }
+             
             return image;
         }
 
@@ -257,7 +273,7 @@ namespace InkOnThat
             }
 
             ResetContoursNavigation(ref contours);
-
+            isPen = false;
             IList<CircleF> circles = new List<CircleF>();
             for (; contours.HNext != null; contours = contours.HNext)
             {
@@ -273,7 +289,7 @@ namespace InkOnThat
 
             }
 
-            if (contours.Area >= 10 && contours.Area <= 50)
+            if (contours.Area >= 1 && contours.Area <= 50)
             {
                 circles.Add(new CircleF(
                   new PointF(contours.BoundingRectangle.Left + contours.BoundingRectangle.Width / 2,
@@ -308,25 +324,19 @@ namespace InkOnThat
                     {
                         sb.AppendLine(string.Format(System.Globalization.CultureInfo.InvariantCulture,
                             "Image     X:{0} Y:{1}", (int)(circle.Center.X * 2), (int)(circle.Center.Y * 2 - 15)));
-                        if ((System.Math.Abs(((int)e.TouchDevice.GetCenterPosition(this).X - (int)(circle.Center.X * 2))) < 10) &&
-                            (System.Math.Abs(((int)e.TouchDevice.GetCenterPosition(this).Y - (int)(circle.Center.Y * 2 - 15))) < 10))
+                        if ((System.Math.Abs(((int)e.TouchDevice.GetCenterPosition(this).X - (int)(circle.Center.X * 2))) < 15) &&
+                            (System.Math.Abs(((int)e.TouchDevice.GetCenterPosition(this).Y - (int)(circle.Center.Y * 2 - 15))) < 15))
                         {
                             e.Handled = false;
                             inkBoard.DefaultDrawingAttributes.Height = circle.Radius;
                             inkBoard.DefaultDrawingAttributes.Width = circle.Radius;
-                            inkBoard.DefaultDrawingAttributes.Color = System.Windows.Media.Colors.WhiteSmoke;
+                            inkBoard.DefaultDrawingAttributes.Color = System.Windows.Media.Colors.Black;
                             inkBoard.DefaultDrawingAttributes.FitToCurve = false;
                         }
                         info.Text = sb.ToString();
                     }
                 }
             }
-        }
-
-        private void onContactUp(object s, System.Windows.Input.TouchEventArgs e)
-        {
-            e.Handled = true;
-            isPen = false;
         }
     }
 }
