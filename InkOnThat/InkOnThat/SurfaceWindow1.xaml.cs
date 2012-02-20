@@ -340,9 +340,9 @@ namespace InkOnThat
             inkBoard.EditingMode = inkBoard.EditingMode == SurfaceInkEditingMode.Ink ? SurfaceInkEditingMode.EraseByPoint : SurfaceInkEditingMode.Ink;
         }
 
-        private void onNewClick(object s, RoutedEventArgs e)
+        private void onClearClick(object s, RoutedEventArgs e)
         {
-           
+            inkBoard.Strokes.Clear();
         }
     }
 }

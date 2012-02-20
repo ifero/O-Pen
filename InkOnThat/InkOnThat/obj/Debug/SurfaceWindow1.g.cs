@@ -132,7 +132,7 @@ namespace InkOnThat {
             this.new_board = ((Microsoft.Surface.Presentation.Controls.SurfaceButton)(target));
             
             #line 23 "..\..\SurfaceWindow1.xaml"
-            this.new_board.Click += new System.Windows.RoutedEventHandler(this.onNewClick);
+            this.new_board.Click += new System.Windows.RoutedEventHandler(this.onClearClick);
             
             #line default
             #line hidden
