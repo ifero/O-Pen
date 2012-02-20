@@ -4,16 +4,24 @@
     xmlns:s="http://schemas.microsoft.com/surface/2008"
     Title="InkOnThat"
     >
-  <Grid>
-        <Image x:Name="iCapturedFrame" Width="369.963" Margin="2"
-               HorizontalAlignment="Right" VerticalAlignment="Bottom" Height="369.963" Canvas.Left="630.037" Canvas.Top="358.037" />
-        <s:SurfaceInkCanvas x:Name="inkBoard" Background="WhiteSmoke"
-                            HorizontalAlignment="Left" VerticalAlignment="Top"
+  <Canvas Background="Gray">
+        <!--<Image x:Name="iCapturedFrame" Width="369.963" Margin="2"
+               HorizontalAlignment="Right" VerticalAlignment="Bottom" Height="369.963" Canvas.Left="630.037" Canvas.Top="358.037" />-->
+        <s:SurfaceInkCanvas x:Name="inkBoard" Background="Black"
+                            Canvas.Top="0" Canvas.Left="0"
                             TouchDown="onContactDown"
+                            TouchMove="onContactDown"
                             PreviewTouchDown="onContactDown"
+                            Width="1700"
+                            Height="900"
+                            MaxHeight="900"
+                            MinHeight="900"
+                            MinWidth="1700"
+                            MaxWidth="1700"
             UsesTouchShape="False"/>
-                             
+        <s:SurfaceButton x:Name="erase_Button" Click="onEraseClick" Canvas.Top="0" Canvas.Left="1710" Width="200" Height="100">Erase/Ink</s:SurfaceButton>
+        <s:SurfaceButton x:Name="new_board" Click="onNewClick" Canvas.Top="120" Canvas.Left="1710" Width="200" Height="100">New</s:SurfaceButton>
                            
-        <TextBlock x:Name="info" Height="163.317" HorizontalAlignment="Right" VerticalAlignment="Top" Width="196.647" />
-    </Grid>
+        <!--<TextBlock x:Name="info" Height="163.317" HorizontalAlignment="Right" VerticalAlignment="Top" Width="196.647" />-->
+    </Canvas>
 </s:SurfaceWindow>

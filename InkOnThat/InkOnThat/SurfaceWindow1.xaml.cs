@@ -102,7 +102,7 @@ namespace InkOnThat
             //process the frame for tracking the blob
             imageFrame = processFrame(imageFrame);
 
-            iCapturedFrame.Source = Bitmap2BitmapImage(imageFrame.ToBitmap());
+            //iCapturedFrame.Source = Bitmap2BitmapImage(imageFrame.ToBitmap());
 
             //if (contourCircles != null)
             //{
@@ -248,18 +248,14 @@ namespace InkOnThat
             Emgu.CV.CvEnum.RETR_TYPE.CV_RETR_LIST);
             contourCircles = FindPossibleCircles(contours);
 
-            //ContactEventArgs cea = new Microsoft.Surface.Presentation.ContactEventArgs();
-            //onContactDown(this, new Microsoft.Surface.Presentation.ContactEventArgs());
-
             //Testing blob detection.
-              
-             if (contourCircles != null)
-             {
-                 foreach (CircleF circle in contourCircles)
-                 {
-                     image.Draw(circle, new Gray(100), 20);
-                 }
-             }
+            //if (contourCircles != null)
+            //{
+            //    foreach (CircleF circle in contourCircles)
+            //    {
+            //        image.Draw(circle, new Gray(100), 20);
+            //    }
+            //}
              
             return image;
         }
@@ -312,31 +308,41 @@ namespace InkOnThat
 
         private void onContactDown(object s, System.Windows.Input.TouchEventArgs e)
         {
-            StringBuilder sb = new StringBuilder();
+            //StringBuilder sb = new StringBuilder();
             e.Handled = true;
             if (isPen)
             {
                 if (contourCircles != null)
                 {
-                    sb.AppendLine(string.Format(System.Globalization.CultureInfo.InvariantCulture,
-                        "Captured X:{0} Y:{1}", (int)e.TouchDevice.GetPosition(this).X, (int)e.TouchDevice.GetPosition(this).Y));
+                    //sb.AppendLine(string.Format(System.Globalization.CultureInfo.InvariantCulture,
+                    //    "Captured X:{0} Y:{1}", (int)e.TouchDevice.GetPosition(this).X, (int)e.TouchDevice.GetPosition(this).Y));
                     foreach (CircleF circle in contourCircles)
                     {
-                        sb.AppendLine(string.Format(System.Globalization.CultureInfo.InvariantCulture,
-                            "Image     X:{0} Y:{1}", (int)(circle.Center.X * 2), (int)(circle.Center.Y * 2 - 15)));
+                        //sb.AppendLine(string.Format(System.Globalization.CultureInfo.InvariantCulture,
+                        //    "Image     X:{0} Y:{1}", (int)(circle.Center.X * 2), (int)(circle.Center.Y * 2 - 15)));
                         if ((System.Math.Abs(((int)e.TouchDevice.GetCenterPosition(this).X - (int)(circle.Center.X * 2))) < 15) &&
                             (System.Math.Abs(((int)e.TouchDevice.GetCenterPosition(this).Y - (int)(circle.Center.Y * 2 - 15))) < 15))
                         {
                             e.Handled = false;
                             inkBoard.DefaultDrawingAttributes.Height = circle.Radius;
                             inkBoard.DefaultDrawingAttributes.Width = circle.Radius;
-                            inkBoard.DefaultDrawingAttributes.Color = System.Windows.Media.Colors.Black;
+                            inkBoard.DefaultDrawingAttributes.Color = System.Windows.Media.Colors.WhiteSmoke;
                             inkBoard.DefaultDrawingAttributes.FitToCurve = false;
                         }
-                        info.Text = sb.ToString();
+                        //info.Text = sb.ToString();
                     }
                 }
             }
+        }
+
+        private void onEraseClick(object s, RoutedEventArgs e)
+        {
+            inkBoard.EditingMode = inkBoard.EditingMode == SurfaceInkEditingMode.Ink ? SurfaceInkEditingMode.EraseByPoint : SurfaceInkEditingMode.Ink;
+        }
+
+        private void onNewClick(object s, RoutedEventArgs e)
+        {
+           
         }
     }
 }
