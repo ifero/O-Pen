@@ -34,11 +34,10 @@ namespace SquareItInside
         IntPtr hwnd;
         private byte[] normalizedImage;
         private Microsoft.Surface.Core.ImageMetrics normalizedMetrics;
-        System.Drawing.Imaging.ColorPalette pal;
         bool imageAvailable;
-        private Bitmap frame;
         private CircleF[] contourCircles;
         bool isPen;
+        private System.Windows.Point offset;
 
         /// <summary>
         /// Default constructor.
@@ -47,6 +46,9 @@ namespace SquareItInside
         {
             isPen = false;
             InitializeComponent();
+            dragRectangle.ReleaseAllCaptures();
+            theBox.ReleaseAllCaptures();
+
             AutoOrientsOnStartup = false;
             // Add handlers for window availability events
             AddWindowAvailabilityHandlers();
@@ -98,12 +100,12 @@ namespace SquareItInside
 
             // Surface image (byte array) to EmguCV image
             Image<Gray, Byte> imageFrame = new Image<Gray, byte>(normalizedMetrics.Width, normalizedMetrics.Height) { Bytes = normalizedImage };
-            
+
             //process the frame for tracking the blob
             imageFrame = processFrame(imageFrame);
-            
-            iCapturedFrame.Source = Bitmap2BitmapImage(imageFrame.ToBitmap());
-            //imageFrame.Dispose();
+
+            //iCapturedFrame.Source = Bitmap2BitmapImage(imageFrame.ToBitmap());
+
             imageAvailable = false;
 
 
@@ -185,20 +187,6 @@ namespace SquareItInside
         }
 
 
-        private void Convert8bppBMPToGrayscale(Bitmap bmp)
-        {
-            if (pal == null) // pal is defined at module level as --- ColorPalette pal;
-            {
-                pal = bmp.Palette;
-                for (int i = 0; i < 256; i++)
-                {
-                    pal.Entries[i] = System.Drawing.Color.FromArgb(i, i, i);
-                }
-            }
-
-            bmp.Palette = pal;
-        }
-
         private BitmapImage Bitmap2BitmapImage(Bitmap bitmap)
         {
             MemoryStream ms = new MemoryStream();
@@ -215,8 +203,8 @@ namespace SquareItInside
 
         private void EnableRawImage()
         {
-                touchTarget.EnableImage(Microsoft.Surface.Core.ImageType.Normalized);
-                touchTarget.FrameReceived += new EventHandler<FrameReceivedEventArgs>(OnTouchTargetFrameReceived);
+            touchTarget.EnableImage(Microsoft.Surface.Core.ImageType.Normalized);
+            touchTarget.FrameReceived += new EventHandler<FrameReceivedEventArgs>(OnTouchTargetFrameReceived);
         }
 
         private void DisableRawImage()
@@ -227,26 +215,22 @@ namespace SquareItInside
 
         private Image<Gray, byte> processFrame(Image<Gray, byte> image)
         {
-            image = image.ThresholdBinary(new Gray(250), new Gray(255)); //Show just the very bright things
+            image = image.ThresholdBinary(new Gray(254), new Gray(255)); //Show just the very bright things
 
+            //detecy Contours from Thresholded image.
             Contour<System.Drawing.Point> contours = image.FindContours(Emgu.CV.CvEnum.CHAIN_APPROX_METHOD.CV_CHAIN_APPROX_SIMPLE,
             Emgu.CV.CvEnum.RETR_TYPE.CV_RETR_LIST);
             contourCircles = FindPossibleCircles(contours);
 
-            //ContactEventArgs cea = new Microsoft.Surface.Presentation.ContactEventArgs();
-            //onContactDown(this, new Microsoft.Surface.Presentation.ContactEventArgs());
+            //Testing blob detection.
+            //if (contourCircles != null)
+            //{
+            //    foreach (CircleF circle in contourCircles)
+            //    {
+            //        image.Draw(circle, new Gray(100), 20);
+            //    }
+            //}
 
-            /*Testing blob detection.
-             * 
-             *if (contourCircles != null)
-             *{
-             *    foreach (CircleF circle in contourCircles)
-             *    {
-             *        image.Draw(circle, new Gray(100), 1);
-             *    }
-             *}
-             *
-             */
             return image;
         }
 
@@ -259,7 +243,7 @@ namespace SquareItInside
             }
 
             ResetContoursNavigation(ref contours);
-
+            isPen = false;
             IList<CircleF> circles = new List<CircleF>();
             for (; contours.HNext != null; contours = contours.HNext)
             {
@@ -275,7 +259,7 @@ namespace SquareItInside
 
             }
 
-            if (contours.Area >= 10 && contours.Area <= 50)
+            if (contours.Area >= 1 && contours.Area <= 50)
             {
                 circles.Add(new CircleF(
                   new PointF(contours.BoundingRectangle.Left + contours.BoundingRectangle.Width / 2,
@@ -296,39 +280,52 @@ namespace SquareItInside
                 contours = contours.HPrev;
         }
 
-        private void onContactDown(object s, System.Windows.Input.TouchEventArgs e)
+        private void onTouchDown(object s, System.Windows.Input.TouchEventArgs e)
         {
-            StringBuilder sb = new StringBuilder();
             e.Handled = true;
             if (isPen)
             {
                 if (contourCircles != null)
                 {
-                    sb.AppendLine(string.Format(System.Globalization.CultureInfo.InvariantCulture,
-                        "Captured X:{0} Y:{1}", (int)e.TouchDevice.GetPosition(this).X, (int)e.TouchDevice.GetPosition(this).Y));
                     foreach (CircleF circle in contourCircles)
                     {
-                        sb.AppendLine(string.Format(System.Globalization.CultureInfo.InvariantCulture,
-                            "Image     X:{0} Y:{1}", (int)(circle.Center.X * 2), (int)(circle.Center.Y * 2 - 15)));
-                        if ((System.Math.Abs(((int)e.TouchDevice.GetCenterPosition(this).X - (int)(circle.Center.X * 2))) < 10) &&
-                            (System.Math.Abs(((int)e.TouchDevice.GetCenterPosition(this).Y - (int)(circle.Center.Y * 2 -15))) < 10))
+                        if ((System.Math.Abs(((int)e.TouchDevice.GetCenterPosition(this).X - (int)(circle.Center.X * 2))) < 15) &&
+                            (System.Math.Abs(((int)e.TouchDevice.GetCenterPosition(this).Y - (int)(circle.Center.Y * 2 - 15))) < 15))
                         {
                             e.Handled = false;
-                            inkBoard.DefaultDrawingAttributes.Height = circle.Radius;
-                            inkBoard.DefaultDrawingAttributes.Width = circle.Radius;
-                            inkBoard.DefaultDrawingAttributes.Color = System.Windows.Media.Colors.Black;
-                            inkBoard.DefaultDrawingAttributes.FitToCurve = false;
+                            System.Windows.Point penPoint = e.TouchDevice.GetPosition(this);
+                            offset = RectangleDragOffset(new System.Windows.Point(Canvas.GetLeft(dragRectangle), Canvas.GetTop(dragRectangle)), penPoint);
                         }
-                        info.Text = sb.ToString();
                     }
                 }
             }
         }
 
-        private void onContactUp(object s, System.Windows.Input.TouchEventArgs e)
+        private void onTouchMove(object s, System.Windows.Input.TouchEventArgs e)
         {
             e.Handled = true;
-            isPen = false;
+            if (isPen)
+            {
+                if (contourCircles != null)
+                {
+                    foreach (CircleF circle in contourCircles)
+                    {
+                        if ((System.Math.Abs(((int)e.TouchDevice.GetCenterPosition(this).X - (int)(circle.Center.X * 2))) < 15) &&
+                            (System.Math.Abs(((int)e.TouchDevice.GetCenterPosition(this).Y - (int)(circle.Center.Y * 2 - 15))) < 15))
+                        {
+                            e.Handled = false;
+                            System.Windows.Point penPoint = e.TouchDevice.GetPosition(this);
+                            Canvas.SetLeft(dragRectangle, penPoint.X - offset.X);
+                            Canvas.SetTop(dragRectangle, penPoint.Y - offset.Y);
+                        }
+                    }
+                }
+            }
+        }
+
+        private System.Windows.Point RectangleDragOffset(System.Windows.Point rectPoint, System.Windows.Point penPoint)
+        {
+            return new System.Windows.Point(penPoint.X - rectPoint.X, penPoint.Y - rectPoint.Y);
         }
     }
 }

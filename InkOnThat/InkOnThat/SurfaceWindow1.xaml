@@ -9,9 +9,9 @@
                HorizontalAlignment="Right" VerticalAlignment="Bottom" Height="369.963" Canvas.Left="630.037" Canvas.Top="358.037" />-->
         <s:SurfaceInkCanvas x:Name="inkBoard" Background="Black"
                             Canvas.Top="0" Canvas.Left="0"
-                            TouchDown="onContactDown"
-                            TouchMove="onContactDown"
-                            PreviewTouchDown="onContactDown"
+                            TouchDown="onTouchDown"
+                            TouchMove="onTouchDown"
+                            PreviewTouchDown="onTouchDown"
                             Width="1700"
                             Height="900"
                             MaxHeight="900"

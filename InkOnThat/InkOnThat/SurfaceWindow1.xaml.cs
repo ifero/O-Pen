@@ -33,7 +33,6 @@ namespace InkOnThat
         IntPtr hwnd;
         private byte[] normalizedImage;
         private Microsoft.Surface.Core.ImageMetrics normalizedMetrics;
-        System.Drawing.Imaging.ColorPalette pal;
         bool imageAvailable;
         private CircleF[] contourCircles;
         bool isPen;
@@ -104,21 +103,6 @@ namespace InkOnThat
 
             //iCapturedFrame.Source = Bitmap2BitmapImage(imageFrame.ToBitmap());
 
-            //if (contourCircles != null)
-            //{
-            //    foreach (CircleF circle in contourCircles)
-            //    {
-            //       pt = new System.Windows.Point((int)(circle.Center.X * 2), (int)(circle.Center.Y * 2 - 15));
-            //       tPoint = new System.Windows.Input.TouchPoint(touchTarget, pt, new Rect(pt, new System.Windows.Size(circle.Radius, circle.Radius)), TouchAction.Down);
-            //       inkBoard.DefaultDrawingAttributes.Height = circle.Radius;
-            //       inkBoard.DefaultDrawingAttributes.Width = circle.Radius;
-            //       inkBoard.DefaultDrawingAttributes.Color = System.Windows.Media.Colors.WhiteSmoke;
-            //       inkBoard.DefaultDrawingAttributes.FitToCurve = false;
-                    
-                  
-            //    }
-            //}
-            //imageFrame.Dispose();
             imageAvailable = false;
 
 
@@ -197,21 +181,6 @@ namespace InkOnThat
             // If the application is deactivated before a raw image is
             // captured, make sure to disable core raw images for performance reasons.
             touchTarget.DisableImage(Microsoft.Surface.Core.ImageType.Normalized);
-        }
-
-
-        private void Convert8bppBMPToGrayscale(Bitmap bmp)
-        {
-            if (pal == null) // pal is defined at module level as --- ColorPalette pal;
-            {
-                pal = bmp.Palette;
-                for (int i = 0; i < 256; i++)
-                {
-                    pal.Entries[i] = System.Drawing.Color.FromArgb(i, i, i);
-                }
-            }
-
-            bmp.Palette = pal;
         }
 
         private BitmapImage Bitmap2BitmapImage(Bitmap bitmap)
@@ -306,7 +275,7 @@ namespace InkOnThat
                 contours = contours.HPrev;
         }
 
-        private void onContactDown(object s, System.Windows.Input.TouchEventArgs e)
+        private void onTouchDown(object s, System.Windows.Input.TouchEventArgs e)
         {
             //StringBuilder sb = new StringBuilder();
             e.Handled = true;

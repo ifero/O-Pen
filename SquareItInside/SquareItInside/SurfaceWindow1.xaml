@@ -4,16 +4,17 @@
     xmlns:s="http://schemas.microsoft.com/surface/2008"
     Title="SquareItInside"
     >
-  <Grid>
-        <Image x:Name="iCapturedFrame" Width="369.963" Margin="2"
-               HorizontalAlignment="Right" VerticalAlignment="Bottom" Height="369.963" Canvas.Left="630.037" Canvas.Top="358.037" />
-        <s:SurfaceInkCanvas x:Name="inkBoard" Background="WhiteSmoke" 
-                            TouchDown="onContactDown" 
-                            TouchUp="onContactUp" 
-                            TouchMove="onContactDown"
-                            PreviewTouchMove="onContactDown" 
-                            Height="730" Width="626.604" 
-                            UsesTouchShape="False"/>
-        <TextBlock x:Name="info" Height="163.317" Canvas.Left="703.263" Canvas.Top="73.326" Width="196.647" />
-    </Grid>
+    <Canvas Background="Gray">
+        <Rectangle x:Name="dragRectangle" 
+                   Width="150" Height="150" 
+                   Canvas.Top="400" Canvas.Left="100" 
+                   TouchDown="onTouchDown"  
+                   TouchMove="onTouchMove"
+                   Fill="Brown"
+                   PreviewTouchDown="onTouchDown"/>
+        <Rectangle x:Name="theBox"
+                   Width="200" Height="200"
+                   Canvas.Top="400" Canvas.Left="1600"
+                   Fill="DarkGreen"/>
+    </Canvas>
 </s:SurfaceWindow>

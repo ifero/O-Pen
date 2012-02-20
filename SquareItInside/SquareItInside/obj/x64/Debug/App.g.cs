@@ -31,7 +31,7 @@ using System.Windows.Shapes;
 using System.Windows.Shell;
 
 
-namespace InkOnThat {
+namespace SquareItInside {
     
     
     /// <summary>
@@ -72,7 +72,7 @@ namespace InkOnThat {
         [System.STAThreadAttribute()]
         [System.Diagnostics.DebuggerNonUserCodeAttribute()]
         public static void Main() {
-            InkOnThat.App app = new InkOnThat.App();
+            SquareItInside.App app = new SquareItInside.App();
             app.InitializeComponent();
             app.Run();
         }
