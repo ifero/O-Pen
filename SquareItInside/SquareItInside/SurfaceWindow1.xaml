@@ -5,15 +5,21 @@
     Title="SquareItInside"
     >
     <Canvas Background="Gray">
+        <s:SurfaceButton x:Name="aButton" Width="200" Height="100" 
+                         Canvas.Top="900" Canvas.Left="1700"
+                         Click="onButtonClick" Visibility="Hidden">REPLAY</s:SurfaceButton>
         <Rectangle x:Name="dragRectangle" 
                    Width="150" Height="150" 
                    Canvas.Top="400" Canvas.Left="100" 
+                   Canvas.ZIndex ="2"
                    TouchDown="onTouchDown"  
                    TouchMove="onTouchMove"
+                   TouchLeave="onTouchLeave"
                    Fill="Brown"
-                   PreviewTouchDown="onTouchDown"/>
+                   />
         <Rectangle x:Name="theBox"
                    Width="200" Height="200"
+                   Canvas.ZIndex ="1"
                    Canvas.Top="400" Canvas.Left="1600"
                    Fill="DarkGreen"/>
     </Canvas>

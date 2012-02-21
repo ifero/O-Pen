@@ -37,7 +37,9 @@ namespace SquareItInside
         bool imageAvailable;
         private CircleF[] contourCircles;
         bool isPen;
-        private System.Windows.Point offset;
+        bool yay;
+        private System.Windows.Point lastPoint;
+        TouchDevice rectangleControlTouchDevice;
 
         /// <summary>
         /// Default constructor.
@@ -103,7 +105,20 @@ namespace SquareItInside
 
             //process the frame for tracking the blob
             imageFrame = processFrame(imageFrame);
-
+            
+            if (rectangleControlTouchDevice == null)
+            {
+                if ((Canvas.GetTop(this.dragRectangle) > Canvas.GetTop(this.theBox) && (Canvas.GetTop(this.dragRectangle) - Canvas.GetTop(this.theBox)) < 50)
+                 && (Canvas.GetLeft(this.dragRectangle) > Canvas.GetLeft(this.theBox) && (Canvas.GetLeft(this.dragRectangle) - Canvas.GetLeft(this.theBox)) < 50))
+                {
+                    if(!yay)
+                    {
+                        aButton.Visibility = Visibility.Visible;
+                        yay = true;
+                    }
+                }
+                else yay = false;
+            }
             //iCapturedFrame.Source = Bitmap2BitmapImage(imageFrame.ToBitmap());
 
             imageAvailable = false;
@@ -292,9 +307,14 @@ namespace SquareItInside
                         if ((System.Math.Abs(((int)e.TouchDevice.GetCenterPosition(this).X - (int)(circle.Center.X * 2))) < 15) &&
                             (System.Math.Abs(((int)e.TouchDevice.GetCenterPosition(this).Y - (int)(circle.Center.Y * 2 - 15))) < 15))
                         {
-                            e.Handled = false;
-                            System.Windows.Point penPoint = e.TouchDevice.GetPosition(this);
-                            offset = RectangleDragOffset(new System.Windows.Point(Canvas.GetLeft(dragRectangle), Canvas.GetTop(dragRectangle)), penPoint);
+                            e.TouchDevice.Capture(this.dragRectangle);
+                            if (rectangleControlTouchDevice == null)
+                            {
+                                rectangleControlTouchDevice = e.TouchDevice;
+
+                                // Remember where this contact took place.  
+                                lastPoint = rectangleControlTouchDevice.GetTouchPoint(this).Position;
+                            }
                         }
                     }
                 }
@@ -313,19 +333,50 @@ namespace SquareItInside
                         if ((System.Math.Abs(((int)e.TouchDevice.GetCenterPosition(this).X - (int)(circle.Center.X * 2))) < 15) &&
                             (System.Math.Abs(((int)e.TouchDevice.GetCenterPosition(this).Y - (int)(circle.Center.Y * 2 - 15))) < 15))
                         {
-                            e.Handled = false;
-                            System.Windows.Point penPoint = e.TouchDevice.GetPosition(this);
-                            Canvas.SetLeft(dragRectangle, penPoint.X - offset.X);
-                            Canvas.SetTop(dragRectangle, penPoint.Y - offset.Y);
+                            if (e.TouchDevice == rectangleControlTouchDevice)
+                            {
+                                // Get the current position of the contact.  
+                                System.Windows.Point currentTouchPoint = rectangleControlTouchDevice.GetCenterPosition(this);
+
+                                // Get the change between the controlling contact point and
+                                // the changed contact point.  
+                                double deltaX = currentTouchPoint.X - lastPoint.X;
+                                double deltaY = currentTouchPoint.Y - lastPoint.Y;
+
+                                // Get and then set a new top position and a new left position for the ellipse.  
+                                double newTop = Canvas.GetTop(this.dragRectangle) + deltaY;
+                                double newLeft = Canvas.GetLeft(this.dragRectangle) + deltaX;
+
+                                Canvas.SetTop(this.dragRectangle, newTop);
+                                Canvas.SetLeft(this.dragRectangle, newLeft);
+
+                                // Forget the old contact point, and remember the new contact point.  
+                                lastPoint = currentTouchPoint;
+                            } 
                         }
                     }
                 }
             }
         }
 
-        private System.Windows.Point RectangleDragOffset(System.Windows.Point rectPoint, System.Windows.Point penPoint)
+        private void onTouchLeave(object s, System.Windows.Input.TouchEventArgs e)
         {
-            return new System.Windows.Point(penPoint.X - rectPoint.X, penPoint.Y - rectPoint.Y);
+            // If this contact is the one that was remembered  
+            if (e.TouchDevice == rectangleControlTouchDevice)
+            {
+                // Forget about this contact.
+                rectangleControlTouchDevice = null;
+            }
+
+            // Mark this event as handled.  
+            e.Handled = true;
+        }
+
+        private void onButtonClick(object s, RoutedEventArgs e)
+        {
+            Canvas.SetTop(this.dragRectangle, 400);
+            Canvas.SetLeft(this.dragRectangle, 100);
+            aButton.Visibility = Visibility.Hidden;
         }
     }
 }
