@@ -242,7 +242,7 @@ namespace InkOnThat
             IList<CircleF> circles = new List<CircleF>();
             for (; contours.HNext != null; contours = contours.HNext)
             {
-                if (contours.Area >= 1 && contours.Area <= 50)
+                if (contours.Area >= 1 && contours.Area <= 20)
                 {
                     circles.Add(new CircleF(
                       new PointF(contours.BoundingRectangle.Left + (contours.BoundingRectangle.Width / 2),
@@ -254,7 +254,7 @@ namespace InkOnThat
 
             }
 
-            if (contours.Area >= 1 && contours.Area <= 50)
+            if (contours.Area >= 1 && contours.Area <= 20)
             {
                 circles.Add(new CircleF(
                   new PointF(contours.BoundingRectangle.Left + contours.BoundingRectangle.Width / 2,
