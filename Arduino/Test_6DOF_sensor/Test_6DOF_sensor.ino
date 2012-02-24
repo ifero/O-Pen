@@ -39,9 +39,17 @@ float wGyro = 10.0;
   * AUTO_SLEEP set and MEASURE set.
   ******************************************/
 void initAccelerometer() {
-  writeTo(ACC, ACC_POWER_CTL, 0);
-  writeTo(ACC, ACC_POWER_CTL, 16);
-  writeTo(ACC, ACC_POWER_CTL, 8);
+  byte val;
+  Wire.beginTransmission(ACC); //start transmission to ACC 
+  Wire.write(ACC_POWER_CTL);        // send register address
+  val = 0;
+  Wire.write(val); 
+  Wire.endTransmission();
+  Wire.beginTransmission(ACC); //start transmission to ACC 
+  Wire.write(ACC_POWER_CTL);        // send register address
+  val = 8;
+  Wire.write(val);    
+  Wire.endTransmission();
 }
 
 /**************************************
@@ -52,11 +60,24 @@ void initAccelerometer() {
   z axis MSB = 36, z axis LSB = 37
   *************************************/
 void getAccelerometerData(int *result) {
-  byte buffer[ACC_TO_READ];
-  readFrom(ACC, ACC_REG_ADDRESS, ACC_TO_READ, buffer);
-  result[0] = ( (int) buffer[1] << 8) | buffer[0];
-  result[1] = ( (int) buffer[3] << 8) | buffer[2];
-  result[2] = ( (int) buffer[5] << 8) | buffer[4];
+  byte buff[ACC_TO_READ];
+  Wire.beginTransmission(ACC); //start transmission to ACC 
+  Wire.write(ACC_REG_ADDRESS);        //sends address to read from
+  Wire.endTransmission(); //end transmission
+  
+  Wire.beginTransmission(ACC); //start transmission to ACC
+  Wire.requestFrom(ACC, ACC_TO_READ);    // request 6 bytes from ACC
+  
+  int i = 0;
+  while(Wire.available())    //ACC may send less than requested (abnormal)
+  { 
+    buff[i] = Wire.read(); // receive a byte
+    i++;
+  }
+  Wire.endTransmission(); //end transmission
+  result[0] = (( buff[1] << 8) | buff[0]);
+  result[1] = (( buff[3] << 8) | buff[2]);
+  result[2] = (( buff[5] << 8) | buff[4]);
 }
 
 void rawAccToG(int *raw, float * RwAcc) {
@@ -79,10 +100,27 @@ void rawAccToG(int *raw, float * RwAcc) {
   ******************************************/
 void initGyroscope()
 {
-  writeTo(GYRO, G_PWR_MGM, 0x00);
-  writeTo(GYRO, G_SMPLRT_DIV, 0x07);
-  writeTo(GYRO, G_DLPF_FS, 0x1E);
-  writeTo(GYRO, G_INT_CFG, 0x00);
+  byte val;
+  Wire.beginTransmission(GYRO); //start transmission to ACC 
+  Wire.write(G_PWR_MGM);        // send register address
+  val = 0x00;
+  Wire.write(val); 
+  Wire.endTransmission();
+  Wire.beginTransmission(GYRO); //start transmission to ACC 
+  Wire.write(G_SMPLRT_DIV);        // send register address
+  val = 0x07;
+  Wire.write(val);    
+  Wire.endTransmission();
+  Wire.beginTransmission(GYRO); //start transmission to ACC 
+  Wire.write(G_DLPF_FS);        // send register address
+  val = 0x1E;
+  Wire.write(val);
+  Wire.endTransmission();
+Wire.beginTransmission(GYRO); //start transmission to ACC 
+  Wire.write(G_INT_CFG);        // send register address
+  val = 0x00;
+  Wire.write(val);    
+  Wire.endTransmission();
 }
 
 /**************************************
@@ -96,11 +134,24 @@ void initGyroscope()
 void getGyroscopeData(int * result)
 {
   byte buffer[G_TO_READ];
-  readFrom(GYRO, G_REG_ADDRESS, G_TO_READ, buffer);
+  Wire.beginTransmission(GYRO); //start transmission to ACC 
+  Wire.write(G_REG_ADDRESS);        //sends address to read from
+  Wire.endTransmission(); //end transmission
+  
+  Wire.beginTransmission(GYRO); //start transmission to ACC
+  Wire.requestFrom(GYRO, G_TO_READ);    // request 6 bytes from ACC
+  
+  int i = 0;
+  while(Wire.available())    //ACC may send less than requested (abnormal)
+  { 
+    buffer[i] = Wire.read(); // receive a byte
+    i++;
+  }
+  Wire.endTransmission(); //end transmission
   result[0] = ( (buffer[2] << 8) | buffer[3]) + g_offx;
-  result[0] = ( (buffer[4] << 8) | buffer[5]) + g_offy;
-  result[0] = ( (buffer[6] << 8) | buffer[7]) + g_offz;
-  result[0] = ( (buffer[0] << 8) | buffer[1]);
+  result[1] = ( (buffer[4] << 8) | buffer[5]) + g_offy;
+  result[2] = ( (buffer[6] << 8) | buffer[7]) + g_offz;
+  result[3] = ( (buffer[0] << 8) | buffer[1]);
 }
 
 //convert raw readings to degrees/sec
@@ -198,43 +249,36 @@ void loop()
     
     getAccelerometerData(acc);
     rawAccToG(acc, RwAcc);
-    
+    normalize3DVec(RwAcc);
     getGyroscopeData(gyro);
     rawGyroToDegsec(gyro, Gyro_ds);
-    
-        serialPrintFloatArr(RwAcc, 3);
-    serialPrintFloatArr(Gyro_ds, 3);
-    serialPrintFloatArr(RwGyro, 3);
-    serialPrintFloatArr(Awz, 2);
-    serialPrintFloatArr(RwEst, 3);
-   
+    getInclination();
+    //Serial.print(Gyro_ds[0]);
+    //Serial.print(" ; ");
+    //Serial.print(Gyro_ds[1]);
+    //Serial.print(" ; ");
+    //Serial.print(Gyro_ds[2]);
+    //Serial.print(" ; ");
+    Serial.print(RwAcc[0]);
+    Serial.print(" ; ");
+    Serial.print(RwAcc[1]);
+    Serial.print(" ; ");
+    Serial.print(RwAcc[2]);
+    Serial.print(" ; ");
+    Serial.print(Awz[0]);
+    Serial.print(" ; ");
+    Serial.print(Awz[1]);
+    Serial.print(" ; ");
+    Serial.print(RwEst[0]);
+    Serial.print(" ; ");
+    Serial.print(RwEst[1]);
+    Serial.print(" ; ");
+    Serial.print(RwEst[2]);
     Serial.println();
+    delay(300);
   }
 }
 
-void serialPrintFloatArr(float * arr, int length) {
-  for(int i=0; i<length; i++) {
-    serialFloatPrint(arr[i]);
-    Serial.print(",");
-  }
-}
-
-
-void serialFloatPrint(float f) {
-  byte * b = (byte *) &f;
-  Serial.print("f:");
-  for(int i=0; i<4; i++) {
-    
-    byte b1 = (b[i] >> 4) & 0x0f;
-    byte b2 = (b[i] & 0x0f);
-    
-    char c1 = (b1 < 10) ? ('0' + b1) : 'A' + b1 - 10;
-    char c2 = (b2 < 10) ? ('0' + b2) : 'A' + b2 - 10;
-    
-    Serial.print(c1);
-    Serial.print(c2);
-  }
-}
 
 //---------------- Functions
 //Writes val to address register on ACC
