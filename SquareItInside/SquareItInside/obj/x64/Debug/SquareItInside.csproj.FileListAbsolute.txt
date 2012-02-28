@@ -31,3 +31,4 @@ C:\AndreaInternship\SquareItInside\SquareItInside\bin\x64\Debug\zh-CN\ZedGraph.r
 C:\AndreaInternship\SquareItInside\SquareItInside\bin\x64\Debug\opencv_core231.dll
 C:\AndreaInternship\SquareItInside\SquareItInside\bin\x64\Debug\opencv_highgui231.dll
 C:\AndreaInternship\SquareItInside\SquareItInside\bin\x64\Debug\opencv_imgproc231.dll
+C:\AndreaInternship\SquareItInside\SquareItInside\bin\x64\Debug\Emgu.CV.GPU.dll

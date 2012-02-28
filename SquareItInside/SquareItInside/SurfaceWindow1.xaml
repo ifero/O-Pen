@@ -2,9 +2,8 @@
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:s="http://schemas.microsoft.com/surface/2008"
-    Title="SquareItInside"
-    >
-    <Canvas Background="Gray">
+    Title="SquareItInside" Cursor="None" ResizeMode="NoResize">
+    <Canvas Background="Gray" Cursor="None" x:Name="myCanvas">
         <s:SurfaceButton x:Name="aButton" Width="200" Height="100" 
                          Canvas.Top="900" Canvas.Left="1700"
                          Click="onButtonClick" Visibility="Hidden">REPLAY</s:SurfaceButton>
@@ -15,8 +14,7 @@
                    TouchDown="onTouchDown"  
                    TouchMove="onTouchMove"
                    TouchLeave="onTouchLeave"
-                   Fill="Brown"
-                   />
+                   Fill="Brown" Cursor="None" ClipToBounds="False" />
         <Rectangle x:Name="theBox"
                    Width="200" Height="200"
                    Canvas.ZIndex ="1"
