@@ -117,7 +117,6 @@ namespace SquareItInside
                 }
                 else isInside = false;
             }
-            //iCapturedFrame.Source = Bitmap2BitmapImage(imageFrame.ToBitmap());
 
             imageAvailable = false;
 

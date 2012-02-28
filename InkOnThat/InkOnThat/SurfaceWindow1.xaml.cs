@@ -1,17 +1,12 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Drawing;
+using System.IO;
+using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
-using System.Windows.Media;
 using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 using Microsoft.Surface;
 using Microsoft.Surface.Core;
 using Microsoft.Surface.Presentation;
@@ -20,7 +15,7 @@ using Microsoft.Surface.Presentation.Input;
 using Emgu.CV;
 using Emgu.CV.Structure;
 using Emgu.Util;
-using System.IO;
+
 
 namespace InkOnThat
 {
@@ -29,13 +24,16 @@ namespace InkOnThat
     /// </summary>
     public partial class SurfaceWindow1 : SurfaceWindow
     {
-        Microsoft.Surface.Core.TouchTarget touchTarget;
-        IntPtr hwnd;
-        private byte[] normalizedImage;
-        private Microsoft.Surface.Core.ImageMetrics normalizedMetrics;
-        bool imageAvailable;
         private CircleF[] contourCircles;
-        bool isPen;
+        private ImageMetrics normalizedMetrics;
+        private TouchTarget touchTarget;
+        private IntPtr hwnd;
+        private DateTime currentTime;
+        private TimeSpan diffTime;
+        private byte[] normalizedImage;
+        private bool imageAvailable;
+        private bool isPen;
+
 
         /// <summary>
         /// Default constructor.
@@ -45,8 +43,6 @@ namespace InkOnThat
             isPen = false;
             InitializeComponent();
             inkBoard.ReleaseAllCaptures();
-
-            AutoOrientsOnStartup = false;
             // Add handlers for window availability events
             AddWindowAvailabilityHandlers();
 
@@ -55,12 +51,14 @@ namespace InkOnThat
 
         private void InitializeSurfaceInput()
         {
+            // Set current date time
+            currentTime = DateTime.Now;
             // Get the hWnd for the SurfaceWindow object after it has been loaded.
             hwnd = new System.Windows.Interop.WindowInteropHelper(this).Handle;
             touchTarget = new Microsoft.Surface.Core.TouchTarget(hwnd);
             // Set up the TouchTarget object for the entire SurfaceWindow object.
             touchTarget.EnableInput();
-            EnableRawImage();
+            touchTarget.EnableImage(ImageType.Normalized);
             // Attach an event handler for the FrameReceived event.
             touchTarget.FrameReceived += new EventHandler<FrameReceivedEventArgs>(OnTouchTargetFrameReceived);
         }
@@ -68,8 +66,6 @@ namespace InkOnThat
         private void OnTouchTargetFrameReceived(object sender, Microsoft.Surface.Core.FrameReceivedEventArgs e)
         {
             imageAvailable = false;
-            int paddingLeft,
-                  paddingRight;
             if (normalizedImage == null)
             {
                 imageAvailable = e.TryGetRawImage(Microsoft.Surface.Core.ImageType.Normalized,
@@ -78,9 +74,7 @@ namespace InkOnThat
                     Microsoft.Surface.Core.InteractiveSurface.PrimarySurfaceDevice.Width,
                     Microsoft.Surface.Core.InteractiveSurface.PrimarySurfaceDevice.Height,
                     out normalizedImage,
-                    out normalizedMetrics,
-                    out paddingLeft,
-                    out paddingRight);
+                    out normalizedMetrics);
             }
             else
             {
@@ -95,15 +89,14 @@ namespace InkOnThat
             if (!imageAvailable)
                 return;
 
-            // Surface image (byte array) to EmguCV image
-            Image<Gray, Byte> imageFrame = new Image<Gray, byte>(normalizedMetrics.Width, normalizedMetrics.Height) { Bytes = normalizedImage };
-
-            //process the frame for tracking the blob
-            imageFrame = processFrame(imageFrame);
-
-            //iCapturedFrame.Source = Bitmap2BitmapImage(imageFrame.ToBitmap());
-
-            imageAvailable = false;
+            // Reduce from 60fpps to 30fpps (frame processed per second) 
+            diffTime = DateTime.Now - currentTime;
+            if (diffTime.Milliseconds > 30)
+            {
+                // Process the frame to detect the LED blob
+                processFrame(new Image<Gray, byte>(normalizedMetrics.Width, normalizedMetrics.Height) { Bytes = normalizedImage });
+                currentTime = DateTime.Now;
+            }
 
 
         }
@@ -196,20 +189,7 @@ namespace InkOnThat
             return bImg;
         }
 
-
-        private void EnableRawImage()
-        {
-            touchTarget.EnableImage(Microsoft.Surface.Core.ImageType.Normalized);
-            touchTarget.FrameReceived += new EventHandler<FrameReceivedEventArgs>(OnTouchTargetFrameReceived);
-        }
-
-        private void DisableRawImage()
-        {
-            touchTarget.DisableImage(Microsoft.Surface.Core.ImageType.Normalized);
-            touchTarget.FrameReceived -= OnTouchTargetFrameReceived;
-        }
-
-        private Image<Gray, byte> processFrame(Image<Gray, byte> image)
+        private void processFrame(Image<Gray, byte> image)
         {
             image = image.ThresholdBinary(new Gray(254), new Gray(255)); //Show just the very bright things
 
@@ -217,16 +197,6 @@ namespace InkOnThat
             Emgu.CV.CvEnum.RETR_TYPE.CV_RETR_LIST);
             contourCircles = FindPossibleCircles(contours);
 
-            //Testing blob detection.
-            //if (contourCircles != null)
-            //{
-            //    foreach (CircleF circle in contourCircles)
-            //    {
-            //        image.Draw(circle, new Gray(100), 20);
-            //    }
-            //}
-             
-            return image;
         }
 
         private CircleF[] FindPossibleCircles(Contour<System.Drawing.Point> contours)
@@ -277,18 +247,13 @@ namespace InkOnThat
 
         private void onTouchDown(object s, System.Windows.Input.TouchEventArgs e)
         {
-            //StringBuilder sb = new StringBuilder();
             e.Handled = true;
             if (isPen)
             {
                 if (contourCircles != null)
                 {
-                    //sb.AppendLine(string.Format(System.Globalization.CultureInfo.InvariantCulture,
-                    //    "Captured X:{0} Y:{1}", (int)e.TouchDevice.GetPosition(this).X, (int)e.TouchDevice.GetPosition(this).Y));
                     foreach (CircleF circle in contourCircles)
                     {
-                        //sb.AppendLine(string.Format(System.Globalization.CultureInfo.InvariantCulture,
-                        //    "Image     X:{0} Y:{1}", (int)(circle.Center.X * 2), (int)(circle.Center.Y * 2 - 15)));
                         if ((System.Math.Abs(((int)e.TouchDevice.GetCenterPosition(this).X - (int)(circle.Center.X * 2))) < 15) &&
                             (System.Math.Abs(((int)e.TouchDevice.GetCenterPosition(this).Y - (int)(circle.Center.Y * 2 - 15))) < 15))
                         {
@@ -298,7 +263,6 @@ namespace InkOnThat
                             inkBoard.DefaultDrawingAttributes.Color = System.Windows.Media.Colors.WhiteSmoke;
                             inkBoard.DefaultDrawingAttributes.FitToCurve = false;
                         }
-                        //info.Text = sb.ToString();
                     }
                 }
             }
