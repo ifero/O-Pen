@@ -32,7 +32,7 @@ namespace InkOnThat
         private TimeSpan diffTime;
         private byte[] normalizedImage;
         private bool imageAvailable;
-        private bool isPen;
+        private PenTrack.Tracking trackLED;
 
 
         /// <summary>
@@ -40,9 +40,8 @@ namespace InkOnThat
         /// </summary>
         public SurfaceWindow1()
         {
-            isPen = false;
+            trackLED = new PenTrack.Tracking();
             InitializeComponent();
-            inkBoard.ReleaseAllCaptures();
             // Add handlers for window availability events
             AddWindowAvailabilityHandlers();
 
@@ -51,6 +50,8 @@ namespace InkOnThat
 
         private void InitializeSurfaceInput()
         {
+            // Release all input captures for SurfaceInkBoard
+            inkBoard.ReleaseAllCaptures();
             // Set current date time
             currentTime = DateTime.Now;
             // Get the hWnd for the SurfaceWindow object after it has been loaded.
@@ -94,7 +95,7 @@ namespace InkOnThat
             if (diffTime.Milliseconds > 30)
             {
                 // Process the frame to detect the LED blob
-                processFrame(new Image<Gray, byte>(normalizedMetrics.Width, normalizedMetrics.Height) { Bytes = normalizedImage });
+                contourCircles = trackLED.TrackContours(normalizedMetrics, normalizedImage);
                 currentTime = DateTime.Now;
             }
 
@@ -189,66 +190,10 @@ namespace InkOnThat
             return bImg;
         }
 
-        private void processFrame(Image<Gray, byte> image)
-        {
-            image = image.ThresholdBinary(new Gray(254), new Gray(255)); //Show just the very bright things
-
-            Contour<System.Drawing.Point> contours = image.FindContours(Emgu.CV.CvEnum.CHAIN_APPROX_METHOD.CV_CHAIN_APPROX_SIMPLE,
-            Emgu.CV.CvEnum.RETR_TYPE.CV_RETR_LIST);
-            contourCircles = FindPossibleCircles(contours);
-
-        }
-
-        private CircleF[] FindPossibleCircles(Contour<System.Drawing.Point> contours)
-        {
-            if (contours == null)
-            {
-                isPen = false;
-                return null;
-            }
-
-            ResetContoursNavigation(ref contours);
-            isPen = false;
-            IList<CircleF> circles = new List<CircleF>();
-            for (; contours.HNext != null; contours = contours.HNext)
-            {
-                if (contours.Area >= 1 && contours.Area <= 20)
-                {
-                    circles.Add(new CircleF(
-                      new PointF(contours.BoundingRectangle.Left + (contours.BoundingRectangle.Width / 2),
-                        contours.BoundingRectangle.Top + (contours.BoundingRectangle.Height / 2)),
-                        contours.BoundingRectangle.Width / 2));
-                    isPen = true;
-
-                }
-
-            }
-
-            if (contours.Area >= 1 && contours.Area <= 20)
-            {
-                circles.Add(new CircleF(
-                  new PointF(contours.BoundingRectangle.Left + contours.BoundingRectangle.Width / 2,
-                    contours.BoundingRectangle.Top + contours.BoundingRectangle.Height / 2),
-                    contours.BoundingRectangle.Width / 2));
-                isPen = true;
-            }
-            return circles.ToArray();
-        }
-
-        private static void ResetContoursNavigation(ref Contour<System.Drawing.Point> contours)
-        {
-            if (contours == null)
-                return;
-
-            //go back to the begining
-            while (contours.HPrev != null)
-                contours = contours.HPrev;
-        }
-
         private void onTouchDown(object s, System.Windows.Input.TouchEventArgs e)
         {
             e.Handled = true;
-            if (isPen)
+            if (trackLED.isAPen())
             {
                 if (contourCircles != null)
                 {
