@@ -5,7 +5,7 @@
     Title="ActiveReading"
     >
     <Canvas Background="Gray" MaxHeight="1080" MaxWidth="1920" Height="1080" Width="1920">
-        <Label Canvas.Left="143" Canvas.Top="183" Content=
+        <Label Canvas.Left="533" Canvas.Top="207" Content=
 "The Microsoft Surface® platform brings people together to connect,
 learn, and decide. It enables experiences that change the way people
 collaborate and connect with a 360-degree interface. 
@@ -24,8 +24,7 @@ is the sensor in the panel, it picks up the image and it feeds that to the
 brain which is our vision input processor that recognizes the image and 
 does something with it. Taken in whole…this is PixelSense technology." 
                FontSize="24" Foreground="Black" Height="597" Width="826" />
-        <s:SurfaceInkCanvas x:Name="writeBoard" Canvas.Left="143" Canvas.Top="837" Height="170" Width="923" Background="Black" DataContext="{Binding}"></s:SurfaceInkCanvas>
-        <Label Canvas.Left="143" Canvas.Top="787" Content="Please write 'PALERMO'" FontSize="32" Foreground="#FF121212" />
-        <Label Canvas.Left="143" Canvas.Top="90" Content="Please highlight the words 'immediately' and 'input(s)'" FontSize="32" Foreground="Black" />
+        <s:SurfaceInkCanvas x:Name="writeBoard" Canvas.Left="533" Canvas.Top="207" Height="597" Width="826" Background="Gray" Opacity="0" DataContext="{Binding}"></s:SurfaceInkCanvas>
+        <Label Canvas.Left="533" Canvas.Top="97" Content="Please highlight the words 'immediately' and 'input(s)'" FontSize="32" Foreground="Black" />
     </Canvas>
 </s:SurfaceWindow>
