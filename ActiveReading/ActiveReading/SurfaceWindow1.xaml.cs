@@ -23,13 +23,17 @@ namespace ActiveReading
     /// </summary>
     public partial class SurfaceWindow1 : SurfaceWindow
     {
+        private int mode;
+        private bool highlight;
         /// <summary>
         /// Default constructor.
         /// </summary>
         public SurfaceWindow1()
         {
             InitializeComponent();
-
+            mode = 0;
+            highlight = false;
+            writeBoard.DefaultDrawingAttributes.Color = System.Windows.Media.Colors.Yellow;
             // Add handlers for window availability events
             AddWindowAvailabilityHandlers();
         }
@@ -98,6 +102,47 @@ namespace ActiveReading
         private void OnWindowUnavailable(object sender, EventArgs e)
         {
             //TODO: disable audio, animations here
+        }
+
+        private void onModeClick(object s, RoutedEventArgs e)
+        {
+            switch (mode)
+            {
+                case 0:
+                    {
+                        mode = 1;
+                        modeButton.Content = "Mode 2";
+                        break;
+                    }
+                case 1:
+                    {
+                        mode = 2;
+                        modeButton.Content = "Mode 3";
+                        break;
+                    }
+                case 2:
+                    {
+                        mode = 0;
+                        modeButton.Content = "Mode 1";
+                        break;
+                    }
+            }
+        }
+
+        private void onHlClick(object s, RoutedEventArgs e)
+        {
+            if (!highlight)
+            {
+                highlight = true;
+                writeBoard.EditingMode = SurfaceInkEditingMode.Ink;
+                highlightButton.Background = Brushes.Yellow;
+            }
+            else
+            {
+                highlight = false;
+                writeBoard.EditingMode = SurfaceInkEditingMode.None;
+                highlightButton.Background = Brushes.Silver;
+            }
         }
     }
 }
