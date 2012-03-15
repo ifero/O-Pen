@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.IO.Ports;
 using System.Linq;
 using System.Text;
 using System.Windows;
@@ -12,9 +13,14 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using Microsoft.Surface;
+using Microsoft.Surface.Core;
 using Microsoft.Surface.Presentation;
 using Microsoft.Surface.Presentation.Controls;
 using Microsoft.Surface.Presentation.Input;
+using Emgu.CV;
+using Emgu.CV.Structure;
+using Emgu.Util;
+
 
 namespace ActiveReading
 {
@@ -23,19 +29,114 @@ namespace ActiveReading
     /// </summary>
     public partial class SurfaceWindow1 : SurfaceWindow
     {
+        private TouchTarget touchTarget;
+        private CircleF[] contourCircles;
+        private IntPtr hwnd;
+        private ImageMetrics normalizedMetrics;
+        private TimeSpan diffTime;
+        private DateTime currentTime;
+        private byte[] normalizedImage;
+        private bool imageAvailable;
+        private PenTrack.Tracking trackLED;
         private int mode;
+        private bool mode1, mode2, mode3;
         private bool highlight;
+        private SerialPort sp;
         /// <summary>
         /// Default constructor.
         /// </summary>
         public SurfaceWindow1()
         {
+            trackLED = new PenTrack.Tracking();
+            try
+            {
+                sp = new SerialPort("COM5", 19200);
+                sp.Open();
+                sp.ReadTimeout = 100;
+            }
+            catch (System.Exception ex)
+            {
+                Console.WriteLine(ex);
+            }
             InitializeComponent();
             mode = 0;
             highlight = false;
             writeBoard.DefaultDrawingAttributes.Color = System.Windows.Media.Colors.Yellow;
+            writeBoard.DefaultDrawingAttributes.Height = 22;
+            writeBoard.DefaultDrawingAttributes.Width = 22;
+            InitializeSurfaceInput();
             // Add handlers for window availability events
             AddWindowAvailabilityHandlers();
+        }
+
+        private void InitializeSurfaceInput()
+        {
+            // Release all inputs
+            writeBoard.ReleaseAllCaptures();
+            // Set current date time
+            currentTime = DateTime.Now;
+            // Get the hWnd for the SurfaceWindow object after it has been loaded.
+            hwnd = new System.Windows.Interop.WindowInteropHelper(this).Handle;
+            touchTarget = new TouchTarget(hwnd);
+            // Set up the TouchTarget object for the entire SurfaceWindow object.
+            touchTarget.EnableInput();
+            touchTarget.EnableImage(ImageType.Normalized);
+            // Attach an event handler for the FrameReceived event.
+            touchTarget.FrameReceived += new EventHandler<FrameReceivedEventArgs>(OnTouchTargetFrameReceived);
+
+        }
+
+        private void OnTouchTargetFrameReceived(object sender, Microsoft.Surface.Core.FrameReceivedEventArgs e)
+        {
+            if (sp.IsOpen)
+            {
+                if (sp.BytesToRead != 0)
+                {
+                    try
+                    {
+                        Console.Write(sp.ReadLine());
+                    }
+                    catch (System.Exception ex)
+                    {
+                        Console.WriteLine(ex);
+                    }
+                }
+            }
+            imageAvailable = false;
+            if (normalizedImage == null)
+            {
+                imageAvailable = e.TryGetRawImage(ImageType.Normalized,
+                    Microsoft.Surface.Core.InteractiveSurface.PrimarySurfaceDevice.Left,
+                    Microsoft.Surface.Core.InteractiveSurface.PrimarySurfaceDevice.Top,
+                    Microsoft.Surface.Core.InteractiveSurface.PrimarySurfaceDevice.Width,
+                    Microsoft.Surface.Core.InteractiveSurface.PrimarySurfaceDevice.Height,
+                    out normalizedImage,
+                    out normalizedMetrics);
+            }
+            else
+            {
+                imageAvailable = e.UpdateRawImage(ImageType.Normalized, normalizedImage,
+                     Microsoft.Surface.Core.InteractiveSurface.PrimarySurfaceDevice.Left,
+                     Microsoft.Surface.Core.InteractiveSurface.PrimarySurfaceDevice.Top,
+                     Microsoft.Surface.Core.InteractiveSurface.PrimarySurfaceDevice.Width,
+                     Microsoft.Surface.Core.InteractiveSurface.PrimarySurfaceDevice.Height);
+            }
+
+            if (!imageAvailable)
+                return;
+
+            // Reduce from 60fpps to 30fpps (frame processed per second) 
+            diffTime = DateTime.Now - currentTime;
+            if (diffTime.Milliseconds > 30)
+            {
+                // Process the frame to detect the LED blob
+                contourCircles = trackLED.TrackContours(normalizedMetrics, normalizedImage);
+                currentTime = DateTime.Now;
+            }
+
+            imageAvailable = false;
+
+
         }
 
         /// <summary>
@@ -112,6 +213,9 @@ namespace ActiveReading
                     {
                         mode = 1;
                         modeButton.Content = "Mode 2";
+                        highlightButton.Visibility = System.Windows.Visibility.Hidden;
+                        highlightButton.Background = Brushes.Silver;
+                        writeBoard.EditingMode = SurfaceInkEditingMode.None;
                         break;
                     }
                 case 1:
@@ -124,6 +228,7 @@ namespace ActiveReading
                     {
                         mode = 0;
                         modeButton.Content = "Mode 1";
+                        highlightButton.Visibility = System.Windows.Visibility.Visible;
                         break;
                     }
             }
@@ -142,6 +247,27 @@ namespace ActiveReading
                 highlight = false;
                 writeBoard.EditingMode = SurfaceInkEditingMode.None;
                 highlightButton.Background = Brushes.Silver;
+            }
+        }
+
+        private void onTouchDown(object s, System.Windows.Input.TouchEventArgs e)
+        {
+            e.Handled = true;
+            if (trackLED.isAPen())
+            {
+                if (contourCircles != null)
+                {
+                    foreach (CircleF circle in contourCircles)
+                    {
+                        if ((System.Math.Abs(((int)e.TouchDevice.GetCenterPosition(this).X - (int)(circle.Center.X * 2))) < 15) &&
+                            (System.Math.Abs(((int)e.TouchDevice.GetCenterPosition(this).Y - (int)(circle.Center.Y * 2 - 15))) < 15) &&
+                            ( mode == 0 || (mode2 && mode == 1) || (mode3 && mode == 2)))
+                        {
+                            e.Handled = false;
+                            writeBoard.DefaultDrawingAttributes.FitToCurve = false;
+                        }
+                    }
+                }
             }
         }
     }

@@ -24,8 +24,8 @@ is the sensor in the panel, it picks up the image and it feeds that to the
 brain which is our vision input processor that recognizes the image and 
 does something with it. Taken in whole…this is PixelSense technology." 
                FontSize="24" Foreground="Black" Height="597" Width="826" />
-        <s:SurfaceInkCanvas x:Name="writeBoard" Canvas.Left="533" Canvas.Top="267" Height="597" Width="826" Background="Transparent" 
-                            EditingMode="None" Opacity="0.5"/>
+        <s:SurfaceInkCanvas x:Name="writeBoard" Canvas.Left="533" Canvas.Top="267" Height="597" Width="826" Background="Transparent" UsesTouchShape="False" 
+                            EditingMode="None" Opacity="0.5" TouchDown="onTouchDown" TouchMove="onTouchDown" PreviewTouchDown="onTouchDown"/>
         <Label Canvas.Left="533" Canvas.Top="140" Content="Please highlight the words 'immediately' and 'input(s)'" FontSize="32" Foreground="Black" />
         <s:SurfaceButton x:Name="modeButton" Canvas.Left="20" Canvas.Top="20" Content="Mode 1" Width="250" Height="100" 
                          HorizontalContentAlignment="Center" VerticalContentAlignment="Center" FontSize="32"

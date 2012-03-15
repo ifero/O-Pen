@@ -197,21 +197,7 @@ namespace SquareItInside
             // If the application is deactivated before a raw image is
             // captured, make sure to disable core raw images for performance reasons.
             touchTarget.DisableImage(Microsoft.Surface.Core.ImageType.Normalized);
-        }
-
-
-        private BitmapImage Bitmap2BitmapImage(Bitmap bitmap)
-        {
-            MemoryStream ms = new MemoryStream();
-            bitmap.Save(ms, System.Drawing.Imaging.ImageFormat.Bmp);
-            BitmapImage bImg = new System.Windows.Media.Imaging.BitmapImage();
-            ms.Position = 0;
-            bImg.BeginInit();
-            ms.Seek(0, SeekOrigin.Begin);
-            bImg.StreamSource = ms;
-            bImg.EndInit();
-            return bImg;
-        }      
+        } 
 
         private void onTouchDown(object s, System.Windows.Input.TouchEventArgs e)
         {

@@ -57,7 +57,7 @@ namespace PenTrack
 
             }
 
-            if (contours.Area >= 1 && contours.Area <= 40)
+            if (contours.Area >= 1 && contours.Area <= 30)
             {
                 circles.Add(new CircleF(
                   new PointF(contours.BoundingRectangle.Left + contours.BoundingRectangle.Width / 2,
