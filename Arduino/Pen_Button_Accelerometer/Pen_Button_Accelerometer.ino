@@ -160,10 +160,17 @@ void normalize3DVec(float * vector) {
   vector[2] /= R;  
 }
 
+// convert raw readings to degrees/sec
+void rawGyroToDegsec(int * raw, float * gyro_ds) {
+  gyro_ds[0] = ((float) raw[0]) / 14.375;
+  gyro_ds[1] = ((float) raw[1]) / 14.375;
+  gyro_ds[2] = ((float) raw[2]) / 14.375;
+}
+
 void setup()
 {
   Serial.begin(19200);
-  pinMode(2, INPUT);
+  pinMode(3, INPUT);
   Wire.begin();
   initAccelerometer();
   initGyroscope();
@@ -171,7 +178,7 @@ void setup()
 
 void loop()
 {
-  int sensorValue = digitalRead(2);
+  int sensorValue = digitalRead(3);
   if(!Serial.available()) 
   {
     int acc[3];
@@ -180,6 +187,7 @@ void loop()
     getGyroscopeData(gyro);
     rawAccToG(acc, RwAcc);
     normalize3DVec(RwAcc);
+    rawGyroToDegsec(gyro, RwGyro);
     Serial.print(sensorValue);
     Serial.print(";");
     Serial.print(RwAcc[0]);
@@ -188,11 +196,11 @@ void loop()
     Serial.print(";");
     Serial.print(RwAcc[2]);
     Serial.print(";");
-    Serial.print(gyro[0]);
+    Serial.print(RwGyro[0]);
     Serial.print(";");
-    Serial.print(gyro[1]);
+    Serial.print(RwGyro[1]);
     Serial.print(";");
-    Serial.print(gyro[2]);
+    Serial.print(RwGyro[2]);
     Serial.println();
     delay(300);
   }
