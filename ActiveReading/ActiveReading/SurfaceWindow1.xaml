@@ -24,14 +24,32 @@ is the sensor in the panel, it picks up the image and it feeds that to the
 brain which is our vision input processor that recognizes the image and 
 does something with it. Taken in whole…this is PixelSense technology." 
                FontSize="24" Foreground="Black" Height="597" Width="826" />
-        <s:SurfaceInkCanvas x:Name="writeBoard" Canvas.Left="533" Canvas.Top="267" Height="597" Width="826" Background="Transparent" UsesTouchShape="False" 
+        <s:SurfaceInkCanvas x:Name="annotateBoard" Canvas.Left="340" Canvas.Top="193" Height="877" Width="1173" Background="Transparent" UsesTouchShape="False" 
+                            EditingMode="None" Opacity="1" TouchDown="onTouchDown" TouchMove="onTouchDown" PreviewTouchDown="onTouchDown"/>
+        <s:SurfaceInkCanvas x:Name="highlightBoard" Canvas.Left="533" Canvas.Top="267" Height="597" Width="826" Background="Transparent" UsesTouchShape="False" 
                             EditingMode="None" Opacity="0.5" TouchDown="onTouchDown" TouchMove="onTouchDown" PreviewTouchDown="onTouchDown"/>
-        <Label Canvas.Left="533" Canvas.Top="140" Content="Please highlight the words 'immediately' and 'input(s)'" FontSize="32" Foreground="Black" />
-        <s:SurfaceButton x:Name="modeButton" Canvas.Left="20" Canvas.Top="20" Content="Mode 1" Width="250" Height="100" 
+        <s:SurfaceInkCanvas x:Name="drawBoard" Canvas.Left="340" Canvas.Top="193" Height="877" Width="1173" Background="Black" UsesTouchShape="False" 
+                            EditingMode="None" TouchDown="onTouchDown" TouchMove="onTouchDown" PreviewTouchDown="onTouchDown" Visibility="Hidden"/>
+        <Label Canvas.Left="533" Canvas.Top="140" Content="Please highlight the words 'immediately' and 'input(s)'" FontSize="32" Foreground="Black" x:Name="highlightLabel"/>
+        <Label Canvas.Left="713" Canvas.Top="140" Content="erase the word 'vision-based'" FontSize="32" Foreground="Black" Visibility="Hidden" x:Name="annotateLabel"/>
+        <Label Canvas.Left="494" Canvas.Top="140" Content="Have fun, write or paint what you want in the blackboard" FontSize="32" Foreground="Black" Visibility="Hidden" x:Name="drawLable"/>
+        <s:SurfaceButton x:Name="modeButton" Canvas.Left="20" Canvas.Top="20" Content="Pen Mode 1" Width="250" Height="100" 
                          HorizontalContentAlignment="Center" VerticalContentAlignment="Center" FontSize="32"
                          Click="onModeClick"/>
-        <s:SurfaceButton x:Name="highlightButton" Width="200" Height="50" Content="Highlight" Canvas.Left="1417" Canvas.Top="156" 
+        <s:SurfaceButton x:Name="highlightButton" Width="200" Height="50" Content="Highlight" Canvas.Left="1517" Canvas.Top="146" 
                          HorizontalContentAlignment="Center" VerticalContentAlignment="Center" FontSize="24" Background="Silver"
                          Click="onHlClick" Foreground="Black"/>
+        <s:SurfaceButton x:Name="taskButton" Canvas.Left="20" Canvas.Top="146" Content="Task1 - HL" 
+                         FontSize="32" Height="100" HorizontalContentAlignment="Center"  VerticalContentAlignment="Center" Width="250" 
+                         Click="onTaskClick"/>
+        <s:SurfaceButton x:Name="annotateButton" Background="Silver" Canvas.Left="1517" Canvas.Top="146" Content="Annotate" FontSize="24" 
+                         Foreground="Black" Height="50" HorizontalContentAlignment="Center"  VerticalContentAlignment="Center" Width="200" 
+                         Click="onAnnotateClick" Visibility="Hidden"/>
+        <s:SurfaceButton Background="Silver" Canvas.Left="1517" Canvas.Top="146" Content="Ink" FontSize="24" Foreground="Black" Height="50" 
+                         HorizontalContentAlignment="Center" Name="drawButton" VerticalContentAlignment="Center" Width="200" 
+                         Click="onDrawEraseClick" Visibility="Hidden"/>
+        <s:SurfaceButton Background="Silver" Canvas.Left="1517" Canvas.Top="203" Content="Clear" FontSize="24" Foreground="Black" Height="50" 
+                         HorizontalContentAlignment="Center" Name="clearButton" VerticalContentAlignment="Center" Width="200" 
+                         Click="onClearClick" Visibility="Hidden"/>
     </Canvas>
 </s:SurfaceWindow>

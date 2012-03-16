@@ -38,15 +38,24 @@ namespace ActiveReading
         private byte[] normalizedImage;
         private bool imageAvailable;
         private PenTrack.Tracking trackLED;
-        private int mode;
-        private bool mode1, mode2, mode3;
-        private bool highlight;
+        private int mode, task;
+        private bool mode2, mode3;
+        private bool highlight, annotate;
         private SerialPort sp;
+        private String[] split;
+        float[] rwAcc;
+        float[] rwGyro;
+        int button;
         /// <summary>
         /// Default constructor.
         /// </summary>
         public SurfaceWindow1()
         {
+            mode2 = false;
+            mode3 = false;
+            split = null;
+            rwAcc = new float[3];
+            rwGyro = new float[3];
             trackLED = new PenTrack.Tracking();
             try
             {
@@ -61,9 +70,10 @@ namespace ActiveReading
             InitializeComponent();
             mode = 0;
             highlight = false;
-            writeBoard.DefaultDrawingAttributes.Color = System.Windows.Media.Colors.Yellow;
-            writeBoard.DefaultDrawingAttributes.Height = 22;
-            writeBoard.DefaultDrawingAttributes.Width = 22;
+            annotate = false;
+            highlightBoard.DefaultDrawingAttributes.Color = System.Windows.Media.Colors.Yellow;
+            annotateBoard.DefaultDrawingAttributes.Color = System.Windows.Media.Colors.Black;
+            drawBoard.DefaultDrawingAttributes.Color = System.Windows.Media.Colors.White;
             InitializeSurfaceInput();
             // Add handlers for window availability events
             AddWindowAvailabilityHandlers();
@@ -72,7 +82,8 @@ namespace ActiveReading
         private void InitializeSurfaceInput()
         {
             // Release all inputs
-            writeBoard.ReleaseAllCaptures();
+            highlightBoard.ReleaseAllCaptures();
+            annotateBoard.ReleaseAllCaptures();
             // Set current date time
             currentTime = DateTime.Now;
             // Get the hWnd for the SurfaceWindow object after it has been loaded.
@@ -94,7 +105,31 @@ namespace ActiveReading
                 {
                     try
                     {
-                        Console.Write(sp.ReadLine());
+                        String str = sp.ReadLine();
+                        split = str.Split(';');
+                        Console.WriteLine(str);
+                        switch (mode)
+                        {
+                            case 1:
+                                {
+                                    button = int.Parse(split[0]);
+                                    break;
+                                }
+                            case 2:
+                                {
+                                    rwAcc[0] = float.Parse(split[1]) / 100;
+                                    rwAcc[1] = float.Parse(split[2]) / 100;
+                                    rwAcc[2] = float.Parse(split[3]) / 100;
+                                    break;
+                                }
+                            case 3:
+                                {
+                                    rwGyro[0] = float.Parse(split[4]) / 100;
+                                    rwGyro[1] = float.Parse(split[5]) / 100;
+                                    rwGyro[2] = float.Parse(split[6]) / 100;
+                                    break;
+                                }
+                        }
                     }
                     catch (System.Exception ex)
                     {
@@ -102,6 +137,7 @@ namespace ActiveReading
                     }
                 }
             }
+
             imageAvailable = false;
             if (normalizedImage == null)
             {
@@ -134,6 +170,109 @@ namespace ActiveReading
                 currentTime = DateTime.Now;
             }
 
+            if (split != null)
+            {
+                switch (mode)
+                {
+                    case 1:
+                        {
+                            if (button == 1)
+                            {
+                                mode2 = true;
+                                switch (task)
+                                {
+                                    case 0:
+                                        {
+                                            highlightBoard.EditingMode = SurfaceInkEditingMode.Ink;
+                                            break;
+                                        }
+                                    case 1:
+                                        {
+                                            annotateBoard.EditingMode = SurfaceInkEditingMode.Ink;
+                                            break;
+                                        }
+                                    case 2:
+                                        {
+                                            drawBoard.EditingMode = SurfaceInkEditingMode.Ink;
+                                            break;
+                                        }
+                                }
+                            }
+                            else
+                            {
+                                mode2 = false;
+                                switch (task)
+                                {
+                                    case 0:
+                                        {
+                                            highlightBoard.EditingMode = SurfaceInkEditingMode.None;
+                                            break;
+                                        }
+                                    case 1:
+                                        {
+                                            annotateBoard.EditingMode = SurfaceInkEditingMode.None;
+                                            break;
+                                        }
+                                    case 2:
+                                        {
+                                            drawBoard.EditingMode = SurfaceInkEditingMode.None;
+                                            break;
+                                        }
+                                }
+                            }
+                            break;
+                        }
+                    case 2:
+                        {
+                            if (((rwAcc[0] <= 0.75) && (rwAcc[1] >= 0.65)) || ((rwAcc[0] <= 0.6) && (rwAcc[1] <= -0.6))
+                                || ((rwAcc[0] <= 0.7) && (rwAcc[2] <= -0.4 || rwAcc[2] >= 0.7)))
+                            {
+                                mode3 = true;
+                                switch (task)
+                                {
+                                    case 0:
+                                        {
+                                            highlightBoard.EditingMode = SurfaceInkEditingMode.Ink;
+                                            break;
+                                        }
+                                    case 1:
+                                        {
+                                            annotateBoard.EditingMode = SurfaceInkEditingMode.Ink;
+                                            break;
+                                        }
+                                    case 2:
+                                        {
+                                            drawBoard.EditingMode = SurfaceInkEditingMode.None;
+                                            break;
+                                        }
+                                }
+                            }
+                            else
+                            {
+                                mode3 = false;
+                                switch (task)
+                                {
+                                    case 0:
+                                        {
+                                            highlightBoard.EditingMode = SurfaceInkEditingMode.None;
+                                            break;
+                                        }
+                                    case 1:
+                                        {
+                                            annotateBoard.EditingMode = SurfaceInkEditingMode.None;
+                                            break;
+                                        }
+                                    case 2:
+                                        {
+                                            drawBoard.EditingMode = SurfaceInkEditingMode.None;
+                                            break;
+                                        }
+                                }
+                            }
+                            break;
+                        }
+                }
+            }
             imageAvailable = false;
 
 
@@ -212,23 +351,70 @@ namespace ActiveReading
                 case 0:
                     {
                         mode = 1;
-                        modeButton.Content = "Mode 2";
-                        highlightButton.Visibility = System.Windows.Visibility.Hidden;
-                        highlightButton.Background = Brushes.Silver;
-                        writeBoard.EditingMode = SurfaceInkEditingMode.None;
+                        modeButton.Content = "Pen Mode 2";
+                        switch (task)
+                        {
+                            case 0:
+                                {
+                                    highlightButton.Visibility = System.Windows.Visibility.Hidden;
+                                    highlightButton.Background = Brushes.Silver;
+                                    highlightBoard.EditingMode = SurfaceInkEditingMode.None;
+                                    break;
+                                }
+                            case 1:
+                                {
+                                    annotateButton.Visibility = System.Windows.Visibility.Hidden;
+                                    annotateButton.Background = Brushes.Silver;
+                                    annotateBoard.EditingMode = SurfaceInkEditingMode.None;
+                                    break;
+                                }
+                            case 2:
+                                {
+                                    drawButton.Visibility = System.Windows.Visibility.Hidden;
+                                    drawButton.Background = Brushes.Silver;
+                                    clearButton.Visibility = System.Windows.Visibility.Hidden;
+                                    clearButton.Background = Brushes.Silver;
+                                    drawBoard.EditingMode = SurfaceInkEditingMode.None;
+                                    break;
+                                }
+                        }
                         break;
                     }
                 case 1:
                     {
                         mode = 2;
-                        modeButton.Content = "Mode 3";
+                        modeButton.Content = "Pen Mode 3";
                         break;
                     }
                 case 2:
                     {
                         mode = 0;
-                        modeButton.Content = "Mode 1";
-                        highlightButton.Visibility = System.Windows.Visibility.Visible;
+                        modeButton.Content = "Pen Mode 1";
+                        switch (task)
+                        {
+                            case 0:
+                                {
+                                    highlightButton.Visibility = System.Windows.Visibility.Visible;
+                                    highlightButton.Background = Brushes.Silver;
+                                    highlightBoard.EditingMode = SurfaceInkEditingMode.None;
+                                    break;
+                                }
+                            case 1:
+                                {
+                                    annotateButton.Visibility = System.Windows.Visibility.Visible;
+                                    annotateButton.Background = Brushes.Silver;
+                                    annotateBoard.EditingMode = SurfaceInkEditingMode.None;
+                                    break;
+                                }
+                            case 2:
+                                {
+                                    drawButton.Visibility = System.Windows.Visibility.Visible;
+                                    drawButton.Background = Brushes.Silver;
+                                    clearButton.Visibility = System.Windows.Visibility.Visible;
+                                    clearButton.Background = Brushes.Silver;
+                                    break;
+                                }
+                        }
                         break;
                     }
             }
@@ -239,13 +425,13 @@ namespace ActiveReading
             if (!highlight)
             {
                 highlight = true;
-                writeBoard.EditingMode = SurfaceInkEditingMode.Ink;
+                highlightBoard.EditingMode = SurfaceInkEditingMode.Ink;
                 highlightButton.Background = Brushes.Yellow;
             }
             else
             {
                 highlight = false;
-                writeBoard.EditingMode = SurfaceInkEditingMode.None;
+                highlightBoard.EditingMode = SurfaceInkEditingMode.None;
                 highlightButton.Background = Brushes.Silver;
             }
         }
@@ -260,14 +446,117 @@ namespace ActiveReading
                     foreach (CircleF circle in contourCircles)
                     {
                         if ((System.Math.Abs(((int)e.TouchDevice.GetCenterPosition(this).X - (int)(circle.Center.X * 2))) < 15) &&
-                            (System.Math.Abs(((int)e.TouchDevice.GetCenterPosition(this).Y - (int)(circle.Center.Y * 2 - 15))) < 15) &&
-                            ( mode == 0 || (mode2 && mode == 1) || (mode3 && mode == 2)))
+                            (System.Math.Abs(((int)e.TouchDevice.GetCenterPosition(this).Y - (int)(circle.Center.Y * 2 - 15))) < 15))
                         {
-                            e.Handled = false;
-                            writeBoard.DefaultDrawingAttributes.FitToCurve = false;
+                            switch (task)
+                            {
+                                case 0:
+                                    {
+                                        if (mode == 0 || (mode2 && mode == 1) || (mode3 && mode == 2))
+                                        {
+                                            e.Handled = false;
+                                            highlightBoard.DefaultDrawingAttributes.Height = circle.Radius * 2;
+                                            highlightBoard.DefaultDrawingAttributes.Width = circle.Radius * 2;
+                                            highlightBoard.DefaultDrawingAttributes.FitToCurve = false;
+                                        }
+                                        break;
+                                    }
+                                case 1:
+                                    {
+                                        if (mode == 0 || (mode2 && mode == 1) || (mode3 && mode == 2))
+                                        {
+                                            e.Handled = false;
+                                            annotateBoard.DefaultDrawingAttributes.Height = circle.Radius * 2;
+                                            annotateBoard.DefaultDrawingAttributes.Width = circle.Radius * 2;
+                                            annotateBoard.DefaultDrawingAttributes.FitToCurve = false;
+                                        }
+                                        break;
+                                    }
+                                case 2:
+                                    {
+                                        if (mode == 0 || (mode2 && mode == 1) || (mode3 && mode == 2))
+                                        {
+                                            //do work
+                                            e.Handled = false;
+                                        }
+                                        break;
+                                    }
+                            }   
                         }
                     }
                 }
+            }
+        }
+
+        private void onTaskClick(object s, RoutedEventArgs e)
+        {
+            switch (task)
+            {
+                case 0:
+                    {
+                        task = 1;
+                        taskButton.Content = "Task2 - E/A";
+                        highlightLabel.Visibility = System.Windows.Visibility.Hidden;
+                        Panel.SetZIndex(annotateBoard, 2);
+                        Panel.SetZIndex(highlightLabel, 0);
+                        annotateLabel.Visibility = Visibility.Visible;
+                        highlightBoard.EditingMode = SurfaceInkEditingMode.None;
+                        annotateBoard.EditingMode = SurfaceInkEditingMode.None;
+                        if (mode == 0)
+                        {
+                            highlightButton.Visibility = System.Windows.Visibility.Hidden;
+                            highlightButton.Background = Brushes.Silver;
+                            annotateButton.Background = Brushes.Silver;
+                            annotateButton.Visibility = System.Windows.Visibility.Visible;
+                        }
+                        break;
+                    }
+                case 1:
+                    {
+                        task = 2;
+                        taskButton.Content = "Task3 - INK";
+                        annotateLabel.Visibility = System.Windows.Visibility.Hidden;
+                        drawLable.Visibility = System.Windows.Visibility.Visible;
+                        annotateBoard.EditingMode = SurfaceInkEditingMode.None;
+                        if (mode == 0)
+                        {
+                            annotateButton.Background = Brushes.Silver;
+                            annotateButton.Visibility = System.Windows.Visibility.Hidden;
+                        }
+                        break;
+                    }
+                case 2:
+                    {
+                        task = 0;
+                        taskButton.Content = "Task1 - HL";
+                        drawLable.Visibility = System.Windows.Visibility.Hidden;
+                        highlightLabel.Visibility = System.Windows.Visibility.Visible;
+                        highlightBoard.EditingMode = SurfaceInkEditingMode.None;
+                        Panel.SetZIndex(highlightBoard, 1);
+                        Panel.SetZIndex(annotateBoard, 0);
+                        if (mode == 0)
+                        {
+                            highlightButton.Visibility = System.Windows.Visibility.Visible;
+                            highlightButton.Background = Brushes.Silver;
+                        }
+                        break;
+                    }
+            }
+        }
+
+        private void onAnnotateClick(object s, RoutedEventArgs e)
+        {
+            if (!annotate)
+            {
+                annotate = true;
+                annotateBoard.EditingMode = SurfaceInkEditingMode.Ink;
+                annotateButton.Background = Brushes.Green;
+            }
+            else
+            {
+                annotate = false;
+                annotateBoard.EditingMode = SurfaceInkEditingMode.None;
+                annotateButton.Background = Brushes.Silver;
             }
         }
     }
