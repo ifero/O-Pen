@@ -2,10 +2,9 @@
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:s="http://schemas.microsoft.com/surface/2008"
-    Title="ActiveReading"
-    >
+    Title="ActiveReading">
     <Canvas Background="Gray" MaxHeight="1080" MaxWidth="1920" Height="1080" Width="1920">
-        <Label Canvas.Left="533" Canvas.Top="267" Content=
+        <Label x:Name="textBoard" Canvas.Left="533" Canvas.Top="267" Content=
 "The Microsoft Surface® platform brings people together to connect,
 learn, and decide. It enables experiences that change the way people
 collaborate and connect with a 360-degree interface. 
@@ -28,7 +27,7 @@ does something with it. Taken in whole…this is PixelSense technology."
                             EditingMode="None" Opacity="1" TouchDown="onTouchDown" TouchMove="onTouchDown" PreviewTouchDown="onTouchDown"/>
         <s:SurfaceInkCanvas x:Name="highlightBoard" Canvas.Left="533" Canvas.Top="267" Height="597" Width="826" Background="Transparent" UsesTouchShape="False" 
                             EditingMode="None" Opacity="0.5" TouchDown="onTouchDown" TouchMove="onTouchDown" PreviewTouchDown="onTouchDown"/>
-        <s:SurfaceInkCanvas x:Name="drawBoard" Canvas.Left="340" Canvas.Top="193" Height="877" Width="1173" Background="Black" UsesTouchShape="False" 
+        <s:SurfaceInkCanvas x:Name="drawBoard" Canvas.Left="440" Canvas.Top="250" Height="720" Width="983" Background="Black" UsesTouchShape="False" 
                             EditingMode="None" TouchDown="onTouchDown" TouchMove="onTouchDown" PreviewTouchDown="onTouchDown" Visibility="Hidden"/>
         <Label Canvas.Left="533" Canvas.Top="140" Content="Please highlight the words 'immediately' and 'input(s)'" FontSize="32" Foreground="Black" x:Name="highlightLabel"/>
         <Label Canvas.Left="713" Canvas.Top="140" Content="erase the word 'vision-based'" FontSize="32" Foreground="Black" Visibility="Hidden" x:Name="annotateLabel"/>
@@ -51,5 +50,8 @@ does something with it. Taken in whole…this is PixelSense technology."
         <s:SurfaceButton Background="Silver" Canvas.Left="1517" Canvas.Top="203" Content="Clear" FontSize="24" Foreground="Black" Height="50" 
                          HorizontalContentAlignment="Center" Name="clearButton" VerticalContentAlignment="Center" Width="200" 
                          Click="onClearClick" Visibility="Hidden"/>
+        <Rectangle x:Name="immediatelyRect" Height="12" Width="130" Canvas.Left="931" Canvas.Top="634" />
+        <Rectangle x:Name="inputsRect" Canvas.Left="1260" Canvas.Top="413" Height="8"  Width="61" />
+        <Rectangle x:Name="inputRect" Canvas.Left="824" Canvas.Top="765" Height="6"  Width="50" />
     </Canvas>
 </s:SurfaceWindow>

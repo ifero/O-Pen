@@ -41,6 +41,8 @@ namespace ActiveReading
         private int mode, task;
         private bool mode2, mode3;
         private bool highlight, annotate;
+        private bool draw;
+        private bool hlWord1,hlWord2,hlWord3;
         private SerialPort sp;
         private String[] split;
         float[] rwAcc;
@@ -53,6 +55,7 @@ namespace ActiveReading
         {
             mode2 = false;
             mode3 = false;
+            hlWord1 = false;
             split = null;
             rwAcc = new float[3];
             rwGyro = new float[3];
@@ -84,6 +87,7 @@ namespace ActiveReading
             // Release all inputs
             highlightBoard.ReleaseAllCaptures();
             annotateBoard.ReleaseAllCaptures();
+            drawBoard.ReleaseAllCaptures();
             // Set current date time
             currentTime = DateTime.Now;
             // Get the hWnd for the SurfaceWindow object after it has been loaded.
@@ -275,7 +279,7 @@ namespace ActiveReading
             }
             imageAvailable = false;
 
-
+            
         }
 
         /// <summary>
@@ -433,6 +437,33 @@ namespace ActiveReading
                 highlight = false;
                 highlightBoard.EditingMode = SurfaceInkEditingMode.None;
                 highlightButton.Background = Brushes.Silver;
+                if (highlightBoard.Strokes.Count() != 0)
+                {
+                    foreach (System.Windows.Ink.Stroke strk in highlightBoard.Strokes)
+                    {
+                        Console.WriteLine("{0} {1} {2}", Canvas.GetTop(immediatelyRect) - Canvas.GetTop(highlightBoard),strk.GetBounds().Top,
+                            Math.Abs(Canvas.GetTop(immediatelyRect) - Canvas.GetTop(highlightBoard) - strk.GetBounds().Top));
+                        Console.WriteLine("{0} {1} {2}", Canvas.GetLeft(immediatelyRect) - Canvas.GetLeft(highlightBoard), strk.GetBounds().Left,
+                           Math.Abs(Canvas.GetLeft(immediatelyRect) - Canvas.GetLeft(highlightBoard) - strk.GetBounds().Left));
+                        Console.WriteLine("{0} {1} {2}", Canvas.GetLeft(immediatelyRect) - Canvas.GetLeft(highlightBoard) + immediatelyRect.Width,
+                           strk.GetBounds().Left + strk.GetBounds().Width,
+                           Math.Abs(Canvas.GetLeft(immediatelyRect) - Canvas.GetLeft(highlightBoard) + immediatelyRect.Width - 
+                                    strk.GetBounds().Left + strk.GetBounds().Width));
+                        Console.WriteLine("{0} {1} {2}", Canvas.GetTop(immediatelyRect) - Canvas.GetTop(highlightBoard) + immediatelyRect.Height,
+                           strk.GetBounds().Top + strk.GetBounds().Height,
+                           Math.Abs(Canvas.GetTop(immediatelyRect) - Canvas.GetTop(highlightBoard) + immediatelyRect.Height - 
+                                    strk.GetBounds().Top + strk.GetBounds().Height));
+                        if (Math.Abs(Canvas.GetTop(immediatelyRect) - (strk.GetBounds().Top + Canvas.GetTop(highlightBoard))) < 20 &&
+                            Math.Abs(Canvas.GetLeft(immediatelyRect) - (strk.GetBounds().Left + Canvas.GetLeft(highlightBoard))) < 20 &&
+                            Math.Abs((Canvas.GetLeft(highlightBoard) + strk.GetBounds().Right) - Canvas.GetRight(immediatelyRect)) < 20 &&
+                            Math.Abs((Canvas.GetLeft(highlightBoard) + strk.GetBounds().Bottom) - Canvas.GetBottom(immediatelyRect)) < 20)
+                        {
+                            hlWord1 = true;
+                            Console.WriteLine("YES");
+                        }
+
+                    }
+                }
             }
         }
 
@@ -476,8 +507,10 @@ namespace ActiveReading
                                     {
                                         if (mode == 0 || (mode2 && mode == 1) || (mode3 && mode == 2))
                                         {
-                                            //do work
                                             e.Handled = false;
+                                            drawBoard.DefaultDrawingAttributes.Height = circle.Radius * 2;
+                                            drawBoard.DefaultDrawingAttributes.Width = circle.Radius * 2;
+                                            drawBoard.DefaultDrawingAttributes.FitToCurve = false;
                                         }
                                         break;
                                     }
@@ -518,10 +551,17 @@ namespace ActiveReading
                         annotateLabel.Visibility = System.Windows.Visibility.Hidden;
                         drawLable.Visibility = System.Windows.Visibility.Visible;
                         annotateBoard.EditingMode = SurfaceInkEditingMode.None;
+                        annotateBoard.Visibility = System.Windows.Visibility.Hidden;
+                        highlightBoard.Visibility = System.Windows.Visibility.Hidden;
+                        drawBoard.Visibility = System.Windows.Visibility.Visible;
+                        textBoard.Visibility = System.Windows.Visibility.Hidden;
                         if (mode == 0)
                         {
                             annotateButton.Background = Brushes.Silver;
                             annotateButton.Visibility = System.Windows.Visibility.Hidden;
+                            drawButton.Background = Brushes.Silver;
+                            drawButton.Visibility = System.Windows.Visibility.Visible;
+                            clearButton.Visibility = System.Windows.Visibility.Visible;
                         }
                         break;
                     }
@@ -532,10 +572,18 @@ namespace ActiveReading
                         drawLable.Visibility = System.Windows.Visibility.Hidden;
                         highlightLabel.Visibility = System.Windows.Visibility.Visible;
                         highlightBoard.EditingMode = SurfaceInkEditingMode.None;
+                        drawBoard.EditingMode = SurfaceInkEditingMode.None;
+                        highlightBoard.Visibility = System.Windows.Visibility.Visible;
+                        annotateBoard.Visibility = System.Windows.Visibility.Visible;
+                        textBoard.Visibility = System.Windows.Visibility.Visible;
+                        drawBoard.Visibility = System.Windows.Visibility.Hidden;
                         Panel.SetZIndex(highlightBoard, 1);
                         Panel.SetZIndex(annotateBoard, 0);
                         if (mode == 0)
                         {
+                            drawButton.Background = Brushes.Silver;
+                            drawButton.Visibility = System.Windows.Visibility.Hidden;
+                            clearButton.Visibility = System.Windows.Visibility.Hidden;
                             highlightButton.Visibility = System.Windows.Visibility.Visible;
                             highlightButton.Background = Brushes.Silver;
                         }
@@ -558,6 +606,27 @@ namespace ActiveReading
                 annotateBoard.EditingMode = SurfaceInkEditingMode.None;
                 annotateButton.Background = Brushes.Silver;
             }
+        }
+
+        private void onDrawEraseClick(object s, RoutedEventArgs e)
+        {
+            if (!draw)
+            {
+                draw = true;
+                drawBoard.EditingMode = SurfaceInkEditingMode.Ink;
+                drawButton.Background = Brushes.Blue;
+            }
+            else
+            {
+                draw = false;
+                drawBoard.EditingMode = SurfaceInkEditingMode.None;
+                drawButton.Background = Brushes.Silver;
+            }
+        }
+
+        private void onClearClick(object s, RoutedEventArgs e)
+        {
+            drawBoard.Strokes.Clear();
         }
     }
 }
