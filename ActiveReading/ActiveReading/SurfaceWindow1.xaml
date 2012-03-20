@@ -7,21 +7,21 @@
         <Label x:Name="textBoard" Canvas.Left="533" Canvas.Top="267" Content=
 "The Microsoft Surface® platform brings people together to connect,
 learn, and decide. It enables experiences that change the way people
-collaborate and connect with a 360-degree interface. 
-And, with PixelSense™, Microsoft Surface sees and responds to touch 
-and real world objects—supporting more than 50 simultaneous inputs. 
-This experience comes to life in the new 40 inch Samsung SUR40 for 
+collaborate and connect with a 360-degree interface. And, with 
+PixelSense™, Microsoft Surface sees and responds to touch and real 
+world objects—supporting more than 50 simultaneous inputs. This 
+experience comes to life in the new 40 inch Samsung SUR40 for 
 Microsoft Surface that can be used as a table, on the wall, or 
-embedded in other fixtures or furniture.
-PixelSense allows a display to recognize fingers, hands, and objects 
-placed on the screen, enabling vision-based interaction without the 
-use of cameras. The individual pixels in the display see what's touching 
-the screen and that information is immediately processed 
-and interpreted. Think of it like the connection between the eye and 
-the brain. You need both, working together, to see. In this case, the eye 
-is the sensor in the panel, it picks up the image and it feeds that to the 
-brain which is our vision input processor that recognizes the image and 
-does something with it. Taken in whole…this is PixelSense technology." 
+embedded in other fixtures or furniture. PixelSense allows a display to 
+recognize fingers, hands, and objects placed on the screen, enabling 
+vision-based interaction without the use of cameras. The individual 
+pixels in the display see what's touching the screen and that information 
+is immediately processed and interpreted. Think of it like the connection 
+between the eye and the brain. You need both, working together, to see. 
+In this case, the eye is the sensor in the panel, it picks up the image and 
+it feeds that to the brain which is our vision input processor that 
+recognizes the image and does something with it. Taken in whole…this 
+is PixelSense technology." 
                FontSize="24" Foreground="Black" Height="597" Width="826" />
         <s:SurfaceInkCanvas x:Name="annotateBoard" Canvas.Left="340" Canvas.Top="193" Height="877" Width="1173" Background="Transparent" UsesTouchShape="False" 
                             EditingMode="None" Opacity="1" TouchDown="onTouchDown" TouchMove="onTouchDown" PreviewTouchDown="onTouchDown"/>
@@ -50,8 +50,9 @@ does something with it. Taken in whole…this is PixelSense technology."
         <s:SurfaceButton Background="Silver" Canvas.Left="1517" Canvas.Top="203" Content="Clear" FontSize="24" Foreground="Black" Height="50" 
                          HorizontalContentAlignment="Center" Name="clearButton" VerticalContentAlignment="Center" Width="200" 
                          Click="onClearClick" Visibility="Hidden"/>
-        <Rectangle x:Name="immediatelyRect" Height="12" Width="130" Canvas.Left="931" Canvas.Top="634" />
-        <Rectangle x:Name="inputsRect" Canvas.Left="1260" Canvas.Top="413" Height="8"  Width="61" />
-        <Rectangle x:Name="inputRect" Canvas.Left="824" Canvas.Top="765" Height="6"  Width="50" />
+        <Rectangle x:Name="immediatelyRect" Height="12" Width="130" Canvas.Left="567" Canvas.Top="634" />
+        <Rectangle x:Name="inputsRect" Canvas.Left="1163" Canvas.Top="413" Height="8"  Width="61" />
+        <Rectangle x:Name="inputRect" Canvas.Left="1039" Canvas.Top="733" Height="6"  Width="50" />
+        <Rectangle x:Name="vbRect" Canvas.Left="547" Canvas.Top="572" Height="10" Width="130" />
     </Canvas>
 </s:SurfaceWindow>

@@ -43,6 +43,7 @@ namespace ActiveReading
         private bool highlight, annotate;
         private bool draw;
         private bool hlWord1,hlWord2,hlWord3;
+        private bool hlDone, annotateDone, drawDone;
         private SerialPort sp;
         private String[] split;
         float[] rwAcc;
@@ -56,6 +57,10 @@ namespace ActiveReading
             mode2 = false;
             mode3 = false;
             hlWord1 = false;
+            hlWord2 = false;
+            hlWord3 = false;
+            hlDone = false;
+            annotateDone = false;
             split = null;
             rwAcc = new float[3];
             rwGyro = new float[3];
@@ -279,7 +284,69 @@ namespace ActiveReading
             }
             imageAvailable = false;
 
-            
+            if (highlightBoard.Strokes.Count() != 0)
+            {
+                foreach (System.Windows.Ink.Stroke strk in highlightBoard.Strokes)
+                {
+                    if (!hlWord1 &&
+                        Math.Abs(Canvas.GetTop(immediatelyRect) - (strk.GetBounds().Top + Canvas.GetTop(highlightBoard))) < 50 &&
+                        Math.Abs(Canvas.GetLeft(immediatelyRect) - (strk.GetBounds().Left + Canvas.GetLeft(highlightBoard))) < 50 &&
+                        Math.Abs((Canvas.GetLeft(immediatelyRect) - Canvas.GetLeft(highlightBoard) + immediatelyRect.Width) -
+                                (strk.GetBounds().Left + strk.GetBounds().Width)) < 50 &&
+                        Math.Abs((Canvas.GetTop(immediatelyRect) - Canvas.GetTop(highlightBoard) + immediatelyRect.Height) -
+                                (strk.GetBounds().Top + strk.GetBounds().Height)) < 50)
+                    {
+                        hlWord1 = true;
+                        Console.WriteLine("YES - 1");
+                    }
+                    if (!hlWord2 &&
+                        Math.Abs(Canvas.GetTop(inputsRect) - (strk.GetBounds().Top + Canvas.GetTop(highlightBoard))) < 50 &&
+                        Math.Abs(Canvas.GetLeft(inputsRect) - (strk.GetBounds().Left + Canvas.GetLeft(highlightBoard))) < 50 &&
+                        Math.Abs((Canvas.GetLeft(inputsRect) - Canvas.GetLeft(highlightBoard) + inputsRect.Width) -
+                                (strk.GetBounds().Left + strk.GetBounds().Width)) < 50 &&
+                        Math.Abs((Canvas.GetTop(inputsRect) - Canvas.GetTop(highlightBoard) + inputsRect.Height) -
+                                (strk.GetBounds().Top + strk.GetBounds().Height)) < 50)
+                    {
+                        hlWord2 = true;
+                        Console.WriteLine("YES - 2");
+                    }
+                    if (!hlWord3 &&
+                        Math.Abs(Canvas.GetTop(inputRect) - (strk.GetBounds().Top + Canvas.GetTop(highlightBoard))) < 50 &&
+                        Math.Abs(Canvas.GetLeft(inputRect) - (strk.GetBounds().Left + Canvas.GetLeft(highlightBoard))) < 50 &&
+                        Math.Abs((Canvas.GetLeft(inputRect) - Canvas.GetLeft(highlightBoard) + inputRect.Width) -
+                                (strk.GetBounds().Left + strk.GetBounds().Width)) < 50 &&
+                        Math.Abs((Canvas.GetTop(inputRect) - Canvas.GetTop(highlightBoard) + inputRect.Height) -
+                                (strk.GetBounds().Top + strk.GetBounds().Height)) < 50)
+                    {
+                        hlWord3 = true;
+                        Console.WriteLine("YES - 3");
+                    }
+
+                }
+                if (hlWord1 && hlWord2 && hlWord3 && !hlDone)
+                {
+                    hlDone = true;
+                    //stop timer, send log
+                }
+            }
+            if (annotateBoard.Strokes.Count() != 0)
+            {
+                foreach (System.Windows.Ink.Stroke strk in annotateBoard.Strokes)
+                {
+                    if (!annotateDone &&
+                        Math.Abs(Canvas.GetTop(vbRect) - (strk.GetBounds().Top + Canvas.GetTop(annotateBoard))) < 50 &&
+                        Math.Abs(Canvas.GetLeft(vbRect) - (strk.GetBounds().Left + Canvas.GetLeft(annotateBoard))) < 50 &&
+                        Math.Abs((Canvas.GetLeft(vbRect) - Canvas.GetLeft(annotateBoard) + vbRect.Width) -
+                                (strk.GetBounds().Left + strk.GetBounds().Width)) < 50 &&
+                        Math.Abs((Canvas.GetTop(vbRect) - Canvas.GetTop(annotateBoard) + vbRect.Height) -
+                                (strk.GetBounds().Top + strk.GetBounds().Height)) < 50)
+                    {
+                        annotateDone = true;
+                        Console.WriteLine("YES - vb");
+                        //stop timer, send log
+                    }
+                }
+            }
         }
 
         /// <summary>
@@ -437,33 +504,7 @@ namespace ActiveReading
                 highlight = false;
                 highlightBoard.EditingMode = SurfaceInkEditingMode.None;
                 highlightButton.Background = Brushes.Silver;
-                if (highlightBoard.Strokes.Count() != 0)
-                {
-                    foreach (System.Windows.Ink.Stroke strk in highlightBoard.Strokes)
-                    {
-                        Console.WriteLine("{0} {1} {2}", Canvas.GetTop(immediatelyRect) - Canvas.GetTop(highlightBoard),strk.GetBounds().Top,
-                            Math.Abs(Canvas.GetTop(immediatelyRect) - Canvas.GetTop(highlightBoard) - strk.GetBounds().Top));
-                        Console.WriteLine("{0} {1} {2}", Canvas.GetLeft(immediatelyRect) - Canvas.GetLeft(highlightBoard), strk.GetBounds().Left,
-                           Math.Abs(Canvas.GetLeft(immediatelyRect) - Canvas.GetLeft(highlightBoard) - strk.GetBounds().Left));
-                        Console.WriteLine("{0} {1} {2}", Canvas.GetLeft(immediatelyRect) - Canvas.GetLeft(highlightBoard) + immediatelyRect.Width,
-                           strk.GetBounds().Left + strk.GetBounds().Width,
-                           Math.Abs(Canvas.GetLeft(immediatelyRect) - Canvas.GetLeft(highlightBoard) + immediatelyRect.Width - 
-                                    strk.GetBounds().Left + strk.GetBounds().Width));
-                        Console.WriteLine("{0} {1} {2}", Canvas.GetTop(immediatelyRect) - Canvas.GetTop(highlightBoard) + immediatelyRect.Height,
-                           strk.GetBounds().Top + strk.GetBounds().Height,
-                           Math.Abs(Canvas.GetTop(immediatelyRect) - Canvas.GetTop(highlightBoard) + immediatelyRect.Height - 
-                                    strk.GetBounds().Top + strk.GetBounds().Height));
-                        if (Math.Abs(Canvas.GetTop(immediatelyRect) - (strk.GetBounds().Top + Canvas.GetTop(highlightBoard))) < 20 &&
-                            Math.Abs(Canvas.GetLeft(immediatelyRect) - (strk.GetBounds().Left + Canvas.GetLeft(highlightBoard))) < 20 &&
-                            Math.Abs((Canvas.GetLeft(highlightBoard) + strk.GetBounds().Right) - Canvas.GetRight(immediatelyRect)) < 20 &&
-                            Math.Abs((Canvas.GetLeft(highlightBoard) + strk.GetBounds().Bottom) - Canvas.GetBottom(immediatelyRect)) < 20)
-                        {
-                            hlWord1 = true;
-                            Console.WriteLine("YES");
-                        }
-
-                    }
-                }
+                
             }
         }
 
