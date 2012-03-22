@@ -1,3 +1,16 @@
+#region Things to do better
+/*
+ * - Create several methods that handle all this changes of state
+ * - Create several classes that handle all this methods
+ * - Insert the words to remark for each difficulty
+ * - create the log and integrate it with log4net.
+ * - Create some sort of class for all this variables
+ * - Maybe create a class for each task?!
+ * 
+ */
+#endregion
+
+
 using System;
 using System.Collections.Generic;
 using System.IO.Ports;
@@ -177,7 +190,7 @@ namespace FinalVersion
             if (diffTime.Milliseconds > 30)
             {
                 // Process the frame to detect the LED blob
-                if(technique != 3)
+                if (technique != 3)
                     contourCircles = trackLED.TrackContours(normalizedMetrics, normalizedImage, pen);
                 else
                     contourCircles = trackLED.TrackContours(normalizedMetrics, normalizedImage, finger);
@@ -285,51 +298,68 @@ namespace FinalVersion
             }
             imageAvailable = false;
 
-            if (highlightBoard.Strokes.Count() != 0)
+            if (task == 0)
             {
-                foreach (System.Windows.Ink.Stroke strk in highlightBoard.Strokes)
+                if (highlightBoard.Strokes.Count() != 0)
                 {
-                    if (!hlMedium &&
-                        Math.Abs(Canvas.GetTop(mediumRect) - (strk.GetBounds().Top + Canvas.GetTop(highlightBoard))) < 50 &&
-                        Math.Abs(Canvas.GetLeft(mediumRect) - (strk.GetBounds().Left + Canvas.GetLeft(highlightBoard))) < 50 &&
-                        Math.Abs((Canvas.GetLeft(mediumRect) - Canvas.GetLeft(highlightBoard) + mediumRect.Width) -
-                                (strk.GetBounds().Left + strk.GetBounds().Width)) < 50 &&
-                        Math.Abs((Canvas.GetTop(mediumRect) - Canvas.GetTop(highlightBoard) + mediumRect.Height) -
-                                (strk.GetBounds().Top + strk.GetBounds().Height)) < 50)
+                    switch (difficulty)
                     {
-                        hlMedium = true;
-                        Console.WriteLine("YES - 1");
-                    }
-                    if (!hlShort &&
-                        Math.Abs(Canvas.GetTop(shortRect) - (strk.GetBounds().Top + Canvas.GetTop(highlightBoard))) < 50 &&
-                        Math.Abs(Canvas.GetLeft(shortRect) - (strk.GetBounds().Left + Canvas.GetLeft(highlightBoard))) < 50 &&
-                        Math.Abs((Canvas.GetLeft(shortRect) - Canvas.GetLeft(highlightBoard) + shortRect.Width) -
-                                (strk.GetBounds().Left + strk.GetBounds().Width)) < 50 &&
-                        Math.Abs((Canvas.GetTop(shortRect) - Canvas.GetTop(highlightBoard) + shortRect.Height) -
-                                (strk.GetBounds().Top + strk.GetBounds().Height)) < 50)
-                    {
-                        hlShort = true;
-                        Console.WriteLine("YES - 2");
-                    }
-                    if (!hlLong &&
-                        Math.Abs(Canvas.GetTop(longRect) - (strk.GetBounds().Top + Canvas.GetTop(highlightBoard))) < 50 &&
-                        Math.Abs(Canvas.GetLeft(longRect) - (strk.GetBounds().Left + Canvas.GetLeft(highlightBoard))) < 50 &&
-                        Math.Abs((Canvas.GetLeft(longRect) - Canvas.GetLeft(highlightBoard) + longRect.Width) -
-                                (strk.GetBounds().Left + strk.GetBounds().Width)) < 50 &&
-                        Math.Abs((Canvas.GetTop(longRect) - Canvas.GetTop(highlightBoard) + longRect.Height) -
-                                (strk.GetBounds().Top + strk.GetBounds().Height)) < 50)
-                    {
-                        hlLong = true;
-                        Console.WriteLine("YES - 3");
-                    }
-
+                        case 0:
+                            {
+                                foreach (System.Windows.Ink.Stroke strk in highlightBoard.Strokes)
+                                {
+                                    if (!hlShort &&
+                                        Math.Abs(Canvas.GetTop(shortRect) - (strk.GetBounds().Top + Canvas.GetTop(highlightBoard))) < 50 &&
+                                        Math.Abs(Canvas.GetLeft(shortRect) - (strk.GetBounds().Left + Canvas.GetLeft(highlightBoard))) < 50 &&
+                                        Math.Abs((Canvas.GetLeft(shortRect) - Canvas.GetLeft(highlightBoard) + shortRect.Width) -
+                                            (strk.GetBounds().Left + strk.GetBounds().Width)) < 50 &&
+                                        Math.Abs((Canvas.GetTop(shortRect) - Canvas.GetTop(highlightBoard) + shortRect.Height) -
+                                            (strk.GetBounds().Top + strk.GetBounds().Height)) < 50)
+                                    {
+                                        hlShort = true;
+                                        Console.WriteLine("YES - 2");
+                                    }
+                                }
+                                break;
+                            }
+                        case 1:
+                            {
+                                foreach (System.Windows.Ink.Stroke strk in highlightBoard.Strokes)
+                                {
+                                    if (!hlMedium &&
+                                        Math.Abs(Canvas.GetTop(mediumRect) - (strk.GetBounds().Top + Canvas.GetTop(highlightBoard))) < 50 &&
+                                        Math.Abs(Canvas.GetLeft(mediumRect) - (strk.GetBounds().Left + Canvas.GetLeft(highlightBoard))) < 50 &&
+                                        Math.Abs((Canvas.GetLeft(mediumRect) - Canvas.GetLeft(highlightBoard) + mediumRect.Width) -
+                                            (strk.GetBounds().Left + strk.GetBounds().Width)) < 50 &&
+                                        Math.Abs((Canvas.GetTop(mediumRect) - Canvas.GetTop(highlightBoard) + mediumRect.Height) -
+                                            (strk.GetBounds().Top + strk.GetBounds().Height)) < 50)
+                                    {
+                                        hlMedium = true;
+                                        Console.WriteLine("YES - 1");
+                                    }
+                                }
+                                break;
+                            }
+                        case 2:
+                            {
+                                foreach (System.Windows.Ink.Stroke strk in highlightBoard.Strokes)
+                                {
+                                    if (!hlLong &&
+                                        Math.Abs(Canvas.GetTop(longRect) - (strk.GetBounds().Top + Canvas.GetTop(highlightBoard))) < 50 &&
+                                        Math.Abs(Canvas.GetLeft(longRect) - (strk.GetBounds().Left + Canvas.GetLeft(highlightBoard))) < 50 &&
+                                        Math.Abs((Canvas.GetLeft(longRect) - Canvas.GetLeft(highlightBoard) + longRect.Width) -
+                                            (strk.GetBounds().Left + strk.GetBounds().Width)) < 50 &&
+                                        Math.Abs((Canvas.GetTop(longRect) - Canvas.GetTop(highlightBoard) + longRect.Height) -
+                                            (strk.GetBounds().Top + strk.GetBounds().Height)) < 50)
+                                        {
+                                            hlLong = true;
+                                            Console.WriteLine("YES - 3");
+                                        }
+                                }
+                                break;
+                            }
+                    }    
                 }
-                // To Be changed! 
-                //if (hlWord1 && hlWord2 && hlWord3 && !hlDone)
-                //{
-                //    hlDone = true;
-                //    //stop timer, send log
-                //}
             }
         }
         /// <summary>
@@ -730,6 +760,11 @@ namespace FinalVersion
                         difficultyButton.Content = "Medium";
                         switch (task)
                         {
+                            case 0:
+                                {
+                                    highlightBoard.Strokes.Clear();
+                                    break;
+                                }
                             case 1:
                                 {
                                     Canvas.SetTop(dragRectangle, 400);
@@ -755,6 +790,11 @@ namespace FinalVersion
                         difficultyButton.Content = "Hard";
                         switch (task)
                         {
+                            case 0:
+                                {
+                                    highlightBoard.Strokes.Clear();
+                                    break;
+                                }
                             case 1:
                                 {
                                     Canvas.SetTop(dragRectangle, 425);
@@ -780,6 +820,11 @@ namespace FinalVersion
                         difficultyButton.Content = "Easy";
                         switch (task)
                         {
+                            case 0:
+                                {
+                                    highlightBoard.Strokes.Clear();
+                                    break;
+                                }
                             case 1:
                                 {
                                     Canvas.SetTop(dragRectangle, 380);
