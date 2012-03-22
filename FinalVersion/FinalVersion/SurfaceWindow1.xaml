@@ -5,18 +5,18 @@
     Title="FinalVersion">
 
     <Canvas x:Name="myCanvas" Background="Gray" MaxHeight="1080" MaxWidth="1920" Height="1080" Width="1920">
-        <Rectangle x:Name="dragRectangle" 
-                   Width="150" Height="150" Visibility="Hidden"
-                   Canvas.Top="400" Canvas.Left="100" 
+        <Rectangle x:Name="dragRectangle" Visibility="Hidden"
+                   Width="300" Height="300" 
+                   Canvas.Top="380" Canvas.Left="430" 
                    Canvas.ZIndex ="2"
                    TouchDown="onTouchDown"  
                    TouchMove="onTouchMove"
                    TouchLeave="onTouchLeave"
                    Fill="Brown" Cursor="None" ClipToBounds="False" />
         <Rectangle x:Name="theBox" Visibility="Hidden"
-                   Width="200" Height="200"
+                   Width="600" Height="600"
                    Canvas.ZIndex ="1"
-                   Canvas.Top="400" Canvas.Left="1600"
+                   Canvas.Top="264" Canvas.Left="1077"
                    Fill="DarkGreen"/>
         <Label x:Name="textBoard" Canvas.Left="533" Canvas.Top="267" Content=
             "The Microsoft Surface® platform brings people together to connect,
@@ -43,13 +43,16 @@ is PixelSense technology."
                             EditingMode="None" TouchDown="onTouchDown" TouchMove="onTouchDown" PreviewTouchDown="onTouchDown" Visibility="Hidden"/>
         <s:SurfaceButton x:Name="modeButton" Canvas.Left="20" Canvas.Top="20" Content="Pen Mode 1" Width="250" Height="100" 
                          HorizontalContentAlignment="Center" VerticalContentAlignment="Center" FontSize="32"
-                         Click="onModeClick"/>
-        <s:SurfaceButton x:Name="taskButton" Canvas.Left="20" Canvas.Top="146" Content="Task1 - HL" 
+                         Click="onTechniqueClick"/>
+        <s:SurfaceButton x:Name="taskButton" Canvas.Left="20" Canvas.Top="139" Content="Task1 - HL" 
                          FontSize="32" Height="100" HorizontalContentAlignment="Center"  VerticalContentAlignment="Center" Width="250" 
                          Click="onTaskClick"/>
         <s:SurfaceButton x:Name="highlightButton" Width="200" Height="50" Content="Highlight" Canvas.Left="1517" Canvas.Top="146" 
                          HorizontalContentAlignment="Center" VerticalContentAlignment="Center" FontSize="24" Background="Silver"
                          Click="onHlClick" Foreground="Black"/>
+        <s:SurfaceButton x:Name="difficultyButton" Canvas.Left="20" Canvas.Top="266" Content="Easy" FontSize="32" Height="100" 
+                         HorizontalContentAlignment="Center"  VerticalContentAlignment="Center" Width="250" 
+                         Click="onDifficultyClick"/>
         <s:SurfaceButton x:Name="drawButton" Background="Silver" Canvas.Left="1517" Canvas.Top="146" Content="Ink" FontSize="24" 
                          Foreground="Black" Height="50" HorizontalContentAlignment="Center"  VerticalContentAlignment="Center" Width="200" 
                          Click="onDrawEraseClick" Visibility="Hidden"/>
@@ -58,12 +61,14 @@ is PixelSense technology."
                          Click="onClearClick" Visibility="Hidden"/>
         <s:SurfaceButton x:Name="selectButton" Background="Silver" Canvas.Left="1517" Canvas.Top="146" Content="Select" 
                          FontSize="24" Foreground="Black" Height="50" HorizontalContentAlignment="Center" 
-                         VerticalContentAlignment="Center" Width="200" Visibility="Hidden"/>
+                         VerticalContentAlignment="Center" Width="200" Visibility="Hidden"
+                         Click="onDragClick"/>
         <Rectangle x:Name="mediumRect" Height="12" Width="130" Canvas.Left="567" Canvas.Top="634" />
         <Rectangle x:Name="shortRect" Canvas.Left="1163" Canvas.Top="413" Height="8"  Width="61" />
         <Rectangle x:Name="longRect" Canvas.Left="567" Canvas.Top="793" Height="12"  Width="242" />
         <Label Canvas.Left="533" Canvas.Top="140" Content="Please highlight the words 'immediately' and 'input(s)'" FontSize="32" Foreground="Black" x:Name="highlightLabel"/>
         <Label Canvas.Left="494" Canvas.Top="140" Content="Have fun, write or paint what you want in the blackboard" FontSize="32" Foreground="Black" Visibility="Hidden" x:Name="drawLable"/>
+        
     </Canvas>
 
 </s:SurfaceWindow>

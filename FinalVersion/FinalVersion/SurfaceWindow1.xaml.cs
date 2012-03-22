@@ -38,12 +38,12 @@ namespace FinalVersion
         private bool imageAvailable;
         private Tracking trackLED;
         private System.Windows.Point lastPoint;
-        private int mode, task;
-        private bool mode2, mode3;
-        private bool highlight, annotate;
+        private int technique, task, difficulty;
+        private bool buttonTechnique, tiltTechnique;
+        private bool highlight;
         private bool draw;
-        private bool hlWord1, hlWord2, hlWord3;
-        private bool hlDone, annotateDone, drawDone;
+        private bool drag;
+        private bool hlShort, hlMedium, hlLong;
         private SerialPort sp;
         private String[] split;
         private bool isInside;
@@ -56,13 +56,11 @@ namespace FinalVersion
         /// </summary>
         public SurfaceWindow1()
         {
-            mode2 = false;
-            mode3 = false;
-            hlWord1 = false;
-            hlWord2 = false;
-            hlWord3 = false;
-            hlDone = false;
-            annotateDone = false;
+            buttonTechnique = false;
+            tiltTechnique = false;
+            hlMedium = false;
+            hlShort = false;
+            hlLong = false;
             split = null;
             rwAcc = new float[3];
             rwGyro = new float[3];
@@ -78,9 +76,10 @@ namespace FinalVersion
                 Console.WriteLine(ex);
             }
             InitializeComponent();
-            mode = 0;
+            technique = 0;
+            difficulty = 0;
+            task = 0;
             highlight = false;
-            annotate = false;
             highlightBoard.DefaultDrawingAttributes.Color = System.Windows.Media.Colors.Yellow;
             drawBoard.DefaultDrawingAttributes.Color = System.Windows.Media.Colors.White;
             InitializeSurfaceInput();
@@ -120,7 +119,7 @@ namespace FinalVersion
                         String str = sp.ReadLine();
                         split = str.Split(';');
                         Console.WriteLine(str);
-                        switch (mode)
+                        switch (technique)
                         {
                             case 1:
                                 {
@@ -178,7 +177,7 @@ namespace FinalVersion
             if (diffTime.Milliseconds > 30)
             {
                 // Process the frame to detect the LED blob
-                if(mode != 3)
+                if(technique != 3)
                     contourCircles = trackLED.TrackContours(normalizedMetrics, normalizedImage, pen);
                 else
                     contourCircles = trackLED.TrackContours(normalizedMetrics, normalizedImage, finger);
@@ -203,13 +202,13 @@ namespace FinalVersion
 
             if (split != null)
             {
-                switch (mode)
+                switch (technique)
                 {
                     case 1:
                         {
                             if (button == 1)
                             {
-                                mode2 = true;
+                                buttonTechnique = true;
                                 switch (task)
                                 {
                                     case 0:
@@ -217,11 +216,6 @@ namespace FinalVersion
                                             highlightBoard.EditingMode = SurfaceInkEditingMode.Ink;
                                             break;
                                         }
-                                    //case 1:
-                                    //    {
-                                    //        //annotateBoard.EditingMode = SurfaceInkEditingMode.Ink; <-- Change with Drag 'n Drop
-                                    //        break;
-                                    //    }
                                     case 2:
                                         {
                                             drawBoard.EditingMode = SurfaceInkEditingMode.Ink;
@@ -231,7 +225,7 @@ namespace FinalVersion
                             }
                             else
                             {
-                                mode2 = false;
+                                buttonTechnique = false;
                                 switch (task)
                                 {
                                     case 0:
@@ -239,11 +233,6 @@ namespace FinalVersion
                                             highlightBoard.EditingMode = SurfaceInkEditingMode.None;
                                             break;
                                         }
-                                    //case 1:
-                                    //    {
-                                    //        //annotateBoard.EditingMode = SurfaceInkEditingMode.None; <-- Change with Drag 'n Drop
-                                    //        break;
-                                    //    }
                                     case 2:
                                         {
                                             drawBoard.EditingMode = SurfaceInkEditingMode.None;
@@ -258,7 +247,7 @@ namespace FinalVersion
                             if (((rwAcc[0] <= 0.75) && (rwAcc[1] >= 0.65)) || ((rwAcc[0] <= 0.6) && (rwAcc[1] <= -0.6))
                                 || ((rwAcc[0] <= 0.7) && (rwAcc[2] <= -0.4 || rwAcc[2] >= 0.7)))
                             {
-                                mode3 = true;
+                                tiltTechnique = true;
                                 switch (task)
                                 {
                                     case 0:
@@ -266,11 +255,6 @@ namespace FinalVersion
                                             highlightBoard.EditingMode = SurfaceInkEditingMode.Ink;
                                             break;
                                         }
-                                    //case 1:
-                                    //    {
-                                    //        //annotateBoard.EditingMode = SurfaceInkEditingMode.Ink; <-- Change with Drag 'n Drop
-                                    //        break;
-                                    //    }
                                     case 2:
                                         {
                                             drawBoard.EditingMode = SurfaceInkEditingMode.None;
@@ -280,7 +264,7 @@ namespace FinalVersion
                             }
                             else
                             {
-                                mode3 = false;
+                                tiltTechnique = false;
                                 switch (task)
                                 {
                                     case 0:
@@ -288,11 +272,6 @@ namespace FinalVersion
                                             highlightBoard.EditingMode = SurfaceInkEditingMode.None;
                                             break;
                                         }
-                                    //case 1:
-                                    //    {
-                                    //        //annotateBoard.EditingMode = SurfaceInkEditingMode.None; <-- Change with Drag 'n Drop
-                                    //        break;
-                                    //    }
                                     case 2:
                                         {
                                             drawBoard.EditingMode = SurfaceInkEditingMode.None;
@@ -310,7 +289,7 @@ namespace FinalVersion
             {
                 foreach (System.Windows.Ink.Stroke strk in highlightBoard.Strokes)
                 {
-                    if (!hlWord1 &&
+                    if (!hlMedium &&
                         Math.Abs(Canvas.GetTop(mediumRect) - (strk.GetBounds().Top + Canvas.GetTop(highlightBoard))) < 50 &&
                         Math.Abs(Canvas.GetLeft(mediumRect) - (strk.GetBounds().Left + Canvas.GetLeft(highlightBoard))) < 50 &&
                         Math.Abs((Canvas.GetLeft(mediumRect) - Canvas.GetLeft(highlightBoard) + mediumRect.Width) -
@@ -318,10 +297,10 @@ namespace FinalVersion
                         Math.Abs((Canvas.GetTop(mediumRect) - Canvas.GetTop(highlightBoard) + mediumRect.Height) -
                                 (strk.GetBounds().Top + strk.GetBounds().Height)) < 50)
                     {
-                        hlWord1 = true;
+                        hlMedium = true;
                         Console.WriteLine("YES - 1");
                     }
-                    if (!hlWord2 &&
+                    if (!hlShort &&
                         Math.Abs(Canvas.GetTop(shortRect) - (strk.GetBounds().Top + Canvas.GetTop(highlightBoard))) < 50 &&
                         Math.Abs(Canvas.GetLeft(shortRect) - (strk.GetBounds().Left + Canvas.GetLeft(highlightBoard))) < 50 &&
                         Math.Abs((Canvas.GetLeft(shortRect) - Canvas.GetLeft(highlightBoard) + shortRect.Width) -
@@ -329,10 +308,10 @@ namespace FinalVersion
                         Math.Abs((Canvas.GetTop(shortRect) - Canvas.GetTop(highlightBoard) + shortRect.Height) -
                                 (strk.GetBounds().Top + strk.GetBounds().Height)) < 50)
                     {
-                        hlWord2 = true;
+                        hlShort = true;
                         Console.WriteLine("YES - 2");
                     }
-                    if (!hlWord3 &&
+                    if (!hlLong &&
                         Math.Abs(Canvas.GetTop(longRect) - (strk.GetBounds().Top + Canvas.GetTop(highlightBoard))) < 50 &&
                         Math.Abs(Canvas.GetLeft(longRect) - (strk.GetBounds().Left + Canvas.GetLeft(highlightBoard))) < 50 &&
                         Math.Abs((Canvas.GetLeft(longRect) - Canvas.GetLeft(highlightBoard) + longRect.Width) -
@@ -340,7 +319,7 @@ namespace FinalVersion
                         Math.Abs((Canvas.GetTop(longRect) - Canvas.GetTop(highlightBoard) + longRect.Height) -
                                 (strk.GetBounds().Top + strk.GetBounds().Height)) < 50)
                     {
-                        hlWord3 = true;
+                        hlLong = true;
                         Console.WriteLine("YES - 3");
                     }
 
@@ -419,13 +398,13 @@ namespace FinalVersion
             //TODO: disable audio, animations here
         }
 
-        private void onModeClick(object s, RoutedEventArgs e)
+        private void onTechniqueClick(object s, RoutedEventArgs e)
         {
-            switch (mode)
+            switch (technique)
             {
                 case 0:
                     {
-                        mode = 1;
+                        technique = 1;
                         modeButton.Content = "Pen Mode 2";
                         switch (task)
                         {
@@ -438,9 +417,9 @@ namespace FinalVersion
                                 }
                             case 1:
                                 {
-                                    //annotateButton.Visibility = System.Windows.Visibility.Hidden;
-                                    //annotateButton.Background = Brushes.Silver;                  <-- replace with DnD
-                                    //annotateBoard.EditingMode = SurfaceInkEditingMode.None;
+                                    selectButton.Visibility = System.Windows.Visibility.Hidden;
+                                    selectButton.Background = Brushes.Silver;
+                                    drag = false;
                                     break;
                                 }
                             case 2:
@@ -457,13 +436,44 @@ namespace FinalVersion
                     }
                 case 1:
                     {
-                        mode = 2;
+                        technique = 2;
                         modeButton.Content = "Pen Mode 3";
                         break;
                     }
                 case 2:
                     {
-                        mode = 0;
+                        technique = 3;
+                        modeButton.Content = "Finger";
+                        switch (task)
+                        {
+                            case 0:
+                                {
+                                    highlightButton.Visibility = System.Windows.Visibility.Visible;
+                                    highlightButton.Background = Brushes.Silver;
+                                    highlightBoard.EditingMode = SurfaceInkEditingMode.None;
+                                    break;
+                                }
+                            case 1:
+                                {
+                                    selectButton.Visibility = System.Windows.Visibility.Visible;
+                                    selectButton.Background = Brushes.Silver;
+                                    drag = false;
+                                    break;
+                                }
+                            case 2:
+                                {
+                                    drawButton.Visibility = System.Windows.Visibility.Visible;
+                                    drawButton.Background = Brushes.Silver;
+                                    clearButton.Visibility = System.Windows.Visibility.Visible;
+                                    clearButton.Background = Brushes.Silver;
+                                    break;
+                                }
+                        }
+                        break;
+                    }
+                case 3:
+                    {
+                        technique = 0;
                         modeButton.Content = "Pen Mode 1";
                         switch (task)
                         {
@@ -476,9 +486,9 @@ namespace FinalVersion
                                 }
                             case 1:
                                 {
-                                    //annotateButton.Visibility = System.Windows.Visibility.Visible;
-                                    //annotateButton.Background = Brushes.Silver;
-                                    //annotateBoard.EditingMode = SurfaceInkEditingMode.None;
+                                    selectButton.Visibility = System.Windows.Visibility.Visible;
+                                    selectButton.Background = Brushes.Silver;
+                                    drag = false;
                                     break;
                                 }
                             case 2:
@@ -528,7 +538,7 @@ namespace FinalVersion
                             {
                                 case 0:
                                     {
-                                        if (mode == 0 || (mode2 && mode == 1) || (mode3 && mode == 2))
+                                        if (technique == 0 || (buttonTechnique && technique == 1) || (tiltTechnique && technique == 2) || technique == 3)
                                         {
                                             e.Handled = false;
                                             highlightBoard.DefaultDrawingAttributes.Height = circle.Radius * 2;
@@ -539,7 +549,7 @@ namespace FinalVersion
                                     }
                                 case 1:
                                     {
-                                        if (mode == 0 || (mode2 && mode == 1) || (mode3 && mode == 2))
+                                        if (technique == 0 || (buttonTechnique && technique == 1) || (tiltTechnique && technique == 2) || (technique == 3 && drag))
                                         {
                                             e.Handled = false;
                                             e.TouchDevice.Capture(this.dragRectangle);
@@ -555,18 +565,13 @@ namespace FinalVersion
                                     }
                                 case 2:
                                     {
-                                        if (mode == 0 || (mode2 && mode == 1) || (mode3 && mode == 2))
+                                        if (technique == 0 || (buttonTechnique && technique == 1) || (tiltTechnique && technique == 2) || technique == 3)
                                         {
                                             e.Handled = false;
                                             drawBoard.DefaultDrawingAttributes.Height = circle.Radius * 2;
                                             drawBoard.DefaultDrawingAttributes.Width = circle.Radius * 2;
                                             drawBoard.DefaultDrawingAttributes.FitToCurve = false;
                                         }
-                                        break;
-                                    }
-                                case 3:
-                                    {
-                                        //finger recognition
                                         break;
                                     }
                             }
@@ -590,7 +595,7 @@ namespace FinalVersion
                         dragRectangle.Visibility = System.Windows.Visibility.Visible;
                         theBox.Visibility = System.Windows.Visibility.Visible;
                         textBoard.Visibility = System.Windows.Visibility.Hidden;
-                        if (mode == 0)
+                        if (technique == 0 || technique == 3)
                         {
                             highlightButton.Visibility = System.Windows.Visibility.Hidden;
                             highlightButton.Background = Brushes.Silver;
@@ -607,7 +612,7 @@ namespace FinalVersion
                         theBox.Visibility = System.Windows.Visibility.Hidden;
                         drawLable.Visibility = System.Windows.Visibility.Visible;
                         drawBoard.Visibility = System.Windows.Visibility.Visible;
-                        if (mode == 0)
+                        if (technique == 0 || technique == 3)
                         {
                             selectButton.Visibility = System.Windows.Visibility.Hidden;
                             selectButton.Background = Brushes.Silver;
@@ -628,7 +633,7 @@ namespace FinalVersion
                         highlightBoard.Visibility = System.Windows.Visibility.Visible;
                         textBoard.Visibility = System.Windows.Visibility.Visible;
                         drawBoard.Visibility = System.Windows.Visibility.Hidden;
-                        if (mode == 0)
+                        if (technique == 0 || technique == 3)
                         {
                             drawButton.Background = Brushes.Silver;
                             drawButton.Visibility = System.Windows.Visibility.Hidden;
@@ -699,6 +704,102 @@ namespace FinalVersion
 
             // Mark this event as handled.  
             e.Handled = true;
+        }
+
+        private void onDragClick(object s, RoutedEventArgs e)
+        {
+            if (!drag)
+            {
+                drag = true;
+                selectButton.Background = Brushes.Green;
+            }
+            else
+            {
+                drag = false;
+                selectButton.Background = Brushes.Silver;
+            }
+        }
+
+        private void onDifficultyClick(object s, RoutedEventArgs e)
+        {
+            switch (difficulty)
+            {
+                case 0:
+                    {
+                        difficulty = 1;
+                        difficultyButton.Content = "Medium";
+                        switch (task)
+                        {
+                            case 1:
+                                {
+                                    Canvas.SetTop(dragRectangle, 400);
+                                    Canvas.SetLeft(dragRectangle, 150);
+                                    dragRectangle.Width = 250;
+                                    dragRectangle.Height = 250;
+                                    Canvas.SetTop(theBox, 350);
+                                    Canvas.SetLeft(theBox, 1400);
+                                    theBox.Width = 400;
+                                    theBox.Height = 400;
+                                    break;
+                                }
+                            case 2:
+                                {
+                                    break;
+                                }
+                        }
+                        break;
+                    }
+                case 1:
+                    {
+                        difficulty = 2;
+                        difficultyButton.Content = "Hard";
+                        switch (task)
+                        {
+                            case 1:
+                                {
+                                    Canvas.SetTop(dragRectangle, 425);
+                                    Canvas.SetLeft(dragRectangle, 50);
+                                    dragRectangle.Width = 125;
+                                    dragRectangle.Height = 125;
+                                    Canvas.SetTop(theBox, 410);
+                                    Canvas.SetLeft(theBox, 1700);
+                                    theBox.Width = 150;
+                                    theBox.Height = 150;
+                                    break;
+                                }
+                            case 2:
+                                {
+                                    break;
+                                }
+                        }
+                        break;
+                    }
+                case 2:
+                    {
+                        difficulty = 0;
+                        difficultyButton.Content = "Easy";
+                        switch (task)
+                        {
+                            case 1:
+                                {
+                                    Canvas.SetTop(dragRectangle, 380);
+                                    Canvas.SetLeft(dragRectangle, 430);
+                                    dragRectangle.Width = 300;
+                                    dragRectangle.Height = 300;
+                                    Canvas.SetTop(theBox, 264);
+                                    Canvas.SetLeft(theBox, 1077);
+                                    theBox.Width = 600;
+                                    theBox.Height = 600;
+                                    break;
+                                }
+                            case 2:
+                                {
+                                    break;
+                                }
+                        }
+                        break;
+                    }
+            }
         }
     }
 }
