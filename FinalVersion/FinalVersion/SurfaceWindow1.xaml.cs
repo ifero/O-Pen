@@ -1,12 +1,11 @@
 #region Things to do better
 /*
- * - Create several methods that handle all this changes of state
- * - Create several classes that handle all this methods
- * - Insert the words to remark for each difficulty
+ * - Insert buttons for vote the draw-like
  * - create the log and integrate it with log4net.
  * - Create some sort of class for all this variables
  * - Maybe create a class for each task?!
- * 
+ * - Create several methods that handle all this changes of state
+ * - Create several classes that handle all this methods
  */
 #endregion
 
@@ -41,6 +40,8 @@ namespace FinalVersion
         private TouchDevice rectangleControlTouchDevice;
         private static int finger = 150;
         private static int pen = 254;
+        private static int penSpot = 30;
+        private static int fingerSpot = 100;
         private TouchTarget touchTarget;
         private CircleF[] contourCircles;
         private IntPtr hwnd;
@@ -52,6 +53,7 @@ namespace FinalVersion
         private Tracking trackLED;
         private System.Windows.Point lastPoint;
         private int technique, task, difficulty;
+        private int done;
         private bool buttonTechnique, tiltTechnique;
         private bool highlight;
         private bool draw;
@@ -191,26 +193,10 @@ namespace FinalVersion
             {
                 // Process the frame to detect the LED blob
                 if (technique != 3)
-                    contourCircles = trackLED.TrackContours(normalizedMetrics, normalizedImage, pen);
+                    contourCircles = trackLED.TrackContours(normalizedMetrics, normalizedImage, pen, penSpot);
                 else
-                    contourCircles = trackLED.TrackContours(normalizedMetrics, normalizedImage, finger);
+                    contourCircles = trackLED.TrackContours(normalizedMetrics, normalizedImage, finger, fingerSpot);
                 currentTime = DateTime.Now;
-            }
-
-            if (task == 1)
-            {
-                if (rectangleControlTouchDevice == null)
-                {
-                    if ((Canvas.GetTop(this.dragRectangle) > Canvas.GetTop(this.theBox) && (Canvas.GetTop(this.dragRectangle) - Canvas.GetTop(this.theBox)) < 50)
-                     && (Canvas.GetLeft(this.dragRectangle) > Canvas.GetLeft(this.theBox) && (Canvas.GetLeft(this.dragRectangle) - Canvas.GetLeft(this.theBox)) < 50))
-                    {
-                        if (!isInside)
-                        {
-                            isInside = true;
-                        }
-                    }
-                    else isInside = false;
-                }
             }
 
             if (split != null)
@@ -270,7 +256,7 @@ namespace FinalVersion
                                         }
                                     case 2:
                                         {
-                                            drawBoard.EditingMode = SurfaceInkEditingMode.None;
+                                            drawBoard.EditingMode = SurfaceInkEditingMode.Ink;
                                             break;
                                         }
                                 }
@@ -317,7 +303,8 @@ namespace FinalVersion
                                             (strk.GetBounds().Top + strk.GetBounds().Height)) < 50)
                                     {
                                         hlShort = true;
-                                        Console.WriteLine("YES - 2");
+                                        Console.WriteLine("YES - 1");
+                                        //send log
                                     }
                                 }
                                 break;
@@ -335,7 +322,8 @@ namespace FinalVersion
                                             (strk.GetBounds().Top + strk.GetBounds().Height)) < 50)
                                     {
                                         hlMedium = true;
-                                        Console.WriteLine("YES - 1");
+                                        Console.WriteLine("YES - 2");
+                                        //send log
                                     }
                                 }
                                 break;
@@ -354,11 +342,31 @@ namespace FinalVersion
                                         {
                                             hlLong = true;
                                             Console.WriteLine("YES - 3");
+                                            //send log
                                         }
                                 }
                                 break;
                             }
                     }    
+                }
+            }
+            if (task == 1)
+            {
+                if (rectangleControlTouchDevice == null)
+                {
+                    if (Canvas.GetTop(this.dragRectangle) > Canvas.GetTop(this.theBox) && 
+                        (Canvas.GetTop(this.dragRectangle) + dragRectangle.Height < Canvas.GetTop(theBox) + theBox.Height) &&
+                        Canvas.GetLeft(this.dragRectangle) > Canvas.GetLeft(this.theBox) &&
+                        (Canvas.GetLeft(this.dragRectangle) + dragRectangle.Width < Canvas.GetLeft(theBox) + theBox.Width))
+                    {
+                        if (!isInside)
+                        {
+                            Console.WriteLine("YAY");
+                            //send log
+                            isInside = true;
+                        }
+                    }
+                    else isInside = false;
                 }
             }
         }
@@ -443,6 +451,7 @@ namespace FinalVersion
                                     highlightButton.Visibility = System.Windows.Visibility.Hidden;
                                     highlightButton.Background = Brushes.Silver;
                                     highlightBoard.EditingMode = SurfaceInkEditingMode.None;
+                                    highlightBoard.Strokes.Clear();
                                     break;
                                 }
                             case 1:
@@ -450,15 +459,55 @@ namespace FinalVersion
                                     selectButton.Visibility = System.Windows.Visibility.Hidden;
                                     selectButton.Background = Brushes.Silver;
                                     drag = false;
+                                    switch (difficulty)
+                                    {
+                                        case 0:
+                                            {
+                                                Canvas.SetTop(dragRectangle, 380);
+                                                Canvas.SetLeft(dragRectangle, 430);
+                                                dragRectangle.Width = 300;
+                                                dragRectangle.Height = 300;
+                                                Canvas.SetTop(theBox, 264);
+                                                Canvas.SetLeft(theBox, 1077);
+                                                theBox.Width = 600;
+                                                theBox.Height = 600;
+                                                break;
+                                            }
+                                        case 1:
+                                            {
+                                                Canvas.SetTop(dragRectangle, 400);
+                                                Canvas.SetLeft(dragRectangle, 150);
+                                                dragRectangle.Width = 250;
+                                                dragRectangle.Height = 250;
+                                                Canvas.SetTop(theBox, 350);
+                                                Canvas.SetLeft(theBox, 1400);
+                                                theBox.Width = 400;
+                                                theBox.Height = 400;
+                                                break;
+                                            }
+                                        case 2:
+                                            {
+                                                Canvas.SetTop(dragRectangle, 425);
+                                                Canvas.SetLeft(dragRectangle, 50);
+                                                dragRectangle.Width = 125;
+                                                dragRectangle.Height = 125;
+                                                Canvas.SetTop(theBox, 410);
+                                                Canvas.SetLeft(theBox, 1700);
+                                                theBox.Width = 150;
+                                                theBox.Height = 150;
+                                                break;
+                                            }
+                                    }
                                     break;
                                 }
                             case 2:
                                 {
                                     drawButton.Visibility = System.Windows.Visibility.Hidden;
                                     drawButton.Background = Brushes.Silver;
-                                    clearButton.Visibility = System.Windows.Visibility.Hidden;
-                                    clearButton.Background = Brushes.Silver;
+                                    doneButton.Visibility = System.Windows.Visibility.Hidden;
+                                    doneButton.Background = Brushes.Silver;
                                     drawBoard.EditingMode = SurfaceInkEditingMode.None;
+                                    drawBoard.Strokes.Clear();
                                     break;
                                 }
                         }
@@ -468,6 +517,62 @@ namespace FinalVersion
                     {
                         technique = 2;
                         modeButton.Content = "Pen Mode 3";
+                        switch (task)
+                        {
+                            case 0:
+                                {
+                                    highlightBoard.Strokes.Clear();
+                                    break;
+                                }
+                            case 1:
+                                {
+                                    switch (difficulty)
+                                    {
+                                        case 0:
+                                            {
+                                                Canvas.SetTop(dragRectangle, 380);
+                                                Canvas.SetLeft(dragRectangle, 430);
+                                                dragRectangle.Width = 300;
+                                                dragRectangle.Height = 300;
+                                                Canvas.SetTop(theBox, 264);
+                                                Canvas.SetLeft(theBox, 1077);
+                                                theBox.Width = 600;
+                                                theBox.Height = 600;
+                                                break;
+                                            }
+                                        case 1:
+                                            {
+                                                Canvas.SetTop(dragRectangle, 400);
+                                                Canvas.SetLeft(dragRectangle, 150);
+                                                dragRectangle.Width = 250;
+                                                dragRectangle.Height = 250;
+                                                Canvas.SetTop(theBox, 350);
+                                                Canvas.SetLeft(theBox, 1400);
+                                                theBox.Width = 400;
+                                                theBox.Height = 400;
+                                                break;
+                                            }
+                                        case 2:
+                                            {
+                                                Canvas.SetTop(dragRectangle, 425);
+                                                Canvas.SetLeft(dragRectangle, 50);
+                                                dragRectangle.Width = 125;
+                                                dragRectangle.Height = 125;
+                                                Canvas.SetTop(theBox, 410);
+                                                Canvas.SetLeft(theBox, 1700);
+                                                theBox.Width = 150;
+                                                theBox.Height = 150;
+                                                break;
+                                            }
+                                    }
+                                    break;
+                                }
+                            case 2:
+                                {
+                                    drawBoard.Strokes.Clear();
+                                    break;
+                                }
+                        }
                         break;
                     }
                 case 2:
@@ -481,6 +586,7 @@ namespace FinalVersion
                                     highlightButton.Visibility = System.Windows.Visibility.Visible;
                                     highlightButton.Background = Brushes.Silver;
                                     highlightBoard.EditingMode = SurfaceInkEditingMode.None;
+                                    highlightBoard.Strokes.Clear();
                                     break;
                                 }
                             case 1:
@@ -488,14 +594,54 @@ namespace FinalVersion
                                     selectButton.Visibility = System.Windows.Visibility.Visible;
                                     selectButton.Background = Brushes.Silver;
                                     drag = false;
+                                    switch (difficulty)
+                                    {
+                                        case 0:
+                                            {
+                                                Canvas.SetTop(dragRectangle, 380);
+                                                Canvas.SetLeft(dragRectangle, 430);
+                                                dragRectangle.Width = 300;
+                                                dragRectangle.Height = 300;
+                                                Canvas.SetTop(theBox, 264);
+                                                Canvas.SetLeft(theBox, 1077);
+                                                theBox.Width = 600;
+                                                theBox.Height = 600;
+                                                break;
+                                            }
+                                        case 1:
+                                            {
+                                                Canvas.SetTop(dragRectangle, 400);
+                                                Canvas.SetLeft(dragRectangle, 150);
+                                                dragRectangle.Width = 250;
+                                                dragRectangle.Height = 250;
+                                                Canvas.SetTop(theBox, 350);
+                                                Canvas.SetLeft(theBox, 1400);
+                                                theBox.Width = 400;
+                                                theBox.Height = 400;
+                                                break;
+                                            }
+                                        case 2:
+                                            {
+                                                Canvas.SetTop(dragRectangle, 425);
+                                                Canvas.SetLeft(dragRectangle, 50);
+                                                dragRectangle.Width = 125;
+                                                dragRectangle.Height = 125;
+                                                Canvas.SetTop(theBox, 410);
+                                                Canvas.SetLeft(theBox, 1700);
+                                                theBox.Width = 150;
+                                                theBox.Height = 150;
+                                                break;
+                                            }
+                                    }
                                     break;
                                 }
                             case 2:
                                 {
                                     drawButton.Visibility = System.Windows.Visibility.Visible;
                                     drawButton.Background = Brushes.Silver;
-                                    clearButton.Visibility = System.Windows.Visibility.Visible;
-                                    clearButton.Background = Brushes.Silver;
+                                    doneButton.Visibility = System.Windows.Visibility.Visible;
+                                    doneButton.Background = Brushes.Silver;
+                                    drawBoard.Strokes.Clear();
                                     break;
                                 }
                         }
@@ -512,6 +658,7 @@ namespace FinalVersion
                                     highlightButton.Visibility = System.Windows.Visibility.Visible;
                                     highlightButton.Background = Brushes.Silver;
                                     highlightBoard.EditingMode = SurfaceInkEditingMode.None;
+                                    highlightBoard.Strokes.Clear();
                                     break;
                                 }
                             case 1:
@@ -519,14 +666,54 @@ namespace FinalVersion
                                     selectButton.Visibility = System.Windows.Visibility.Visible;
                                     selectButton.Background = Brushes.Silver;
                                     drag = false;
+                                    switch (difficulty)
+                                    {
+                                        case 0:
+                                            {
+                                                Canvas.SetTop(dragRectangle, 380);
+                                                Canvas.SetLeft(dragRectangle, 430);
+                                                dragRectangle.Width = 300;
+                                                dragRectangle.Height = 300;
+                                                Canvas.SetTop(theBox, 264);
+                                                Canvas.SetLeft(theBox, 1077);
+                                                theBox.Width = 600;
+                                                theBox.Height = 600;
+                                                break;
+                                            }
+                                        case 1:
+                                            {
+                                                Canvas.SetTop(dragRectangle, 400);
+                                                Canvas.SetLeft(dragRectangle, 150);
+                                                dragRectangle.Width = 250;
+                                                dragRectangle.Height = 250;
+                                                Canvas.SetTop(theBox, 350);
+                                                Canvas.SetLeft(theBox, 1400);
+                                                theBox.Width = 400;
+                                                theBox.Height = 400;
+                                                break;
+                                            }
+                                        case 2:
+                                            {
+                                                Canvas.SetTop(dragRectangle, 425);
+                                                Canvas.SetLeft(dragRectangle, 50);
+                                                dragRectangle.Width = 125;
+                                                dragRectangle.Height = 125;
+                                                Canvas.SetTop(theBox, 410);
+                                                Canvas.SetLeft(theBox, 1700);
+                                                theBox.Width = 150;
+                                                theBox.Height = 150;
+                                                break;
+                                            }
+                                    }
                                     break;
                                 }
                             case 2:
                                 {
                                     drawButton.Visibility = System.Windows.Visibility.Visible;
                                     drawButton.Background = Brushes.Silver;
-                                    clearButton.Visibility = System.Windows.Visibility.Visible;
-                                    clearButton.Background = Brushes.Silver;
+                                    doneButton.Visibility = System.Windows.Visibility.Visible;
+                                    doneButton.Background = Brushes.Silver;
+                                    drawBoard.Strokes.Clear();
                                     break;
                                 }
                         }
@@ -622,6 +809,7 @@ namespace FinalVersion
                         highlightLabel.Visibility = System.Windows.Visibility.Hidden;
                         highlightBoard.EditingMode = SurfaceInkEditingMode.None;
                         highlightBoard.Visibility = System.Windows.Visibility.Hidden;
+                        highlightBoard.Strokes.Clear();
                         dragRectangle.Visibility = System.Windows.Visibility.Visible;
                         theBox.Visibility = System.Windows.Visibility.Visible;
                         textBoard.Visibility = System.Windows.Visibility.Hidden;
@@ -631,6 +819,45 @@ namespace FinalVersion
                             highlightButton.Background = Brushes.Silver;
                             selectButton.Visibility = System.Windows.Visibility.Visible;
                             selectButton.Background = Brushes.Silver;
+                        }
+                        switch (difficulty)
+                        {
+                            case 0:
+                                {
+                                    Canvas.SetTop(dragRectangle, 380);
+                                    Canvas.SetLeft(dragRectangle, 430);
+                                    dragRectangle.Width = 300;
+                                    dragRectangle.Height = 300;
+                                    Canvas.SetTop(theBox, 264);
+                                    Canvas.SetLeft(theBox, 1077);
+                                    theBox.Width = 600;
+                                    theBox.Height = 600;
+                                    break;
+                                }
+                            case 1:
+                                {
+                                    Canvas.SetTop(dragRectangle, 400);
+                                    Canvas.SetLeft(dragRectangle, 150);
+                                    dragRectangle.Width = 250;
+                                    dragRectangle.Height = 250;
+                                    Canvas.SetTop(theBox, 350);
+                                    Canvas.SetLeft(theBox, 1400);
+                                    theBox.Width = 400;
+                                    theBox.Height = 400;
+                                    break;
+                                }
+                            case 2:
+                                {
+                                    Canvas.SetTop(dragRectangle, 425);
+                                    Canvas.SetLeft(dragRectangle, 50);
+                                    dragRectangle.Width = 125;
+                                    dragRectangle.Height = 125;
+                                    Canvas.SetTop(theBox, 410);
+                                    Canvas.SetLeft(theBox, 1700);
+                                    theBox.Width = 150;
+                                    theBox.Height = 150;
+                                    break;
+                                }
                         }
                         break;
                     }
@@ -642,13 +869,41 @@ namespace FinalVersion
                         theBox.Visibility = System.Windows.Visibility.Hidden;
                         drawLable.Visibility = System.Windows.Visibility.Visible;
                         drawBoard.Visibility = System.Windows.Visibility.Visible;
+                        wordDrawLabel.Visibility = System.Windows.Visibility.Visible;
                         if (technique == 0 || technique == 3)
                         {
                             selectButton.Visibility = System.Windows.Visibility.Hidden;
                             selectButton.Background = Brushes.Silver;
                             drawButton.Background = Brushes.Silver;
                             drawButton.Visibility = System.Windows.Visibility.Visible;
-                            clearButton.Visibility = System.Windows.Visibility.Visible;
+                            doneButton.Visibility = System.Windows.Visibility.Visible;
+                        }
+                        switch (difficulty)
+                        {
+                            case 0:
+                                {
+                                    wordDrawLabel.Content = "PALERMO";
+                                    wordDrawLabel.FontSize = 200;
+                                    wordDrawLabel.FontFamily = new FontFamily("Segoe360");
+                                    drawBoard.Strokes.Clear();
+                                    break;
+                                }
+                            case 1:
+                                {
+                                    wordDrawLabel.Content = "Forza Palermo";
+                                    wordDrawLabel.FontSize = 180;
+                                    wordDrawLabel.FontFamily = new FontFamily("Gabriola");
+                                    drawBoard.Strokes.Clear();
+                                    break;
+                                }
+                            case 2:
+                                {
+                                    wordDrawLabel.Content = "Andrea's ITU Internship";
+                                    wordDrawLabel.FontSize = 72;
+                                    wordDrawLabel.FontFamily = new FontFamily("Segoe Script");
+                                    drawBoard.Strokes.Clear();
+                                    break;
+                                }
                         }
                         break;
                     }
@@ -663,13 +918,33 @@ namespace FinalVersion
                         highlightBoard.Visibility = System.Windows.Visibility.Visible;
                         textBoard.Visibility = System.Windows.Visibility.Visible;
                         drawBoard.Visibility = System.Windows.Visibility.Hidden;
+                        wordDrawLabel.Visibility = System.Windows.Visibility.Hidden;
+                        drawBoard.Strokes.Clear();
                         if (technique == 0 || technique == 3)
                         {
                             drawButton.Background = Brushes.Silver;
                             drawButton.Visibility = System.Windows.Visibility.Hidden;
-                            clearButton.Visibility = System.Windows.Visibility.Hidden;
+                            doneButton.Visibility = System.Windows.Visibility.Hidden;
                             highlightButton.Visibility = System.Windows.Visibility.Visible;
                             highlightButton.Background = Brushes.Silver;
+                        }
+                        switch (difficulty)
+                        {
+                            case 0:
+                                {
+                                    highlightLabel.Content = "Please highlight the word 'inputs'";
+                                    break;
+                                }
+                            case 1:
+                                {
+                                    highlightLabel.Content = "Please highlight the word 'immediately'";
+                                    break;
+                                }
+                            case 2:
+                                {
+                                    highlightLabel.Content = "Please highlight the word 'PixelSense technology'";
+                                    break;
+                                }
                         }
                         break;
                     }
@@ -692,9 +967,21 @@ namespace FinalVersion
             }
         }
 
-        private void onClearClick(object s, RoutedEventArgs e)
+        private void onDoneClick(object s, RoutedEventArgs e)
         {
-            drawBoard.Strokes.Clear();
+            if (done == 0)
+            {
+                voteLabel.Visibility = System.Windows.Visibility.Visible;
+                radio1.Visibility = System.Windows.Visibility.Visible;
+                radio2.Visibility = System.Windows.Visibility.Visible;
+                radio3.Visibility = System.Windows.Visibility.Visible;
+                radio4.Visibility = System.Windows.Visibility.Visible;
+                radio5.Visibility = System.Windows.Visibility.Visible;
+            }
+            else
+            {
+                //send log!
+            }
         }
 
         private void onTouchMove(object s, System.Windows.Input.TouchEventArgs e)
@@ -762,6 +1049,7 @@ namespace FinalVersion
                         {
                             case 0:
                                 {
+                                    highlightLabel.Content = "Please highlight the word 'immediately'";
                                     highlightBoard.Strokes.Clear();
                                     break;
                                 }
@@ -779,6 +1067,10 @@ namespace FinalVersion
                                 }
                             case 2:
                                 {
+                                    wordDrawLabel.Content = "Forza Palermo";
+                                    wordDrawLabel.FontSize = 180;
+                                    wordDrawLabel.FontFamily = new FontFamily("Gabriola");
+                                    drawBoard.Strokes.Clear();
                                     break;
                                 }
                         }
@@ -792,6 +1084,7 @@ namespace FinalVersion
                         {
                             case 0:
                                 {
+                                    highlightLabel.Content = "Please highlight the word 'PixelSense technology'";
                                     highlightBoard.Strokes.Clear();
                                     break;
                                 }
@@ -809,6 +1102,10 @@ namespace FinalVersion
                                 }
                             case 2:
                                 {
+                                    wordDrawLabel.Content = "Andrea's ITU Internship";
+                                    wordDrawLabel.FontSize = 72;
+                                    wordDrawLabel.FontFamily = new FontFamily("Segoe Script");
+                                    drawBoard.Strokes.Clear();
                                     break;
                                 }
                         }
@@ -822,6 +1119,7 @@ namespace FinalVersion
                         {
                             case 0:
                                 {
+                                    highlightLabel.Content = "Please highlight the word 'inputs'";
                                     highlightBoard.Strokes.Clear();
                                     break;
                                 }
@@ -839,6 +1137,10 @@ namespace FinalVersion
                                 }
                             case 2:
                                 {
+                                    wordDrawLabel.Content = "PALERMO";
+                                    wordDrawLabel.FontSize = 200;
+                                    wordDrawLabel.FontFamily = new FontFamily("Segoe360");
+                                    drawBoard.Strokes.Clear();
                                     break;
                                 }
                         }

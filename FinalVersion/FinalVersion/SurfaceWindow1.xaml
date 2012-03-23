@@ -37,9 +37,11 @@ it feeds that to the brain which is our vision input processor that
 recognizes the image and does something with it. Taken in whole…this 
 is PixelSense technology." 
                FontSize="24" Foreground="Black" Height="597" Width="826" />
+        <Label x:Name="wordDrawLabel" Background="Black" Foreground="Pink" Canvas.Top="250" Canvas.Left="440" Width="983" Height="720"
+               Content="PALERMO" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" FontSize="200" Visibility="Hidden"/>
         <s:SurfaceInkCanvas x:Name="highlightBoard" Canvas.Left="533" Canvas.Top="267" Height="597" Width="826" Background="Transparent" UsesTouchShape="False" 
                             EditingMode="None" Opacity="0.5" TouchDown="onTouchDown" TouchMove="onTouchDown" PreviewTouchDown="onTouchDown"/>
-        <s:SurfaceInkCanvas x:Name="drawBoard" Canvas.Left="440" Canvas.Top="250" Height="720" Width="983" Background="Black" UsesTouchShape="False" 
+        <s:SurfaceInkCanvas x:Name="drawBoard" Canvas.Left="440" Canvas.Top="250" Height="720" Width="983" Background="Transparent" UsesTouchShape="False" 
                             EditingMode="None" TouchDown="onTouchDown" TouchMove="onTouchDown" PreviewTouchDown="onTouchDown" Visibility="Hidden"/>
         <s:SurfaceButton x:Name="modeButton" Canvas.Left="20" Canvas.Top="20" Content="Pen Mode 1" Width="250" Height="100" 
                          HorizontalContentAlignment="Center" VerticalContentAlignment="Center" FontSize="32"
@@ -56,9 +58,9 @@ is PixelSense technology."
         <s:SurfaceButton x:Name="drawButton" Background="Silver" Canvas.Left="1517" Canvas.Top="146" Content="Ink" FontSize="24" 
                          Foreground="Black" Height="50" HorizontalContentAlignment="Center"  VerticalContentAlignment="Center" Width="200" 
                          Click="onDrawEraseClick" Visibility="Hidden"/>
-        <s:SurfaceButton x:Name="clearButton" Background="Silver" Canvas.Left="1517" Canvas.Top="203" Content="Clear" FontSize="24" 
+        <s:SurfaceButton x:Name="doneButton" Background="Silver" Canvas.Left="1517" Canvas.Top="754" Content="Clear" FontSize="24" 
                          Foreground="Black" Height="50" HorizontalContentAlignment="Center"  VerticalContentAlignment="Center" Width="200" 
-                         Click="onClearClick" Visibility="Hidden"/>
+                         Click="onDoneClick" Visibility="Hidden"/>
         <s:SurfaceButton x:Name="selectButton" Background="Silver" Canvas.Left="1517" Canvas.Top="146" Content="Select" 
                          FontSize="24" Foreground="Black" Height="50" HorizontalContentAlignment="Center" 
                          VerticalContentAlignment="Center" Width="200" Visibility="Hidden"
@@ -66,9 +68,14 @@ is PixelSense technology."
         <Rectangle x:Name="mediumRect" Height="12" Width="130" Canvas.Left="567" Canvas.Top="634" />
         <Rectangle x:Name="shortRect" Canvas.Left="1163" Canvas.Top="413" Height="8"  Width="61" />
         <Rectangle x:Name="longRect" Canvas.Left="567" Canvas.Top="793" Height="12"  Width="242" />
-        <Label Canvas.Left="533" Canvas.Top="140" Content="Please highlight the words 'immediately' and 'input(s)'" FontSize="32" Foreground="Black" x:Name="highlightLabel"/>
-        <Label Canvas.Left="494" Canvas.Top="140" Content="Have fun, write or paint what you want in the blackboard" FontSize="32" Foreground="Black" Visibility="Hidden" x:Name="drawLable"/>
-        
+        <Label Canvas.Left="567" Canvas.Top="140" Content="Please, highlight the word 'inputs'" FontSize="32" Foreground="Black" x:Name="highlightLabel"/>
+        <Label Canvas.Left="700" Canvas.Top="140" Content="Please, write on the letters" FontSize="32" Foreground="Black" Visibility="Hidden" x:Name="drawLable"/>
+        <Label Canvas.Left="1518" Canvas.Top="258" Content="Vote" Name="voteLabel" FontSize="32" Foreground="Black"  Visibility="Hidden"/>
+        <s:SurfaceRadioButton Canvas.Left="1517" Canvas.Top="328" Content="1 - bad" Name="radio1" Width="144" Background="Red" Foreground="Black" Visibility="Hidden" />
+        <s:SurfaceRadioButton Canvas.Left="1517" Canvas.Top="380" Content="2 - not so bad" Name="radio2" Width="144" Background="Orange" Foreground="Black" Visibility="Hidden"/>
+        <s:SurfaceRadioButton Canvas.Left="1517" Canvas.Top="432" Content="3 - is ok" Name="radio3" Width="140" Background="Yellow" Foreground="Black"  Visibility="Hidden"/>
+        <s:SurfaceRadioButton Canvas.Left="1517" Canvas.Top="485" Content="4 - good" Name="radio4" Width="144" Background="YellowGreen" Foreground="Black"  Visibility="Hidden"/>
+        <s:SurfaceRadioButton Canvas.Left="1517" Canvas.Top="537" Content="5 - very good" Name="radio5" Width="144" Background="Green" Foreground="Black"  Visibility="Hidden"/>
     </Canvas>
 
 </s:SurfaceWindow>
