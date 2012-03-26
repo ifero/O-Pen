@@ -58,7 +58,7 @@ is PixelSense technology."
         <s:SurfaceButton x:Name="drawButton" Background="Silver" Canvas.Left="1517" Canvas.Top="146" Content="Ink" FontSize="24" 
                          Foreground="Black" Height="50" HorizontalContentAlignment="Center"  VerticalContentAlignment="Center" Width="200" 
                          Click="onDrawEraseClick" Visibility="Hidden"/>
-        <s:SurfaceButton x:Name="doneButton" Background="Silver" Canvas.Left="1517" Canvas.Top="754" Content="Clear" FontSize="24" 
+        <s:SurfaceButton x:Name="doneButton" Background="Silver" Canvas.Left="1517" Canvas.Top="754" Content="Done" FontSize="24" 
                          Foreground="Black" Height="50" HorizontalContentAlignment="Center"  VerticalContentAlignment="Center" Width="200" 
                          Click="onDoneClick" Visibility="Hidden"/>
         <s:SurfaceButton x:Name="selectButton" Background="Silver" Canvas.Left="1517" Canvas.Top="146" Content="Select" 

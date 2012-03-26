@@ -21,3 +21,7 @@ C:\AndreaInternship\FinalVersion\FinalVersion\bin\Debug\Emgu.CV.UI.dll
 C:\AndreaInternship\FinalVersion\FinalVersion\bin\Debug\Emgu.Util.dll
 C:\AndreaInternship\FinalVersion\FinalVersion\obj\Debug\FinalVersion.exe
 C:\AndreaInternship\FinalVersion\FinalVersion\obj\Debug\FinalVersion.pdb
+C:\AndreaInternship\FinalVersion\FinalVersion\bin\Debug\NLog.config
+C:\AndreaInternship\FinalVersion\FinalVersion\bin\Debug\NLog.dll
+C:\AndreaInternship\FinalVersion\FinalVersion\bin\Debug\NLog.pdb
+C:\AndreaInternship\FinalVersion\FinalVersion\bin\Debug\NLog.xml

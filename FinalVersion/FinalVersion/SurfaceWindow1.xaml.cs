@@ -1,7 +1,6 @@
 #region Things to do better
 /*
- * - Insert buttons for vote the draw-like
- * - create the log and integrate it with log4net.
+ * - create class for login.
  * - Create some sort of class for all this variables
  * - Maybe create a class for each task?!
  * - Create several methods that handle all this changes of state
@@ -12,6 +11,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.IO.Ports;
 using System.Linq;
 using System.Text;
@@ -25,6 +25,7 @@ using Microsoft.Surface.Core;
 using Microsoft.Surface.Presentation;
 using Microsoft.Surface.Presentation.Controls;
 using Microsoft.Surface.Presentation.Input;
+using NLog;
 using Emgu.CV;
 using Emgu.CV.Structure;
 using Emgu.Util;
@@ -37,6 +38,7 @@ namespace FinalVersion
     /// </summary>
     public partial class SurfaceWindow1 : SurfaceWindow
     {
+        private static Logger logger;
         private TouchDevice rectangleControlTouchDevice;
         private static int finger = 150;
         private static int pen = 254;
@@ -48,6 +50,7 @@ namespace FinalVersion
         private ImageMetrics normalizedMetrics;
         private TimeSpan diffTime;
         private DateTime currentTime;
+        private DateTime startLog;
         private byte[] normalizedImage;
         private bool imageAvailable;
         private Tracking trackLED;
@@ -59,6 +62,7 @@ namespace FinalVersion
         private bool draw;
         private bool drag;
         private bool hlShort, hlMedium, hlLong;
+        private bool isStarted;
         private SerialPort sp;
         private String[] split;
         private bool isInside;
@@ -71,12 +75,15 @@ namespace FinalVersion
         /// </summary>
         public SurfaceWindow1()
         {
+            logger = LogManager.GetCurrentClassLogger();
+            done = 0;
             buttonTechnique = false;
             tiltTechnique = false;
             hlMedium = false;
             hlShort = false;
             hlLong = false;
             split = null;
+            isStarted = false;
             rwAcc = new float[3];
             rwGyro = new float[3];
             trackLED = new Tracking();
@@ -305,6 +312,8 @@ namespace FinalVersion
                                         hlShort = true;
                                         Console.WriteLine("YES - 1");
                                         //send log
+                                        logger.Info("{0} ; {1} ; {2} ; {3} ; {4} ; {5} ; {6} ;", startLog, "test", task, technique, difficulty, DateTime.Now, 0);
+                                        // wait 5 seconds then show alert/dialogs
                                     }
                                 }
                                 break;
@@ -323,7 +332,9 @@ namespace FinalVersion
                                     {
                                         hlMedium = true;
                                         Console.WriteLine("YES - 2");
+                                        // wait 5 seconds then show alert/dialogs
                                         //send log
+                                        logger.Info("{0} ; {1} ; {2} ; {3} ; {4} ; {5} ; {6} ;", startLog, "test", task, technique, difficulty, DateTime.Now, 0);
                                     }
                                 }
                                 break;
@@ -343,6 +354,8 @@ namespace FinalVersion
                                             hlLong = true;
                                             Console.WriteLine("YES - 3");
                                             //send log
+                                            // wait 5 seconds then show alert/dialogs
+                                            logger.Info("{0} ; {1} ; {2} ; {3} ; {4} ; {5} ; {6} ;", startLog, "test", task, technique, difficulty, DateTime.Now, 0);
                                         }
                                 }
                                 break;
@@ -364,6 +377,8 @@ namespace FinalVersion
                             Console.WriteLine("YAY");
                             //send log
                             isInside = true;
+                            // wait 5 seconds then show alert/dialogs
+                            logger.Info("{0} ; {1} ; {2} ; {3} ; {4} ; {5} ; {6} ;", startLog, "test", task, technique, difficulty, DateTime.Now, 0);
                         }
                     }
                     else isInside = false;
@@ -442,6 +457,7 @@ namespace FinalVersion
             {
                 case 0:
                     {
+                        isStarted = false;
                         technique = 1;
                         modeButton.Content = "Pen Mode 2";
                         switch (task)
@@ -515,6 +531,7 @@ namespace FinalVersion
                     }
                 case 1:
                     {
+                        isStarted = false;
                         technique = 2;
                         modeButton.Content = "Pen Mode 3";
                         switch (task)
@@ -577,6 +594,7 @@ namespace FinalVersion
                     }
                 case 2:
                     {
+                        isStarted = false;
                         technique = 3;
                         modeButton.Content = "Finger";
                         switch (task)
@@ -649,6 +667,7 @@ namespace FinalVersion
                     }
                 case 3:
                     {
+                        isStarted = false;
                         technique = 0;
                         modeButton.Content = "Pen Mode 1";
                         switch (task)
@@ -757,6 +776,11 @@ namespace FinalVersion
                                     {
                                         if (technique == 0 || (buttonTechnique && technique == 1) || (tiltTechnique && technique == 2) || technique == 3)
                                         {
+                                            if (!isStarted)
+                                            {
+                                                startLog = DateTime.Now;
+                                                isStarted = true;
+                                            }
                                             e.Handled = false;
                                             highlightBoard.DefaultDrawingAttributes.Height = circle.Radius * 2;
                                             highlightBoard.DefaultDrawingAttributes.Width = circle.Radius * 2;
@@ -768,6 +792,11 @@ namespace FinalVersion
                                     {
                                         if (technique == 0 || (buttonTechnique && technique == 1) || (tiltTechnique && technique == 2) || (technique == 3 && drag))
                                         {
+                                            if (!isStarted)
+                                            {
+                                                startLog = DateTime.Now;
+                                                isStarted = true;
+                                            }
                                             e.Handled = false;
                                             e.TouchDevice.Capture(this.dragRectangle);
                                             if (rectangleControlTouchDevice == null)
@@ -784,6 +813,11 @@ namespace FinalVersion
                                     {
                                         if (technique == 0 || (buttonTechnique && technique == 1) || (tiltTechnique && technique == 2) || technique == 3)
                                         {
+                                            if (!isStarted)
+                                            {
+                                                startLog = DateTime.Now;
+                                                isStarted = true;
+                                            }
                                             e.Handled = false;
                                             drawBoard.DefaultDrawingAttributes.Height = circle.Radius * 2;
                                             drawBoard.DefaultDrawingAttributes.Width = circle.Radius * 2;
@@ -804,6 +838,7 @@ namespace FinalVersion
             {
                 case 0:
                     {
+                        isStarted = false;
                         task = 1;
                         taskButton.Content = "Task2 - DnD";
                         highlightLabel.Visibility = System.Windows.Visibility.Hidden;
@@ -863,6 +898,7 @@ namespace FinalVersion
                     }
                 case 1:
                     {
+                        isStarted = false;
                         task = 2;
                         taskButton.Content = "Task3 - INK";
                         dragRectangle.Visibility = System.Windows.Visibility.Hidden;
@@ -909,6 +945,7 @@ namespace FinalVersion
                     }
                 case 2:
                     {
+                        isStarted = false;
                         task = 0;
                         taskButton.Content = "Task1 - HL";
                         drawLable.Visibility = System.Windows.Visibility.Hidden;
@@ -957,7 +994,7 @@ namespace FinalVersion
             {
                 draw = true;
                 drawBoard.EditingMode = SurfaceInkEditingMode.Ink;
-                drawButton.Background = Brushes.Blue;
+                drawButton.Background = Brushes.MediumAquamarine;
             }
             else
             {
@@ -969,18 +1006,69 @@ namespace FinalVersion
 
         private void onDoneClick(object s, RoutedEventArgs e)
         {
+            DateTime stopLog;
             if (done == 0)
             {
+                stopLog = DateTime.Now;
                 voteLabel.Visibility = System.Windows.Visibility.Visible;
                 radio1.Visibility = System.Windows.Visibility.Visible;
                 radio2.Visibility = System.Windows.Visibility.Visible;
                 radio3.Visibility = System.Windows.Visibility.Visible;
                 radio4.Visibility = System.Windows.Visibility.Visible;
                 radio5.Visibility = System.Windows.Visibility.Visible;
+                done = 1;
             }
             else
             {
-                //send log!
+                doneButton.Content = "Vote";
+                
+                if (radio1.IsChecked.Value || radio2.IsChecked.Value || radio3.IsChecked.Value ||
+                    radio4.IsChecked.Value || radio5.IsChecked.Value)
+                {
+                    done = 0;
+                    if (radio1.IsChecked.Value)
+                    {
+                        //send log-1
+                        logger.Info("{0} ; {1} ; {2} ; {3} ; {4} ; {5} ; {6} ;", startLog, "test", task, technique, difficulty, DateTime.Now, 1);
+                        // find a way to have screenshot
+                    }
+                    if (radio2.IsChecked.Value)
+                    {
+                        //send log-2
+                        logger.Info("{0} ; {1} ; {2} ; {3} ; {4} ; {5} ; {6} ;", startLog, "test", task, technique, difficulty, DateTime.Now, 2);
+                        // find a way to have screenshot
+                    }
+                    if (radio3.IsChecked.Value)
+                    {
+                        //send log-3
+                        logger.Info("{0} ; {1} ; {2} ; {3} ; {4} ; {5} ; {6} ;", startLog, "test", task, technique, difficulty, DateTime.Now, 3);
+                        // find a way to have screenshot
+                    }
+                    if (radio4.IsChecked.Value)
+                    {
+                        //send log-4
+                        logger.Info("{0} ; {1} ; {2} ; {3} ; {4} ; {5} ; {6} ;", startLog, "test", task, technique, difficulty, DateTime.Now, 4);
+                        // find a way to have screenshot
+                    }
+                    if (radio5.IsChecked.Value)
+                    {
+                        //send log-5
+                        logger.Info("{0} ; {1} ; {2} ; {3} ; {4} ; {5} ; {6} ;", startLog, "test", task, technique, difficulty, DateTime.Now, 5);
+                        // find a way to have screenshot
+                    }
+                    voteLabel.Visibility = System.Windows.Visibility.Hidden;
+                    radio1.Visibility = System.Windows.Visibility.Collapsed;
+                    radio2.Visibility = System.Windows.Visibility.Collapsed;
+                    radio3.Visibility = System.Windows.Visibility.Collapsed;
+                    radio4.Visibility = System.Windows.Visibility.Collapsed;
+                    radio5.Visibility = System.Windows.Visibility.Collapsed;
+                    doneButton.Content = "Done";
+                    //show alert!
+                }
+                else
+                {
+                    //alert, need a vote!!
+                }
             }
         }
 
@@ -1043,6 +1131,7 @@ namespace FinalVersion
             {
                 case 0:
                     {
+                        isStarted = false;
                         difficulty = 1;
                         difficultyButton.Content = "Medium";
                         switch (task)
@@ -1063,6 +1152,8 @@ namespace FinalVersion
                                     Canvas.SetLeft(theBox, 1400);
                                     theBox.Width = 400;
                                     theBox.Height = 400;
+                                    drag = false;
+                                    selectButton.Background = Brushes.Silver;
                                     break;
                                 }
                             case 2:
@@ -1078,6 +1169,7 @@ namespace FinalVersion
                     }
                 case 1:
                     {
+                        isStarted = false;
                         difficulty = 2;
                         difficultyButton.Content = "Hard";
                         switch (task)
@@ -1098,6 +1190,8 @@ namespace FinalVersion
                                     Canvas.SetLeft(theBox, 1700);
                                     theBox.Width = 150;
                                     theBox.Height = 150;
+                                    drag = false;
+                                    selectButton.Background = Brushes.Silver;
                                     break;
                                 }
                             case 2:
@@ -1113,6 +1207,7 @@ namespace FinalVersion
                     }
                 case 2:
                     {
+                        isStarted = false;
                         difficulty = 0;
                         difficultyButton.Content = "Easy";
                         switch (task)
@@ -1133,6 +1228,8 @@ namespace FinalVersion
                                     Canvas.SetLeft(theBox, 1077);
                                     theBox.Width = 600;
                                     theBox.Height = 600;
+                                    drag = false;
+                                    selectButton.Background = Brushes.Silver;
                                     break;
                                 }
                             case 2:
