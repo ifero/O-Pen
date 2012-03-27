@@ -35,26 +35,26 @@ between the eye and the brain. You need both, working together, to see.
 In this case, the eye is the sensor in the panel, it picks up the image and 
 it feeds that to the brain which is our vision input processor that 
 recognizes the image and does something with it. Taken in whole…this 
-is PixelSense technology." 
+is PixelSense technology." Visibility="Collapsed"
                FontSize="24" Foreground="Black" Height="597" Width="826" />
         <Label x:Name="wordDrawLabel" Background="Black" Foreground="Pink" Canvas.Top="250" Canvas.Left="440" Width="983" Height="720"
                Content="PALERMO" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" FontSize="200" Visibility="Hidden"/>
         <s:SurfaceInkCanvas x:Name="highlightBoard" Canvas.Left="533" Canvas.Top="267" Height="597" Width="826" Background="Transparent" UsesTouchShape="False" 
-                            EditingMode="None" Opacity="0.5" TouchDown="onTouchDown" TouchMove="onTouchDown" PreviewTouchDown="onTouchDown"/>
+                            EditingMode="None" Opacity="0.5" TouchDown="onTouchDown" TouchMove="onTouchDown" PreviewTouchDown="onTouchDown" Visibility="Hidden"/>
         <s:SurfaceInkCanvas x:Name="drawBoard" Canvas.Left="440" Canvas.Top="250" Height="720" Width="983" Background="Transparent" UsesTouchShape="False" 
                             EditingMode="None" TouchDown="onTouchDown" TouchMove="onTouchDown" PreviewTouchDown="onTouchDown" Visibility="Hidden"/>
         <s:SurfaceButton x:Name="modeButton" Canvas.Left="20" Canvas.Top="20" Content="Pen Mode 1" Width="250" Height="100" 
                          HorizontalContentAlignment="Center" VerticalContentAlignment="Center" FontSize="32"
-                         Click="onTechniqueClick"/>
+                         Click="onTechniqueClick" Visibility="Collapsed"/>
         <s:SurfaceButton x:Name="taskButton" Canvas.Left="20" Canvas.Top="139" Content="Task1 - HL" 
                          FontSize="32" Height="100" HorizontalContentAlignment="Center"  VerticalContentAlignment="Center" Width="250" 
-                         Click="onTaskClick"/>
+                         Click="onTaskClick" Visibility="Collapsed"/>
         <s:SurfaceButton x:Name="highlightButton" Width="200" Height="50" Content="Highlight" Canvas.Left="1517" Canvas.Top="146" 
                          HorizontalContentAlignment="Center" VerticalContentAlignment="Center" FontSize="24" Background="Silver"
-                         Click="onHlClick" Foreground="Black"/>
+                         Click="onHlClick" Foreground="Black" Visibility="Collapsed"/>
         <s:SurfaceButton x:Name="difficultyButton" Canvas.Left="20" Canvas.Top="266" Content="Easy" FontSize="32" Height="100" 
                          HorizontalContentAlignment="Center"  VerticalContentAlignment="Center" Width="250" 
-                         Click="onDifficultyClick"/>
+                         Click="onDifficultyClick" Visibility="Collapsed"/>
         <s:SurfaceButton x:Name="drawButton" Background="Silver" Canvas.Left="1517" Canvas.Top="146" Content="Ink" FontSize="24" 
                          Foreground="Black" Height="50" HorizontalContentAlignment="Center"  VerticalContentAlignment="Center" Width="200" 
                          Click="onDrawEraseClick" Visibility="Hidden"/>
@@ -65,10 +65,13 @@ is PixelSense technology."
                          FontSize="24" Foreground="Black" Height="50" HorizontalContentAlignment="Center" 
                          VerticalContentAlignment="Center" Width="200" Visibility="Hidden"
                          Click="onDragClick"/>
+        <s:SurfaceButton x:Name="userNameButton" Background="Silver" HorizontalContentAlignment="Center" VerticalContentAlignment="Center"
+                         Click="onUserNameClick" Canvas.Left="1162" Canvas.Top="413" Height="59" Width="172" 
+                         Content="START" Foreground="Black" FontSize="24"/>
         <Rectangle x:Name="mediumRect" Height="12" Width="130" Canvas.Left="567" Canvas.Top="634" />
         <Rectangle x:Name="shortRect" Canvas.Left="1163" Canvas.Top="413" Height="8"  Width="61" />
         <Rectangle x:Name="longRect" Canvas.Left="567" Canvas.Top="793" Height="12"  Width="242" />
-        <Label Canvas.Left="567" Canvas.Top="140" Content="Please, highlight the word 'inputs'" FontSize="32" Foreground="Black" x:Name="highlightLabel"/>
+        <Label Canvas.Left="567" Canvas.Top="140" Content="Please, highlight the word 'inputs'" FontSize="32" Foreground="Black" x:Name="highlightLabel" Visibility="Hidden"/>
         <Label Canvas.Left="700" Canvas.Top="140" Content="Please, write on the letters" FontSize="32" Foreground="Black" Visibility="Hidden" x:Name="drawLable"/>
         <Label Canvas.Left="1518" Canvas.Top="258" Content="Vote" Name="voteLabel" FontSize="32" Foreground="Black"  Visibility="Hidden"/>
         <s:SurfaceRadioButton Canvas.Left="1517" Canvas.Top="328" Content="1 - bad" Name="radio1" Width="144" Background="Red" Foreground="Black" Visibility="Hidden" />
@@ -76,6 +79,10 @@ is PixelSense technology."
         <s:SurfaceRadioButton Canvas.Left="1517" Canvas.Top="432" Content="3 - is ok" Name="radio3" Width="140" Background="Yellow" Foreground="Black"  Visibility="Hidden"/>
         <s:SurfaceRadioButton Canvas.Left="1517" Canvas.Top="485" Content="4 - good" Name="radio4" Width="144" Background="YellowGreen" Foreground="Black"  Visibility="Hidden"/>
         <s:SurfaceRadioButton Canvas.Left="1517" Canvas.Top="537" Content="5 - very good" Name="radio5" Width="144" Background="Green" Foreground="Black"  Visibility="Hidden"/>
+        <s:SurfaceTextBox x:Name="userTB" Height="60" Width="595" Canvas.Left="566" Canvas.Top="412"
+                          KeyboardLayout="Alphanumeric"/>
+        <Label x:Name="userNameLabel" Canvas.Left="567" Canvas.Top="381" Content="Insert Name and Surname"
+               FontSize="24"/>
     </Canvas>
 
 </s:SurfaceWindow>

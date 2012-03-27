@@ -1,6 +1,5 @@
 #region Things to do better
 /*
- * - create class for login.
  * - Create some sort of class for all this variables
  * - Maybe create a class for each task?!
  * - Create several methods that handle all this changes of state
@@ -63,6 +62,7 @@ namespace FinalVersion
         private bool drag;
         private bool hlShort, hlMedium, hlLong;
         private bool isStarted;
+        private String userName;
         private SerialPort sp;
         private String[] split;
         private bool isInside;
@@ -75,6 +75,7 @@ namespace FinalVersion
         /// </summary>
         public SurfaceWindow1()
         {
+            Microsoft.Surface.SurfaceKeyboard.SuppressTextInputPanel(hwnd);
             logger = LogManager.GetCurrentClassLogger();
             done = 0;
             buttonTechnique = false;
@@ -312,7 +313,7 @@ namespace FinalVersion
                                         hlShort = true;
                                         Console.WriteLine("YES - 1");
                                         //send log
-                                        logger.Info("{0} ; {1} ; {2} ; {3} ; {4} ; {5} ; {6} ;", startLog, "test", task, technique, difficulty, DateTime.Now, 0);
+                                        logger.Info("{0} ; {1} ; {2} ; {3} ; {4} ; {5} ; {6} ;", startLog, userName, task, technique, difficulty, DateTime.Now, 0);
                                         // wait 5 seconds then show alert/dialogs
                                     }
                                 }
@@ -332,9 +333,9 @@ namespace FinalVersion
                                     {
                                         hlMedium = true;
                                         Console.WriteLine("YES - 2");
-                                        // wait 5 seconds then show alert/dialogs
                                         //send log
-                                        logger.Info("{0} ; {1} ; {2} ; {3} ; {4} ; {5} ; {6} ;", startLog, "test", task, technique, difficulty, DateTime.Now, 0);
+                                        logger.Info("{0} ; {1} ; {2} ; {3} ; {4} ; {5} ; {6} ;", startLog, userName, task, technique, difficulty, DateTime.Now, 0);
+                                        // wait 5 seconds then show alert/dialogs
                                     }
                                 }
                                 break;
@@ -354,8 +355,8 @@ namespace FinalVersion
                                             hlLong = true;
                                             Console.WriteLine("YES - 3");
                                             //send log
+                                            logger.Info("{0} ; {1} ; {2} ; {3} ; {4} ; {5} ; {6} ;", startLog, userName, task, technique, difficulty, DateTime.Now, 0);
                                             // wait 5 seconds then show alert/dialogs
-                                            logger.Info("{0} ; {1} ; {2} ; {3} ; {4} ; {5} ; {6} ;", startLog, "test", task, technique, difficulty, DateTime.Now, 0);
                                         }
                                 }
                                 break;
@@ -378,7 +379,7 @@ namespace FinalVersion
                             //send log
                             isInside = true;
                             // wait 5 seconds then show alert/dialogs
-                            logger.Info("{0} ; {1} ; {2} ; {3} ; {4} ; {5} ; {6} ;", startLog, "test", task, technique, difficulty, DateTime.Now, 0);
+                            logger.Info("{0} ; {1} ; {2} ; {3} ; {4} ; {5} ; {6} ;", startLog, userName, task, technique, difficulty, DateTime.Now, 0);
                         }
                     }
                     else isInside = false;
@@ -1029,31 +1030,31 @@ namespace FinalVersion
                     if (radio1.IsChecked.Value)
                     {
                         //send log-1
-                        logger.Info("{0} ; {1} ; {2} ; {3} ; {4} ; {5} ; {6} ;", startLog, "test", task, technique, difficulty, DateTime.Now, 1);
+                        logger.Info("{0} ; {1} ; {2} ; {3} ; {4} ; {5} ; {6} ;", startLog, userName, task, technique, difficulty, DateTime.Now, 1);
                         // find a way to have screenshot
                     }
                     if (radio2.IsChecked.Value)
                     {
                         //send log-2
-                        logger.Info("{0} ; {1} ; {2} ; {3} ; {4} ; {5} ; {6} ;", startLog, "test", task, technique, difficulty, DateTime.Now, 2);
+                        logger.Info("{0} ; {1} ; {2} ; {3} ; {4} ; {5} ; {6} ;", startLog, userName, task, technique, difficulty, DateTime.Now, 2);
                         // find a way to have screenshot
                     }
                     if (radio3.IsChecked.Value)
                     {
                         //send log-3
-                        logger.Info("{0} ; {1} ; {2} ; {3} ; {4} ; {5} ; {6} ;", startLog, "test", task, technique, difficulty, DateTime.Now, 3);
+                        logger.Info("{0} ; {1} ; {2} ; {3} ; {4} ; {5} ; {6} ;", startLog, userName, task, technique, difficulty, DateTime.Now, 3);
                         // find a way to have screenshot
                     }
                     if (radio4.IsChecked.Value)
                     {
                         //send log-4
-                        logger.Info("{0} ; {1} ; {2} ; {3} ; {4} ; {5} ; {6} ;", startLog, "test", task, technique, difficulty, DateTime.Now, 4);
+                        logger.Info("{0} ; {1} ; {2} ; {3} ; {4} ; {5} ; {6} ;", startLog, userName, task, technique, difficulty, DateTime.Now, 4);
                         // find a way to have screenshot
                     }
                     if (radio5.IsChecked.Value)
                     {
                         //send log-5
-                        logger.Info("{0} ; {1} ; {2} ; {3} ; {4} ; {5} ; {6} ;", startLog, "test", task, technique, difficulty, DateTime.Now, 5);
+                        logger.Info("{0} ; {1} ; {2} ; {3} ; {4} ; {5} ; {6} ;", startLog, userName, task, technique, difficulty, DateTime.Now, 5);
                         // find a way to have screenshot
                     }
                     voteLabel.Visibility = System.Windows.Visibility.Hidden;
@@ -1243,6 +1244,27 @@ namespace FinalVersion
                         }
                         break;
                     }
+            }
+        }
+
+        private void onUserNameClick(object s, RoutedEventArgs e)
+        {
+            if (userTB.GetLineText(0).Length != 0)
+            {
+                userName = userTB.GetLineText(0);
+                difficultyButton.Visibility = System.Windows.Visibility.Visible;
+                taskButton.Visibility = System.Windows.Visibility.Visible;
+                modeButton.Visibility = System.Windows.Visibility.Visible;
+                highlightBoard.Visibility = System.Windows.Visibility.Visible;
+                textBoard.Visibility = System.Windows.Visibility.Visible;
+                highlightButton.Visibility = System.Windows.Visibility.Visible;
+                userNameButton.Visibility = System.Windows.Visibility.Collapsed;
+                userNameLabel.Visibility = System.Windows.Visibility.Collapsed;
+                userTB.Visibility = System.Windows.Visibility.Collapsed;
+            }
+            else
+            {
+                //show alert for insert user name
             }
         }
     }
