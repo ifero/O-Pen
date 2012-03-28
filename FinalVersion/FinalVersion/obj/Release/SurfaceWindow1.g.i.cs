@@ -270,6 +270,22 @@ namespace FinalVersion {
         #line default
         #line hidden
         
+        
+        #line 86 "..\..\SurfaceWindow1.xaml"
+        [System.Diagnostics.CodeAnalysis.SuppressMessageAttribute("Microsoft.Performance", "CA1823:AvoidUnusedPrivateFields")]
+        internal Microsoft.Surface.Presentation.Controls.SurfaceTextBox surfaceTextBox1;
+        
+        #line default
+        #line hidden
+        
+        
+        #line 87 "..\..\SurfaceWindow1.xaml"
+        [System.Diagnostics.CodeAnalysis.SuppressMessageAttribute("Microsoft.Performance", "CA1823:AvoidUnusedPrivateFields")]
+        internal System.Windows.Controls.Label label1;
+        
+        #line default
+        #line hidden
+        
         private bool _contentLoaded;
         
         /// <summary>
@@ -483,6 +499,12 @@ namespace FinalVersion {
             return;
             case 28:
             this.userNameLabel = ((System.Windows.Controls.Label)(target));
+            return;
+            case 29:
+            this.surfaceTextBox1 = ((Microsoft.Surface.Presentation.Controls.SurfaceTextBox)(target));
+            return;
+            case 30:
+            this.label1 = ((System.Windows.Controls.Label)(target));
             return;
             }
             this._contentLoaded = true;

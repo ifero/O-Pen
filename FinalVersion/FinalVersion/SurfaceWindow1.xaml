@@ -72,6 +72,7 @@ is PixelSense technology." Visibility="Collapsed"
         <Rectangle x:Name="shortRect" Canvas.Left="1163" Canvas.Top="413" Height="8"  Width="61" />
         <Rectangle x:Name="longRect" Canvas.Left="567" Canvas.Top="793" Height="12"  Width="242" />
         <Label Canvas.Left="567" Canvas.Top="140" Content="Please, highlight the word 'inputs'" FontSize="32" Foreground="Black" x:Name="highlightLabel" Visibility="Hidden"/>
+        <Label Canvas.Left="400" Canvas.Top="140" Content="Please, drag the red square and drop it into the green square" FontSize="32" Foreground="Black" x:Name="DragLabel" Visibility="Hidden"/>
         <Label Canvas.Left="700" Canvas.Top="140" Content="Please, write on the letters" FontSize="32" Foreground="Black" Visibility="Hidden" x:Name="drawLable"/>
         <Label Canvas.Left="1518" Canvas.Top="258" Content="Vote" Name="voteLabel" FontSize="32" Foreground="Black"  Visibility="Hidden"/>
         <s:SurfaceRadioButton Canvas.Left="1517" Canvas.Top="328" Content="1 - bad" Name="radio1" Width="144" Background="Red" Foreground="Black" Visibility="Hidden" />
@@ -80,9 +81,12 @@ is PixelSense technology." Visibility="Collapsed"
         <s:SurfaceRadioButton Canvas.Left="1517" Canvas.Top="485" Content="4 - good" Name="radio4" Width="144" Background="YellowGreen" Foreground="Black"  Visibility="Hidden"/>
         <s:SurfaceRadioButton Canvas.Left="1517" Canvas.Top="537" Content="5 - very good" Name="radio5" Width="144" Background="Green" Foreground="Black"  Visibility="Hidden"/>
         <s:SurfaceTextBox x:Name="userTB" Height="60" Width="595" Canvas.Left="566" Canvas.Top="412"
-                          KeyboardLayout="Alphanumeric"/>
+                          KeyboardLayout="Alphanumeric" FontSize="32"/>
         <Label x:Name="userNameLabel" Canvas.Left="567" Canvas.Top="381" Content="Insert Name and Surname"
                FontSize="24"/>
+        <s:SurfaceTextBox Canvas.Left="883" Canvas.Top="478" Height="55" KeyboardLayout="Alphanumeric" Name="groupTB" 
+                          Width="38" FontSize="32" CharacterCasing="Upper" MaxLength="1"/>
+        <Label Canvas.Left="567" Canvas.Top="479" Content="Insert group name(A,B,C,D)" FontSize="24" Name="groupLabel" />
     </Canvas>
 
 </s:SurfaceWindow>

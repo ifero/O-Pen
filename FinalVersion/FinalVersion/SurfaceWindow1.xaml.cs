@@ -28,7 +28,7 @@ using NLog;
 using Emgu.CV;
 using Emgu.CV.Structure;
 using Emgu.Util;
-using PenTrack;
+using Pen;
 
 namespace FinalVersion
 {
@@ -37,10 +37,11 @@ namespace FinalVersion
     /// </summary>
     public partial class SurfaceWindow1 : SurfaceWindow
     {
+        private String groupName;
         private static Logger logger;
         private TouchDevice rectangleControlTouchDevice;
-        private static int finger = 150;
-        private static int pen = 254;
+        private static int fingerThreshold = 100;
+        private static int penThreshold = 254;
         private static int penSpot = 30;
         private static int fingerSpot = 100;
         private TouchTarget touchTarget;
@@ -67,7 +68,7 @@ namespace FinalVersion
         private String[] split;
         private bool isInside;
         float[] rwAcc;
-        float[] rwGyro;
+        //float[] rwGyro;
         int button;
 
         /// <summary>
@@ -75,6 +76,7 @@ namespace FinalVersion
         /// </summary>
         public SurfaceWindow1()
         {
+            groupName = null;
             Microsoft.Surface.SurfaceKeyboard.SuppressTextInputPanel(hwnd);
             logger = LogManager.GetCurrentClassLogger();
             done = 0;
@@ -86,7 +88,7 @@ namespace FinalVersion
             split = null;
             isStarted = false;
             rwAcc = new float[3];
-            rwGyro = new float[3];
+            //rwGyro = new float[3];
             trackLED = new Tracking();
             try
             {
@@ -96,8 +98,10 @@ namespace FinalVersion
             }
             catch (System.Exception ex)
             {
-                Console.WriteLine(ex);
+                logger.Warn(ex);
             }
+            // Set current date time
+            currentTime = DateTime.Now;
             InitializeComponent();
             technique = 0;
             difficulty = 0;
@@ -118,8 +122,6 @@ namespace FinalVersion
             theBox.ReleaseAllCaptures();
             highlightBoard.ReleaseAllCaptures();
             drawBoard.ReleaseAllCaptures();
-            // Set current date time
-            currentTime = DateTime.Now;
             // Get the hWnd for the SurfaceWindow object after it has been loaded.
             hwnd = new System.Windows.Interop.WindowInteropHelper(this).Handle;
             touchTarget = new TouchTarget(hwnd);
@@ -167,7 +169,7 @@ namespace FinalVersion
                     }
                     catch (System.Exception ex)
                     {
-                        Console.WriteLine(ex);
+                        logger.Trace(ex);
                     }
                 }
             }
@@ -201,9 +203,9 @@ namespace FinalVersion
             {
                 // Process the frame to detect the LED blob
                 if (technique != 3)
-                    contourCircles = trackLED.TrackContours(normalizedMetrics, normalizedImage, pen, penSpot);
+                    contourCircles = trackLED.TrackContours(normalizedMetrics, normalizedImage, penThreshold, penSpot);
                 else
-                    contourCircles = trackLED.TrackContours(normalizedMetrics, normalizedImage, finger, fingerSpot);
+                    contourCircles = trackLED.TrackContours(normalizedMetrics, normalizedImage, fingerThreshold, fingerSpot);
                 currentTime = DateTime.Now;
             }
 
@@ -223,6 +225,11 @@ namespace FinalVersion
                                             highlightBoard.EditingMode = SurfaceInkEditingMode.Ink;
                                             break;
                                         }
+                                    case 1:
+                                        {
+                                            drag = true;
+                                            break;
+                                        }
                                     case 2:
                                         {
                                             drawBoard.EditingMode = SurfaceInkEditingMode.Ink;
@@ -238,6 +245,11 @@ namespace FinalVersion
                                     case 0:
                                         {
                                             highlightBoard.EditingMode = SurfaceInkEditingMode.None;
+                                            break;
+                                        }
+                                    case 1:
+                                        {
+                                            drag = false;
                                             break;
                                         }
                                     case 2:
@@ -262,6 +274,11 @@ namespace FinalVersion
                                             highlightBoard.EditingMode = SurfaceInkEditingMode.Ink;
                                             break;
                                         }
+                                    case 1:
+                                        {
+                                            drag = true;
+                                            break;
+                                        }
                                     case 2:
                                         {
                                             drawBoard.EditingMode = SurfaceInkEditingMode.Ink;
@@ -277,6 +294,11 @@ namespace FinalVersion
                                     case 0:
                                         {
                                             highlightBoard.EditingMode = SurfaceInkEditingMode.None;
+                                            break;
+                                        }
+                                    case 1:
+                                        {
+                                            drag = false;
                                             break;
                                         }
                                     case 2:
@@ -458,285 +480,30 @@ namespace FinalVersion
             {
                 case 0:
                     {
-                        isStarted = false;
+                        HideThis(task, technique, difficulty);
                         technique = 1;
-                        modeButton.Content = "Pen Mode 2";
-                        switch (task)
-                        {
-                            case 0:
-                                {
-                                    highlightButton.Visibility = System.Windows.Visibility.Hidden;
-                                    highlightButton.Background = Brushes.Silver;
-                                    highlightBoard.EditingMode = SurfaceInkEditingMode.None;
-                                    highlightBoard.Strokes.Clear();
-                                    break;
-                                }
-                            case 1:
-                                {
-                                    selectButton.Visibility = System.Windows.Visibility.Hidden;
-                                    selectButton.Background = Brushes.Silver;
-                                    drag = false;
-                                    switch (difficulty)
-                                    {
-                                        case 0:
-                                            {
-                                                Canvas.SetTop(dragRectangle, 380);
-                                                Canvas.SetLeft(dragRectangle, 430);
-                                                dragRectangle.Width = 300;
-                                                dragRectangle.Height = 300;
-                                                Canvas.SetTop(theBox, 264);
-                                                Canvas.SetLeft(theBox, 1077);
-                                                theBox.Width = 600;
-                                                theBox.Height = 600;
-                                                break;
-                                            }
-                                        case 1:
-                                            {
-                                                Canvas.SetTop(dragRectangle, 400);
-                                                Canvas.SetLeft(dragRectangle, 150);
-                                                dragRectangle.Width = 250;
-                                                dragRectangle.Height = 250;
-                                                Canvas.SetTop(theBox, 350);
-                                                Canvas.SetLeft(theBox, 1400);
-                                                theBox.Width = 400;
-                                                theBox.Height = 400;
-                                                break;
-                                            }
-                                        case 2:
-                                            {
-                                                Canvas.SetTop(dragRectangle, 425);
-                                                Canvas.SetLeft(dragRectangle, 50);
-                                                dragRectangle.Width = 125;
-                                                dragRectangle.Height = 125;
-                                                Canvas.SetTop(theBox, 410);
-                                                Canvas.SetLeft(theBox, 1700);
-                                                theBox.Width = 150;
-                                                theBox.Height = 150;
-                                                break;
-                                            }
-                                    }
-                                    break;
-                                }
-                            case 2:
-                                {
-                                    drawButton.Visibility = System.Windows.Visibility.Hidden;
-                                    drawButton.Background = Brushes.Silver;
-                                    doneButton.Visibility = System.Windows.Visibility.Hidden;
-                                    doneButton.Background = Brushes.Silver;
-                                    drawBoard.EditingMode = SurfaceInkEditingMode.None;
-                                    drawBoard.Strokes.Clear();
-                                    break;
-                                }
-                        }
+                        ShowThis(task, technique, difficulty);
                         break;
                     }
                 case 1:
                     {
-                        isStarted = false;
+                        HideThis(task, technique, difficulty);
                         technique = 2;
-                        modeButton.Content = "Pen Mode 3";
-                        switch (task)
-                        {
-                            case 0:
-                                {
-                                    highlightBoard.Strokes.Clear();
-                                    break;
-                                }
-                            case 1:
-                                {
-                                    switch (difficulty)
-                                    {
-                                        case 0:
-                                            {
-                                                Canvas.SetTop(dragRectangle, 380);
-                                                Canvas.SetLeft(dragRectangle, 430);
-                                                dragRectangle.Width = 300;
-                                                dragRectangle.Height = 300;
-                                                Canvas.SetTop(theBox, 264);
-                                                Canvas.SetLeft(theBox, 1077);
-                                                theBox.Width = 600;
-                                                theBox.Height = 600;
-                                                break;
-                                            }
-                                        case 1:
-                                            {
-                                                Canvas.SetTop(dragRectangle, 400);
-                                                Canvas.SetLeft(dragRectangle, 150);
-                                                dragRectangle.Width = 250;
-                                                dragRectangle.Height = 250;
-                                                Canvas.SetTop(theBox, 350);
-                                                Canvas.SetLeft(theBox, 1400);
-                                                theBox.Width = 400;
-                                                theBox.Height = 400;
-                                                break;
-                                            }
-                                        case 2:
-                                            {
-                                                Canvas.SetTop(dragRectangle, 425);
-                                                Canvas.SetLeft(dragRectangle, 50);
-                                                dragRectangle.Width = 125;
-                                                dragRectangle.Height = 125;
-                                                Canvas.SetTop(theBox, 410);
-                                                Canvas.SetLeft(theBox, 1700);
-                                                theBox.Width = 150;
-                                                theBox.Height = 150;
-                                                break;
-                                            }
-                                    }
-                                    break;
-                                }
-                            case 2:
-                                {
-                                    drawBoard.Strokes.Clear();
-                                    break;
-                                }
-                        }
+                        ShowThis(task, technique, difficulty);
                         break;
                     }
                 case 2:
                     {
-                        isStarted = false;
+                        HideThis(task, technique, difficulty);
                         technique = 3;
-                        modeButton.Content = "Finger";
-                        switch (task)
-                        {
-                            case 0:
-                                {
-                                    highlightButton.Visibility = System.Windows.Visibility.Visible;
-                                    highlightButton.Background = Brushes.Silver;
-                                    highlightBoard.EditingMode = SurfaceInkEditingMode.None;
-                                    highlightBoard.Strokes.Clear();
-                                    break;
-                                }
-                            case 1:
-                                {
-                                    selectButton.Visibility = System.Windows.Visibility.Visible;
-                                    selectButton.Background = Brushes.Silver;
-                                    drag = false;
-                                    switch (difficulty)
-                                    {
-                                        case 0:
-                                            {
-                                                Canvas.SetTop(dragRectangle, 380);
-                                                Canvas.SetLeft(dragRectangle, 430);
-                                                dragRectangle.Width = 300;
-                                                dragRectangle.Height = 300;
-                                                Canvas.SetTop(theBox, 264);
-                                                Canvas.SetLeft(theBox, 1077);
-                                                theBox.Width = 600;
-                                                theBox.Height = 600;
-                                                break;
-                                            }
-                                        case 1:
-                                            {
-                                                Canvas.SetTop(dragRectangle, 400);
-                                                Canvas.SetLeft(dragRectangle, 150);
-                                                dragRectangle.Width = 250;
-                                                dragRectangle.Height = 250;
-                                                Canvas.SetTop(theBox, 350);
-                                                Canvas.SetLeft(theBox, 1400);
-                                                theBox.Width = 400;
-                                                theBox.Height = 400;
-                                                break;
-                                            }
-                                        case 2:
-                                            {
-                                                Canvas.SetTop(dragRectangle, 425);
-                                                Canvas.SetLeft(dragRectangle, 50);
-                                                dragRectangle.Width = 125;
-                                                dragRectangle.Height = 125;
-                                                Canvas.SetTop(theBox, 410);
-                                                Canvas.SetLeft(theBox, 1700);
-                                                theBox.Width = 150;
-                                                theBox.Height = 150;
-                                                break;
-                                            }
-                                    }
-                                    break;
-                                }
-                            case 2:
-                                {
-                                    drawButton.Visibility = System.Windows.Visibility.Visible;
-                                    drawButton.Background = Brushes.Silver;
-                                    doneButton.Visibility = System.Windows.Visibility.Visible;
-                                    doneButton.Background = Brushes.Silver;
-                                    drawBoard.Strokes.Clear();
-                                    break;
-                                }
-                        }
+                        ShowThis(task, technique, difficulty);
                         break;
                     }
                 case 3:
                     {
-                        isStarted = false;
+                        HideThis(task, technique, difficulty);
                         technique = 0;
-                        modeButton.Content = "Pen Mode 1";
-                        switch (task)
-                        {
-                            case 0:
-                                {
-                                    highlightButton.Visibility = System.Windows.Visibility.Visible;
-                                    highlightButton.Background = Brushes.Silver;
-                                    highlightBoard.EditingMode = SurfaceInkEditingMode.None;
-                                    highlightBoard.Strokes.Clear();
-                                    break;
-                                }
-                            case 1:
-                                {
-                                    selectButton.Visibility = System.Windows.Visibility.Visible;
-                                    selectButton.Background = Brushes.Silver;
-                                    drag = false;
-                                    switch (difficulty)
-                                    {
-                                        case 0:
-                                            {
-                                                Canvas.SetTop(dragRectangle, 380);
-                                                Canvas.SetLeft(dragRectangle, 430);
-                                                dragRectangle.Width = 300;
-                                                dragRectangle.Height = 300;
-                                                Canvas.SetTop(theBox, 264);
-                                                Canvas.SetLeft(theBox, 1077);
-                                                theBox.Width = 600;
-                                                theBox.Height = 600;
-                                                break;
-                                            }
-                                        case 1:
-                                            {
-                                                Canvas.SetTop(dragRectangle, 400);
-                                                Canvas.SetLeft(dragRectangle, 150);
-                                                dragRectangle.Width = 250;
-                                                dragRectangle.Height = 250;
-                                                Canvas.SetTop(theBox, 350);
-                                                Canvas.SetLeft(theBox, 1400);
-                                                theBox.Width = 400;
-                                                theBox.Height = 400;
-                                                break;
-                                            }
-                                        case 2:
-                                            {
-                                                Canvas.SetTop(dragRectangle, 425);
-                                                Canvas.SetLeft(dragRectangle, 50);
-                                                dragRectangle.Width = 125;
-                                                dragRectangle.Height = 125;
-                                                Canvas.SetTop(theBox, 410);
-                                                Canvas.SetLeft(theBox, 1700);
-                                                theBox.Width = 150;
-                                                theBox.Height = 150;
-                                                break;
-                                            }
-                                    }
-                                    break;
-                                }
-                            case 2:
-                                {
-                                    drawButton.Visibility = System.Windows.Visibility.Visible;
-                                    drawButton.Background = Brushes.Silver;
-                                    doneButton.Visibility = System.Windows.Visibility.Visible;
-                                    doneButton.Background = Brushes.Silver;
-                                    drawBoard.Strokes.Clear();
-                                    break;
-                                }
-                        }
+                        ShowThis(task, technique, difficulty);
                         break;
                     }
             }
@@ -839,151 +606,23 @@ namespace FinalVersion
             {
                 case 0:
                     {
-                        isStarted = false;
+                        HideThis(task, technique, difficulty);
                         task = 1;
-                        taskButton.Content = "Task2 - DnD";
-                        highlightLabel.Visibility = System.Windows.Visibility.Hidden;
-                        highlightBoard.EditingMode = SurfaceInkEditingMode.None;
-                        highlightBoard.Visibility = System.Windows.Visibility.Hidden;
-                        highlightBoard.Strokes.Clear();
-                        dragRectangle.Visibility = System.Windows.Visibility.Visible;
-                        theBox.Visibility = System.Windows.Visibility.Visible;
-                        textBoard.Visibility = System.Windows.Visibility.Hidden;
-                        if (technique == 0 || technique == 3)
-                        {
-                            highlightButton.Visibility = System.Windows.Visibility.Hidden;
-                            highlightButton.Background = Brushes.Silver;
-                            selectButton.Visibility = System.Windows.Visibility.Visible;
-                            selectButton.Background = Brushes.Silver;
-                        }
-                        switch (difficulty)
-                        {
-                            case 0:
-                                {
-                                    Canvas.SetTop(dragRectangle, 380);
-                                    Canvas.SetLeft(dragRectangle, 430);
-                                    dragRectangle.Width = 300;
-                                    dragRectangle.Height = 300;
-                                    Canvas.SetTop(theBox, 264);
-                                    Canvas.SetLeft(theBox, 1077);
-                                    theBox.Width = 600;
-                                    theBox.Height = 600;
-                                    break;
-                                }
-                            case 1:
-                                {
-                                    Canvas.SetTop(dragRectangle, 400);
-                                    Canvas.SetLeft(dragRectangle, 150);
-                                    dragRectangle.Width = 250;
-                                    dragRectangle.Height = 250;
-                                    Canvas.SetTop(theBox, 350);
-                                    Canvas.SetLeft(theBox, 1400);
-                                    theBox.Width = 400;
-                                    theBox.Height = 400;
-                                    break;
-                                }
-                            case 2:
-                                {
-                                    Canvas.SetTop(dragRectangle, 425);
-                                    Canvas.SetLeft(dragRectangle, 50);
-                                    dragRectangle.Width = 125;
-                                    dragRectangle.Height = 125;
-                                    Canvas.SetTop(theBox, 410);
-                                    Canvas.SetLeft(theBox, 1700);
-                                    theBox.Width = 150;
-                                    theBox.Height = 150;
-                                    break;
-                                }
-                        }
+                        ShowThis(task, technique, difficulty);
                         break;
                     }
                 case 1:
                     {
-                        isStarted = false;
+                        HideThis(task, technique, difficulty);
                         task = 2;
-                        taskButton.Content = "Task3 - INK";
-                        dragRectangle.Visibility = System.Windows.Visibility.Hidden;
-                        theBox.Visibility = System.Windows.Visibility.Hidden;
-                        drawLable.Visibility = System.Windows.Visibility.Visible;
-                        drawBoard.Visibility = System.Windows.Visibility.Visible;
-                        wordDrawLabel.Visibility = System.Windows.Visibility.Visible;
-                        if (technique == 0 || technique == 3)
-                        {
-                            selectButton.Visibility = System.Windows.Visibility.Hidden;
-                            selectButton.Background = Brushes.Silver;
-                            drawButton.Background = Brushes.Silver;
-                            drawButton.Visibility = System.Windows.Visibility.Visible;
-                            doneButton.Visibility = System.Windows.Visibility.Visible;
-                        }
-                        switch (difficulty)
-                        {
-                            case 0:
-                                {
-                                    wordDrawLabel.Content = "PALERMO";
-                                    wordDrawLabel.FontSize = 200;
-                                    wordDrawLabel.FontFamily = new FontFamily("Segoe360");
-                                    drawBoard.Strokes.Clear();
-                                    break;
-                                }
-                            case 1:
-                                {
-                                    wordDrawLabel.Content = "Forza Palermo";
-                                    wordDrawLabel.FontSize = 180;
-                                    wordDrawLabel.FontFamily = new FontFamily("Gabriola");
-                                    drawBoard.Strokes.Clear();
-                                    break;
-                                }
-                            case 2:
-                                {
-                                    wordDrawLabel.Content = "Andrea's ITU Internship";
-                                    wordDrawLabel.FontSize = 72;
-                                    wordDrawLabel.FontFamily = new FontFamily("Segoe Script");
-                                    drawBoard.Strokes.Clear();
-                                    break;
-                                }
-                        }
+                        ShowThis(task, technique, difficulty);
                         break;
                     }
                 case 2:
                     {
-                        isStarted = false;
+                        HideThis(task, technique, difficulty);
                         task = 0;
-                        taskButton.Content = "Task1 - HL";
-                        drawLable.Visibility = System.Windows.Visibility.Hidden;
-                        highlightLabel.Visibility = System.Windows.Visibility.Visible;
-                        highlightBoard.EditingMode = SurfaceInkEditingMode.None;
-                        drawBoard.EditingMode = SurfaceInkEditingMode.None;
-                        highlightBoard.Visibility = System.Windows.Visibility.Visible;
-                        textBoard.Visibility = System.Windows.Visibility.Visible;
-                        drawBoard.Visibility = System.Windows.Visibility.Hidden;
-                        wordDrawLabel.Visibility = System.Windows.Visibility.Hidden;
-                        drawBoard.Strokes.Clear();
-                        if (technique == 0 || technique == 3)
-                        {
-                            drawButton.Background = Brushes.Silver;
-                            drawButton.Visibility = System.Windows.Visibility.Hidden;
-                            doneButton.Visibility = System.Windows.Visibility.Hidden;
-                            highlightButton.Visibility = System.Windows.Visibility.Visible;
-                            highlightButton.Background = Brushes.Silver;
-                        }
-                        switch (difficulty)
-                        {
-                            case 0:
-                                {
-                                    highlightLabel.Content = "Please highlight the word 'inputs'";
-                                    break;
-                                }
-                            case 1:
-                                {
-                                    highlightLabel.Content = "Please highlight the word 'immediately'";
-                                    break;
-                                }
-                            case 2:
-                                {
-                                    highlightLabel.Content = "Please highlight the word 'PixelSense technology'";
-                                    break;
-                                }
-                        }
+                        ShowThis(task, technique, difficulty);
                         break;
                     }
             }
@@ -1132,37 +771,121 @@ namespace FinalVersion
             {
                 case 0:
                     {
-                        isStarted = false;
+                        HideThis(task, technique, difficulty);
                         difficulty = 1;
-                        difficultyButton.Content = "Medium";
-                        switch (task)
+                        ShowThis(task, technique, difficulty);
+                        break;
+                    }
+                case 1:
+                    {
+                        HideThis(task, technique, difficulty);
+                        difficulty = 2;
+                        ShowThis(task, technique, difficulty);
+                        break;
+                    }
+                case 2:
+                    {
+                        HideThis(task, technique, difficulty);
+                        difficulty = 0;
+                        ShowThis(task, technique, difficulty);
+                        break;
+                    }
+            }
+        }
+
+        private void onUserNameClick(object s, RoutedEventArgs e)
+        {
+            if (userTB.Text.Length != 0 && 
+                (groupTB.Text == "A" || groupTB.Text == "B" || 
+                 groupTB.Text == "C" || groupTB.Text == "D"))
+            {
+                userName = userTB.Text;
+                groupName = groupTB.Text;
+                // TO CHANGE!! you need a method that let you start with something or something else
+                // like startWith(groupName)
+                difficultyButton.Visibility = System.Windows.Visibility.Visible;
+                taskButton.Visibility = System.Windows.Visibility.Visible;
+                modeButton.Visibility = System.Windows.Visibility.Visible;
+                highlightBoard.Visibility = System.Windows.Visibility.Visible;
+                highlightLabel.Visibility = System.Windows.Visibility.Visible;
+                textBoard.Visibility = System.Windows.Visibility.Visible;
+                highlightButton.Visibility = System.Windows.Visibility.Visible;
+                userNameButton.Visibility = System.Windows.Visibility.Collapsed;
+                userNameLabel.Visibility = System.Windows.Visibility.Collapsed;
+                userTB.Visibility = System.Windows.Visibility.Collapsed;
+                groupTB.Visibility = System.Windows.Visibility.Collapsed;
+                groupLabel.Visibility = System.Windows.Visibility.Collapsed;
+            }
+            else
+            {
+                //show alert for insert user name
+            }
+        }
+
+        private void ShowThis(int task, int technique, int difficulty)
+        {
+            isStarted = false;
+            switch (technique)
+            {
+                case 0:
+                    {
+                        modeButton.Content = "Pen Mode 1";
+                        ShowTaskAndDifficulty(task, technique, difficulty);
+                        break;
+                    }
+                case 1:
+                    {
+                        modeButton.Content = "Pen Mode 2";
+                        ShowTaskAndDifficulty(task, technique, difficulty);
+                        break;
+                    }
+                case 2:
+                    {
+                        modeButton.Content = "Pen Mode 3";
+                        ShowTaskAndDifficulty(task, technique, difficulty);
+                        break;
+                    }
+                case 3:
+                    {
+                        modeButton.Content = "Finger";
+                        ShowTaskAndDifficulty(task, technique, difficulty);
+                        break;
+                    }
+            }
+        }
+
+        private void ShowTaskAndDifficulty(int task, int technique, int difficulty)
+        {
+            switch (task)
+            {
+                case 0:
+                    {
+                        taskButton.Content = "Task1 - HL";
+                        highlightLabel.Visibility = System.Windows.Visibility.Visible;
+                        highlightBoard.Visibility = System.Windows.Visibility.Visible;
+                        textBoard.Visibility = System.Windows.Visibility.Visible;
+                        if (technique == 0 || technique == 3)
+                        {
+                            highlightButton.Visibility = System.Windows.Visibility.Visible;
+                        }
+                        switch (difficulty)
                         {
                             case 0:
                                 {
-                                    highlightLabel.Content = "Please highlight the word 'immediately'";
-                                    highlightBoard.Strokes.Clear();
+                                    difficultyButton.Content = "Easy";
+                                    highlightLabel.Content = "Please highlight the word 'inputs'";
                                     break;
                                 }
                             case 1:
                                 {
-                                    Canvas.SetTop(dragRectangle, 400);
-                                    Canvas.SetLeft(dragRectangle, 150);
-                                    dragRectangle.Width = 250;
-                                    dragRectangle.Height = 250;
-                                    Canvas.SetTop(theBox, 350);
-                                    Canvas.SetLeft(theBox, 1400);
-                                    theBox.Width = 400;
-                                    theBox.Height = 400;
-                                    drag = false;
-                                    selectButton.Background = Brushes.Silver;
+                                    difficultyButton.Content = "Medium";
+                                    highlightLabel.Content = "Please highlight the word 'immediately'";
                                     break;
                                 }
                             case 2:
                                 {
-                                    wordDrawLabel.Content = "Forza Palermo";
-                                    wordDrawLabel.FontSize = 180;
-                                    wordDrawLabel.FontFamily = new FontFamily("Gabriola");
-                                    drawBoard.Strokes.Clear();
+                                    difficultyButton.Content = "Hard";
+                                    highlightLabel.Content = "Please highlight the word 'PixelSense technology'";
                                     break;
                                 }
                         }
@@ -1170,57 +893,20 @@ namespace FinalVersion
                     }
                 case 1:
                     {
-                        isStarted = false;
-                        difficulty = 2;
-                        difficultyButton.Content = "Hard";
-                        switch (task)
+                        taskButton.Content = "Task1 - DnD";
+
+                        DragLabel.Visibility = System.Windows.Visibility.Visible;
+                        dragRectangle.Visibility = System.Windows.Visibility.Visible;
+                        theBox.Visibility = System.Windows.Visibility.Visible;
+                        if (technique == 0 || technique == 3)
                         {
-                            case 0:
-                                {
-                                    highlightLabel.Content = "Please highlight the word 'PixelSense technology'";
-                                    highlightBoard.Strokes.Clear();
-                                    break;
-                                }
-                            case 1:
-                                {
-                                    Canvas.SetTop(dragRectangle, 425);
-                                    Canvas.SetLeft(dragRectangle, 50);
-                                    dragRectangle.Width = 125;
-                                    dragRectangle.Height = 125;
-                                    Canvas.SetTop(theBox, 410);
-                                    Canvas.SetLeft(theBox, 1700);
-                                    theBox.Width = 150;
-                                    theBox.Height = 150;
-                                    drag = false;
-                                    selectButton.Background = Brushes.Silver;
-                                    break;
-                                }
-                            case 2:
-                                {
-                                    wordDrawLabel.Content = "Andrea's ITU Internship";
-                                    wordDrawLabel.FontSize = 72;
-                                    wordDrawLabel.FontFamily = new FontFamily("Segoe Script");
-                                    drawBoard.Strokes.Clear();
-                                    break;
-                                }
+                            selectButton.Visibility = System.Windows.Visibility.Visible; 
                         }
-                        break;
-                    }
-                case 2:
-                    {
-                        isStarted = false;
-                        difficulty = 0;
-                        difficultyButton.Content = "Easy";
-                        switch (task)
+                        switch (difficulty)
                         {
                             case 0:
                                 {
-                                    highlightLabel.Content = "Please highlight the word 'inputs'";
-                                    highlightBoard.Strokes.Clear();
-                                    break;
-                                }
-                            case 1:
-                                {
+                                    difficultyButton.Content = "Easy";
                                     Canvas.SetTop(dragRectangle, 380);
                                     Canvas.SetLeft(dragRectangle, 430);
                                     dragRectangle.Width = 300;
@@ -1229,16 +915,72 @@ namespace FinalVersion
                                     Canvas.SetLeft(theBox, 1077);
                                     theBox.Width = 600;
                                     theBox.Height = 600;
-                                    drag = false;
-                                    selectButton.Background = Brushes.Silver;
+                                    break;
+                                }
+                            case 1:
+                                {
+                                    difficultyButton.Content = "Medium";
+                                    Canvas.SetTop(dragRectangle, 400);
+                                    Canvas.SetLeft(dragRectangle, 150);
+                                    dragRectangle.Width = 250;
+                                    dragRectangle.Height = 250;
+                                    Canvas.SetTop(theBox, 350);
+                                    Canvas.SetLeft(theBox, 1400);
+                                    theBox.Width = 400;
+                                    theBox.Height = 400;
                                     break;
                                 }
                             case 2:
                                 {
+                                    difficultyButton.Content = "Hard";
+                                    Canvas.SetTop(dragRectangle, 425);
+                                    Canvas.SetLeft(dragRectangle, 50);
+                                    dragRectangle.Width = 125;
+                                    dragRectangle.Height = 125;
+                                    Canvas.SetTop(theBox, 410);
+                                    Canvas.SetLeft(theBox, 1700);
+                                    theBox.Width = 150;
+                                    theBox.Height = 150;
+                                    break;
+                                }
+                        }
+                        break;
+                    }
+                case 2:
+                    {
+                        taskButton.Content = "Task3 - INK";
+                        drawLable.Visibility = System.Windows.Visibility.Visible;
+                        drawBoard.Visibility = System.Windows.Visibility.Visible;
+                        wordDrawLabel.Visibility = System.Windows.Visibility.Visible;
+                        doneButton.Visibility = System.Windows.Visibility.Visible;
+                        if (technique == 0 || technique == 3)
+                        {
+                            drawButton.Visibility = System.Windows.Visibility.Visible;
+                        }
+                        switch (difficulty)
+                        {
+                            case 0:
+                                {
+                                    difficultyButton.Content = "Easy";
                                     wordDrawLabel.Content = "PALERMO";
                                     wordDrawLabel.FontSize = 200;
                                     wordDrawLabel.FontFamily = new FontFamily("Segoe360");
-                                    drawBoard.Strokes.Clear();
+                                    break;
+                                }
+                            case 1:
+                                {
+                                    difficultyButton.Content = "Medium";
+                                    wordDrawLabel.Content = "Forza Palermo";
+                                    wordDrawLabel.FontSize = 180;
+                                    wordDrawLabel.FontFamily = new FontFamily("Gabriola");
+                                    break;
+                                }
+                            case 2:
+                                {
+                                    difficultyButton.Content = "Hard";
+                                    wordDrawLabel.Content = "Andrea's ITU Internship";
+                                    wordDrawLabel.FontSize = 72;
+                                    wordDrawLabel.FontFamily = new FontFamily("Segoe Script");
                                     break;
                                 }
                         }
@@ -1247,24 +989,64 @@ namespace FinalVersion
             }
         }
 
-        private void onUserNameClick(object s, RoutedEventArgs e)
+        private void HideThis(int task, int technique, int difficulty)
         {
-            if (userTB.GetLineText(0).Length != 0)
+            switch (task)
             {
-                userName = userTB.GetLineText(0);
-                difficultyButton.Visibility = System.Windows.Visibility.Visible;
-                taskButton.Visibility = System.Windows.Visibility.Visible;
-                modeButton.Visibility = System.Windows.Visibility.Visible;
-                highlightBoard.Visibility = System.Windows.Visibility.Visible;
-                textBoard.Visibility = System.Windows.Visibility.Visible;
-                highlightButton.Visibility = System.Windows.Visibility.Visible;
-                userNameButton.Visibility = System.Windows.Visibility.Collapsed;
-                userNameLabel.Visibility = System.Windows.Visibility.Collapsed;
-                userTB.Visibility = System.Windows.Visibility.Collapsed;
-            }
-            else
-            {
-                //show alert for insert user name
+                case 0:
+                    {
+
+                        highlightLabel.Visibility = System.Windows.Visibility.Hidden;
+
+                        highlightBoard.EditingMode = SurfaceInkEditingMode.None;
+                        highlightBoard.Visibility = System.Windows.Visibility.Collapsed;
+                        highlightBoard.Strokes.Clear();
+
+                        textBoard.Visibility = System.Windows.Visibility.Collapsed;
+
+                        if (technique == 0 || technique == 3)
+                        {
+                            highlightButton.Visibility = System.Windows.Visibility.Collapsed;
+                            highlightButton.Background = Brushes.Silver;
+
+                        }
+                        break;
+                    }
+                case 1:
+                    {
+                        drag = false;
+
+                        DragLabel.Visibility = System.Windows.Visibility.Hidden;
+
+                        dragRectangle.Visibility = System.Windows.Visibility.Collapsed;
+                        theBox.Visibility = System.Windows.Visibility.Collapsed;
+
+                        if (technique == 0 || technique == 3)
+                        {
+                            selectButton.Visibility = System.Windows.Visibility.Hidden;
+                            selectButton.Background = Brushes.Silver;
+                        }
+                        break;
+                    }
+                case 2:
+                    {
+                        drawBoard.EditingMode = SurfaceInkEditingMode.None;
+                        drawBoard.Visibility = System.Windows.Visibility.Collapsed;
+                        drawBoard.Strokes.Clear();
+
+                        drawLable.Visibility = System.Windows.Visibility.Hidden;
+
+                        doneButton.Visibility = System.Windows.Visibility.Collapsed;
+
+                        wordDrawLabel.Visibility = System.Windows.Visibility.Hidden;
+
+                        if (technique == 0 || technique == 3)
+                        {
+                            drawButton.Background = Brushes.Silver;
+                            drawButton.Visibility = System.Windows.Visibility.Collapsed;
+                        }
+                        break;
+                    }
             }
         }
     }

@@ -2,12 +2,14 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.IO.Ports;
 using Microsoft.Surface.Core;
 using Emgu.CV;
 using Emgu.CV.Structure;
 using System.Drawing;
+using NLog;
 
-namespace PenTrack
+namespace Pen
 {
     class Tracking
     {
@@ -19,6 +21,8 @@ namespace PenTrack
             isPen = false;
             image = null;
         }
+        
+        #region findContours
 
         public CircleF[] TrackContours(ImageMetrics normalizedMetrics, byte[] normalizedImage,int threshold, int size)
         {
@@ -31,7 +35,6 @@ namespace PenTrack
             return FindPossibleCircles(contours,size);
         }
 
-        #region findContours
         private CircleF[] FindPossibleCircles(Contour<System.Drawing.Point> contours, int size)
         {
             if (contours == null)
@@ -77,11 +80,13 @@ namespace PenTrack
             while (contours.HPrev != null)
                 contours = contours.HPrev;
         }
-
+        #endregion
+        
         public bool isAPen()
         {
             return isPen;
         }
-        #endregion
+        
     }
+
 }
