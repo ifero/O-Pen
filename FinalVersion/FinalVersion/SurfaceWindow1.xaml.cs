@@ -29,6 +29,7 @@ using Emgu.CV;
 using Emgu.CV.Structure;
 using Emgu.Util;
 using Pen;
+using ScreenShotDemo;
 
 namespace FinalVersion
 {
@@ -56,7 +57,6 @@ namespace FinalVersion
         private Tracking trackLED;
         private System.Windows.Point lastPoint;
         private int technique, task, difficulty;
-        private int done;
         private bool buttonTechnique, tiltTechnique;
         private bool highlight;
         private bool draw;
@@ -67,19 +67,22 @@ namespace FinalVersion
         private SerialPort sp;
         private String[] split;
         private bool isInside;
+        private bool trainingMode;
+        private bool thankyou;
         float[] rwAcc;
+        private ScreenCapture sc;
         //float[] rwGyro;
         int button;
-
         /// <summary>
         /// Default constructor.
         /// </summary>
         public SurfaceWindow1()
         {
+            sc = new ScreenCapture();
+            thankyou = false;
             groupName = null;
             Microsoft.Surface.SurfaceKeyboard.SuppressTextInputPanel(hwnd);
             logger = LogManager.GetCurrentClassLogger();
-            done = 0;
             buttonTechnique = false;
             tiltTechnique = false;
             hlMedium = false;
@@ -87,6 +90,7 @@ namespace FinalVersion
             hlLong = false;
             split = null;
             isStarted = false;
+            trainingMode = false;
             rwAcc = new float[3];
             //rwGyro = new float[3];
             trackLED = new Tracking();
@@ -314,97 +318,113 @@ namespace FinalVersion
             }
             imageAvailable = false;
 
-            if (task == 0)
+            if (!trainingMode)
             {
-                if (highlightBoard.Strokes.Count() != 0)
+                if (task == 0)
                 {
-                    switch (difficulty)
+                    if (highlightBoard.Strokes.Count() != 0)
                     {
-                        case 0:
-                            {
-                                foreach (System.Windows.Ink.Stroke strk in highlightBoard.Strokes)
+                        switch (difficulty)
+                        {
+                            case 0:
                                 {
-                                    if (!hlShort &&
-                                        Math.Abs(Canvas.GetTop(shortRect) - (strk.GetBounds().Top + Canvas.GetTop(highlightBoard))) < 50 &&
-                                        Math.Abs(Canvas.GetLeft(shortRect) - (strk.GetBounds().Left + Canvas.GetLeft(highlightBoard))) < 50 &&
-                                        Math.Abs((Canvas.GetLeft(shortRect) - Canvas.GetLeft(highlightBoard) + shortRect.Width) -
-                                            (strk.GetBounds().Left + strk.GetBounds().Width)) < 50 &&
-                                        Math.Abs((Canvas.GetTop(shortRect) - Canvas.GetTop(highlightBoard) + shortRect.Height) -
-                                            (strk.GetBounds().Top + strk.GetBounds().Height)) < 50)
+                                    foreach (System.Windows.Ink.Stroke strk in highlightBoard.Strokes)
                                     {
-                                        hlShort = true;
-                                        Console.WriteLine("YES - 1");
-                                        //send log
-                                        logger.Info("{0} ; {1} ; {2} ; {3} ; {4} ; {5} ; {6} ;", startLog, userName, task, technique, difficulty, DateTime.Now, 0);
-                                        // wait 5 seconds then show alert/dialogs
+                                        if (!hlShort &&
+                                            Math.Abs(Canvas.GetTop(shortRect) - (strk.GetBounds().Top + Canvas.GetTop(highlightBoard))) < 50 &&
+                                            Math.Abs(Canvas.GetLeft(shortRect) - (strk.GetBounds().Left + Canvas.GetLeft(highlightBoard))) < 50 &&
+                                            Math.Abs((Canvas.GetLeft(shortRect) - Canvas.GetLeft(highlightBoard) + shortRect.Width) -
+                                                (strk.GetBounds().Left + strk.GetBounds().Width)) < 50 &&
+                                            Math.Abs((Canvas.GetTop(shortRect) - Canvas.GetTop(highlightBoard) + shortRect.Height) -
+                                                (strk.GetBounds().Top + strk.GetBounds().Height)) < 50)
+                                        {
+                                            hlShort = true;
+                                            Console.WriteLine("YES - 1");
+                                            //send log
+                                            logger.Info("{0} ; {1} ; {2} ; {3} ; {4} ; {5} ; {6}", startLog, userName, groupName, task, technique, difficulty, DateTime.Now);
+                                            if (groupName != "T")
+                                            {
+                                                ShowDoneTask();
+                                            }
+                                        }
                                     }
+                                    break;
                                 }
-                                break;
-                            }
-                        case 1:
-                            {
-                                foreach (System.Windows.Ink.Stroke strk in highlightBoard.Strokes)
+                            case 1:
                                 {
-                                    if (!hlMedium &&
-                                        Math.Abs(Canvas.GetTop(mediumRect) - (strk.GetBounds().Top + Canvas.GetTop(highlightBoard))) < 50 &&
-                                        Math.Abs(Canvas.GetLeft(mediumRect) - (strk.GetBounds().Left + Canvas.GetLeft(highlightBoard))) < 50 &&
-                                        Math.Abs((Canvas.GetLeft(mediumRect) - Canvas.GetLeft(highlightBoard) + mediumRect.Width) -
-                                            (strk.GetBounds().Left + strk.GetBounds().Width)) < 50 &&
-                                        Math.Abs((Canvas.GetTop(mediumRect) - Canvas.GetTop(highlightBoard) + mediumRect.Height) -
-                                            (strk.GetBounds().Top + strk.GetBounds().Height)) < 50)
+                                    foreach (System.Windows.Ink.Stroke strk in highlightBoard.Strokes)
                                     {
-                                        hlMedium = true;
-                                        Console.WriteLine("YES - 2");
-                                        //send log
-                                        logger.Info("{0} ; {1} ; {2} ; {3} ; {4} ; {5} ; {6} ;", startLog, userName, task, technique, difficulty, DateTime.Now, 0);
-                                        // wait 5 seconds then show alert/dialogs
+                                        if (!hlMedium &&
+                                            Math.Abs(Canvas.GetTop(mediumRect) - (strk.GetBounds().Top + Canvas.GetTop(highlightBoard))) < 50 &&
+                                            Math.Abs(Canvas.GetLeft(mediumRect) - (strk.GetBounds().Left + Canvas.GetLeft(highlightBoard))) < 50 &&
+                                            Math.Abs((Canvas.GetLeft(mediumRect) - Canvas.GetLeft(highlightBoard) + mediumRect.Width) -
+                                                (strk.GetBounds().Left + strk.GetBounds().Width)) < 50 &&
+                                            Math.Abs((Canvas.GetTop(mediumRect) - Canvas.GetTop(highlightBoard) + mediumRect.Height) -
+                                                (strk.GetBounds().Top + strk.GetBounds().Height)) < 50)
+                                        {
+                                            hlMedium = true;
+                                            Console.WriteLine("YES - 2");
+                                            //send log
+                                            logger.Info("{0} ; {1} ; {2} ; {3} ; {4} ; {5} ; {6}", startLog, userName, groupName, task, technique, difficulty, DateTime.Now);
+                                            if (groupName != "T")
+                                            {
+                                                ShowDoneTask();
+                                            }
+                                        }
                                     }
+                                    break;
                                 }
-                                break;
-                            }
-                        case 2:
-                            {
-                                foreach (System.Windows.Ink.Stroke strk in highlightBoard.Strokes)
+                            case 2:
                                 {
-                                    if (!hlLong &&
-                                        Math.Abs(Canvas.GetTop(longRect) - (strk.GetBounds().Top + Canvas.GetTop(highlightBoard))) < 50 &&
-                                        Math.Abs(Canvas.GetLeft(longRect) - (strk.GetBounds().Left + Canvas.GetLeft(highlightBoard))) < 50 &&
-                                        Math.Abs((Canvas.GetLeft(longRect) - Canvas.GetLeft(highlightBoard) + longRect.Width) -
-                                            (strk.GetBounds().Left + strk.GetBounds().Width)) < 50 &&
-                                        Math.Abs((Canvas.GetTop(longRect) - Canvas.GetTop(highlightBoard) + longRect.Height) -
-                                            (strk.GetBounds().Top + strk.GetBounds().Height)) < 50)
+                                    foreach (System.Windows.Ink.Stroke strk in highlightBoard.Strokes)
+                                    {
+                                        if (!hlLong &&
+                                            Math.Abs(Canvas.GetTop(longRect) - (strk.GetBounds().Top + Canvas.GetTop(highlightBoard))) < 50 &&
+                                            Math.Abs(Canvas.GetLeft(longRect) - (strk.GetBounds().Left + Canvas.GetLeft(highlightBoard))) < 50 &&
+                                            Math.Abs((Canvas.GetLeft(longRect) - Canvas.GetLeft(highlightBoard) + longRect.Width) -
+                                                (strk.GetBounds().Left + strk.GetBounds().Width)) < 50 &&
+                                            Math.Abs((Canvas.GetTop(longRect) - Canvas.GetTop(highlightBoard) + longRect.Height) -
+                                                (strk.GetBounds().Top + strk.GetBounds().Height)) < 50)
                                         {
                                             hlLong = true;
                                             Console.WriteLine("YES - 3");
                                             //send log
-                                            logger.Info("{0} ; {1} ; {2} ; {3} ; {4} ; {5} ; {6} ;", startLog, userName, task, technique, difficulty, DateTime.Now, 0);
-                                            // wait 5 seconds then show alert/dialogs
+                                            logger.Info("{0} ; {1} ; {2} ; {3} ; {4} ; {5} ; {6}", startLog, userName, groupName, task, technique, difficulty, DateTime.Now);
+                                            if (groupName != "T")
+                                            {
+                                                ShowDoneTask();
+                                            }
                                         }
+                                    }
+                                    break;
                                 }
-                                break;
-                            }
-                    }    
-                }
-            }
-            if (task == 1)
-            {
-                if (rectangleControlTouchDevice == null)
-                {
-                    if (Canvas.GetTop(this.dragRectangle) > Canvas.GetTop(this.theBox) && 
-                        (Canvas.GetTop(this.dragRectangle) + dragRectangle.Height < Canvas.GetTop(theBox) + theBox.Height) &&
-                        Canvas.GetLeft(this.dragRectangle) > Canvas.GetLeft(this.theBox) &&
-                        (Canvas.GetLeft(this.dragRectangle) + dragRectangle.Width < Canvas.GetLeft(theBox) + theBox.Width))
-                    {
-                        if (!isInside)
-                        {
-                            Console.WriteLine("YAY");
-                            //send log
-                            isInside = true;
-                            // wait 5 seconds then show alert/dialogs
-                            logger.Info("{0} ; {1} ; {2} ; {3} ; {4} ; {5} ; {6} ;", startLog, userName, task, technique, difficulty, DateTime.Now, 0);
                         }
                     }
-                    else isInside = false;
+                }
+                if (task == 1)
+                {
+                    if (rectangleControlTouchDevice == null)
+                    {
+                        if (Canvas.GetTop(this.dragRectangle) > Canvas.GetTop(this.theBox) &&
+                            (Canvas.GetTop(this.dragRectangle) + dragRectangle.Height < Canvas.GetTop(theBox) + theBox.Height) &&
+                            Canvas.GetLeft(this.dragRectangle) > Canvas.GetLeft(this.theBox) &&
+                            (Canvas.GetLeft(this.dragRectangle) + dragRectangle.Width < Canvas.GetLeft(theBox) + theBox.Width))
+                        {
+                            if (!isInside)
+                            {
+                                Console.WriteLine("YAY");
+                                //send log
+                                isInside = true;
+                                // wait 5 seconds then show alert/dialogs
+                                logger.Info("{0} ; {1} ; {2} ; {3} ; {4} ; {5} ; {6}", startLog, userName, groupName, task, technique, difficulty, DateTime.Now);
+                                if (groupName != "T")
+                                {
+                                    ShowDoneTask();
+                                }
+                            }
+                        }
+                        else isInside = false;
+                    }
                 }
             }
         }
@@ -474,42 +494,42 @@ namespace FinalVersion
             //TODO: disable audio, animations here
         }
 
-        private void onTechniqueClick(object s, RoutedEventArgs e)
+        private void OnTechniqueClick(object s, RoutedEventArgs e)
         {
             switch (technique)
             {
                 case 0:
                     {
-                        HideThis(task, technique, difficulty);
+                        HideContent();
                         technique = 1;
-                        ShowThis(task, technique, difficulty);
+                        ShowContent();
                         break;
                     }
                 case 1:
                     {
-                        HideThis(task, technique, difficulty);
+                        HideContent();
                         technique = 2;
-                        ShowThis(task, technique, difficulty);
+                        ShowContent();
                         break;
                     }
                 case 2:
                     {
-                        HideThis(task, technique, difficulty);
+                        HideContent();
                         technique = 3;
-                        ShowThis(task, technique, difficulty);
+                        ShowContent();
                         break;
                     }
                 case 3:
                     {
-                        HideThis(task, technique, difficulty);
+                        HideContent();
                         technique = 0;
-                        ShowThis(task, technique, difficulty);
+                        ShowContent();
                         break;
                     }
             }
         }
 
-        private void onHlClick(object s, RoutedEventArgs e)
+        private void OnHlClick(object s, RoutedEventArgs e)
         {
             if (!highlight)
             {
@@ -526,7 +546,7 @@ namespace FinalVersion
             }
         }
 
-        private void onTouchDown(object s, System.Windows.Input.TouchEventArgs e)
+        private void OnTouchDown(object s, System.Windows.Input.TouchEventArgs e)
         {
             e.Handled = true;
             if (trackLED.isAPen())
@@ -600,35 +620,35 @@ namespace FinalVersion
             }
         }
 
-        private void onTaskClick(object s, RoutedEventArgs e)
+        private void OnTaskClick(object s, RoutedEventArgs e)
         {
             switch (task)
             {
                 case 0:
                     {
-                        HideThis(task, technique, difficulty);
+                        HideContent();
                         task = 1;
-                        ShowThis(task, technique, difficulty);
+                        ShowContent();
                         break;
                     }
                 case 1:
                     {
-                        HideThis(task, technique, difficulty);
+                        HideContent();
                         task = 2;
-                        ShowThis(task, technique, difficulty);
+                        ShowContent();
                         break;
                     }
                 case 2:
                     {
-                        HideThis(task, technique, difficulty);
+                        HideContent();
                         task = 0;
-                        ShowThis(task, technique, difficulty);
+                        ShowContent();
                         break;
                     }
             }
         }
 
-        private void onDrawEraseClick(object s, RoutedEventArgs e)
+        private void OnDrawClick(object s, RoutedEventArgs e)
         {
             if (!draw)
             {
@@ -644,75 +664,20 @@ namespace FinalVersion
             }
         }
 
-        private void onDoneClick(object s, RoutedEventArgs e)
+        private void OnDoneClick(object s, RoutedEventArgs e)
         {
-            DateTime stopLog;
-            if (done == 0)
+            logger.Info("{0} ; {1} ; {2} ; {3} ; {4} ; {5} ; {6} ;", startLog, userName, groupName, task, technique, difficulty, DateTime.Now);
+            //take a snapshot
+            string tmp = userName+difficulty+".bmp";
+            sc.CaptureScreenToFile(tmp, System.Drawing.Imaging.ImageFormat.Bmp);
+            //show alert.
+            if (groupName != "T")
             {
-                stopLog = DateTime.Now;
-                voteLabel.Visibility = System.Windows.Visibility.Visible;
-                radio1.Visibility = System.Windows.Visibility.Visible;
-                radio2.Visibility = System.Windows.Visibility.Visible;
-                radio3.Visibility = System.Windows.Visibility.Visible;
-                radio4.Visibility = System.Windows.Visibility.Visible;
-                radio5.Visibility = System.Windows.Visibility.Visible;
-                done = 1;
-            }
-            else
-            {
-                doneButton.Content = "Vote";
-                
-                if (radio1.IsChecked.Value || radio2.IsChecked.Value || radio3.IsChecked.Value ||
-                    radio4.IsChecked.Value || radio5.IsChecked.Value)
-                {
-                    done = 0;
-                    if (radio1.IsChecked.Value)
-                    {
-                        //send log-1
-                        logger.Info("{0} ; {1} ; {2} ; {3} ; {4} ; {5} ; {6} ;", startLog, userName, task, technique, difficulty, DateTime.Now, 1);
-                        // find a way to have screenshot
-                    }
-                    if (radio2.IsChecked.Value)
-                    {
-                        //send log-2
-                        logger.Info("{0} ; {1} ; {2} ; {3} ; {4} ; {5} ; {6} ;", startLog, userName, task, technique, difficulty, DateTime.Now, 2);
-                        // find a way to have screenshot
-                    }
-                    if (radio3.IsChecked.Value)
-                    {
-                        //send log-3
-                        logger.Info("{0} ; {1} ; {2} ; {3} ; {4} ; {5} ; {6} ;", startLog, userName, task, technique, difficulty, DateTime.Now, 3);
-                        // find a way to have screenshot
-                    }
-                    if (radio4.IsChecked.Value)
-                    {
-                        //send log-4
-                        logger.Info("{0} ; {1} ; {2} ; {3} ; {4} ; {5} ; {6} ;", startLog, userName, task, technique, difficulty, DateTime.Now, 4);
-                        // find a way to have screenshot
-                    }
-                    if (radio5.IsChecked.Value)
-                    {
-                        //send log-5
-                        logger.Info("{0} ; {1} ; {2} ; {3} ; {4} ; {5} ; {6} ;", startLog, userName, task, technique, difficulty, DateTime.Now, 5);
-                        // find a way to have screenshot
-                    }
-                    voteLabel.Visibility = System.Windows.Visibility.Hidden;
-                    radio1.Visibility = System.Windows.Visibility.Collapsed;
-                    radio2.Visibility = System.Windows.Visibility.Collapsed;
-                    radio3.Visibility = System.Windows.Visibility.Collapsed;
-                    radio4.Visibility = System.Windows.Visibility.Collapsed;
-                    radio5.Visibility = System.Windows.Visibility.Collapsed;
-                    doneButton.Content = "Done";
-                    //show alert!
-                }
-                else
-                {
-                    //alert, need a vote!!
-                }
-            }
+                ShowDoneTask();
+            };
         }
 
-        private void onTouchMove(object s, System.Windows.Input.TouchEventArgs e)
+        private void OnTouchMove(object s, System.Windows.Input.TouchEventArgs e)
         {
             e.Handled = true;
 
@@ -738,7 +703,7 @@ namespace FinalVersion
             }
         }
 
-        private void onTouchLeave(object s, System.Windows.Input.TouchEventArgs e)
+        private void OnTouchLeave(object s, System.Windows.Input.TouchEventArgs e)
         {
             // If this contact is the one that was remembered  
             if (e.TouchDevice == rectangleControlTouchDevice)
@@ -751,7 +716,7 @@ namespace FinalVersion
             e.Handled = true;
         }
 
-        private void onDragClick(object s, RoutedEventArgs e)
+        private void OnDragClick(object s, RoutedEventArgs e)
         {
             if (!drag)
             {
@@ -765,184 +730,195 @@ namespace FinalVersion
             }
         }
 
-        private void onDifficultyClick(object s, RoutedEventArgs e)
+        private void OnDifficultyClick(object s, RoutedEventArgs e)
         {
             switch (difficulty)
             {
                 case 0:
                     {
-                        HideThis(task, technique, difficulty);
+                        HideContent();
                         difficulty = 1;
-                        ShowThis(task, technique, difficulty);
+                        ShowContent();
                         break;
                     }
                 case 1:
                     {
-                        HideThis(task, technique, difficulty);
+                        HideContent();
                         difficulty = 2;
-                        ShowThis(task, technique, difficulty);
+                        ShowContent();
                         break;
                     }
                 case 2:
                     {
-                        HideThis(task, technique, difficulty);
+                        HideContent();
                         difficulty = 0;
-                        ShowThis(task, technique, difficulty);
+                        ShowContent();
                         break;
                     }
             }
         }
 
-        private void onUserNameClick(object s, RoutedEventArgs e)
+        private void OnUserNameClick(object s, RoutedEventArgs e)
         {
             if (userTB.Text.Length != 0 && 
                 (groupTB.Text == "A" || groupTB.Text == "B" || 
-                 groupTB.Text == "C" || groupTB.Text == "D"))
+                 groupTB.Text == "C" || groupTB.Text == "D" ||
+                 groupTB.Text == "T"))
             {
                 userName = userTB.Text;
                 groupName = groupTB.Text;
-                // TO CHANGE!! you need a method that let you start with something or something else
-                // like startWith(groupName)
-                difficultyButton.Visibility = System.Windows.Visibility.Visible;
-                taskButton.Visibility = System.Windows.Visibility.Visible;
-                modeButton.Visibility = System.Windows.Visibility.Visible;
-                highlightBoard.Visibility = System.Windows.Visibility.Visible;
-                highlightLabel.Visibility = System.Windows.Visibility.Visible;
-                textBoard.Visibility = System.Windows.Visibility.Visible;
-                highlightButton.Visibility = System.Windows.Visibility.Visible;
-                userNameButton.Visibility = System.Windows.Visibility.Collapsed;
-                userNameLabel.Visibility = System.Windows.Visibility.Collapsed;
-                userTB.Visibility = System.Windows.Visibility.Collapsed;
-                groupTB.Visibility = System.Windows.Visibility.Collapsed;
-                groupLabel.Visibility = System.Windows.Visibility.Collapsed;
+                HideLogin();
+                StartWith();
+            }
+        }
+
+        private void ShowContent()
+        {
+            isStarted = false;
+            if (!thankyou)
+            {
+                switch (technique)
+                {
+                    case 0:
+                        {
+                            modeButton.Content = "Pen Mode 1";
+                            ShowTaskAndDifficulty();
+                            break;
+                        }
+                    case 1:
+                        {
+                            modeButton.Content = "Pen Mode 2";
+                            ShowTaskAndDifficulty();
+                            break;
+                        }
+                    case 2:
+                        {
+                            modeButton.Content = "Pen Mode 3";
+                            ShowTaskAndDifficulty();
+                            break;
+                        }
+                    case 3:
+                        {
+                            modeButton.Content = "Finger";
+                            ShowTaskAndDifficulty();
+                            break;
+                        }
+                }
             }
             else
             {
-                //show alert for insert user name
+                finishLabel.Visibility = System.Windows.Visibility.Visible;
             }
         }
 
-        private void ShowThis(int task, int technique, int difficulty)
-        {
-            isStarted = false;
-            switch (technique)
-            {
-                case 0:
-                    {
-                        modeButton.Content = "Pen Mode 1";
-                        ShowTaskAndDifficulty(task, technique, difficulty);
-                        break;
-                    }
-                case 1:
-                    {
-                        modeButton.Content = "Pen Mode 2";
-                        ShowTaskAndDifficulty(task, technique, difficulty);
-                        break;
-                    }
-                case 2:
-                    {
-                        modeButton.Content = "Pen Mode 3";
-                        ShowTaskAndDifficulty(task, technique, difficulty);
-                        break;
-                    }
-                case 3:
-                    {
-                        modeButton.Content = "Finger";
-                        ShowTaskAndDifficulty(task, technique, difficulty);
-                        break;
-                    }
-            }
-        }
-
-        private void ShowTaskAndDifficulty(int task, int technique, int difficulty)
+        private void ShowTaskAndDifficulty()
         {
             switch (task)
             {
                 case 0:
                     {
                         taskButton.Content = "Task1 - HL";
-                        highlightLabel.Visibility = System.Windows.Visibility.Visible;
                         highlightBoard.Visibility = System.Windows.Visibility.Visible;
                         textBoard.Visibility = System.Windows.Visibility.Visible;
                         if (technique == 0 || technique == 3)
                         {
                             highlightButton.Visibility = System.Windows.Visibility.Visible;
                         }
-                        switch (difficulty)
+                        if (!trainingMode)
                         {
-                            case 0:
-                                {
-                                    difficultyButton.Content = "Easy";
-                                    highlightLabel.Content = "Please highlight the word 'inputs'";
-                                    break;
-                                }
-                            case 1:
-                                {
-                                    difficultyButton.Content = "Medium";
-                                    highlightLabel.Content = "Please highlight the word 'immediately'";
-                                    break;
-                                }
-                            case 2:
-                                {
-                                    difficultyButton.Content = "Hard";
-                                    highlightLabel.Content = "Please highlight the word 'PixelSense technology'";
-                                    break;
-                                }
+                            highlightLabel.Visibility = System.Windows.Visibility.Visible;
+                            switch (difficulty)
+                            {
+                                case 0:
+                                    {
+                                        difficultyButton.Content = "Easy";
+                                        highlightLabel.Content = "Please highlight the word 'inputs'";
+                                        break;
+                                    }
+                                case 1:
+                                    {
+                                        difficultyButton.Content = "Medium";
+                                        highlightLabel.Content = "Please highlight the word 'immediately'";
+                                        break;
+                                    }
+                                case 2:
+                                    {
+                                        difficultyButton.Content = "Hard";
+                                        highlightLabel.Content = "Please highlight the word 'PixelSense technology'";
+                                        break;
+                                    }
+                            }
+                        }
+                        else
+                        {
+                            //show train label
+                            trainigButton.Visibility = System.Windows.Visibility.Visible;
                         }
                         break;
                     }
                 case 1:
                     {
                         taskButton.Content = "Task1 - DnD";
-
-                        DragLabel.Visibility = System.Windows.Visibility.Visible;
                         dragRectangle.Visibility = System.Windows.Visibility.Visible;
-                        theBox.Visibility = System.Windows.Visibility.Visible;
                         if (technique == 0 || technique == 3)
                         {
                             selectButton.Visibility = System.Windows.Visibility.Visible; 
                         }
-                        switch (difficulty)
+                        if (!trainingMode)
                         {
-                            case 0:
-                                {
-                                    difficultyButton.Content = "Easy";
-                                    Canvas.SetTop(dragRectangle, 380);
-                                    Canvas.SetLeft(dragRectangle, 430);
-                                    dragRectangle.Width = 300;
-                                    dragRectangle.Height = 300;
-                                    Canvas.SetTop(theBox, 264);
-                                    Canvas.SetLeft(theBox, 1077);
-                                    theBox.Width = 600;
-                                    theBox.Height = 600;
-                                    break;
-                                }
-                            case 1:
-                                {
-                                    difficultyButton.Content = "Medium";
-                                    Canvas.SetTop(dragRectangle, 400);
-                                    Canvas.SetLeft(dragRectangle, 150);
-                                    dragRectangle.Width = 250;
-                                    dragRectangle.Height = 250;
-                                    Canvas.SetTop(theBox, 350);
-                                    Canvas.SetLeft(theBox, 1400);
-                                    theBox.Width = 400;
-                                    theBox.Height = 400;
-                                    break;
-                                }
-                            case 2:
-                                {
-                                    difficultyButton.Content = "Hard";
-                                    Canvas.SetTop(dragRectangle, 425);
-                                    Canvas.SetLeft(dragRectangle, 50);
-                                    dragRectangle.Width = 125;
-                                    dragRectangle.Height = 125;
-                                    Canvas.SetTop(theBox, 410);
-                                    Canvas.SetLeft(theBox, 1700);
-                                    theBox.Width = 150;
-                                    theBox.Height = 150;
-                                    break;
-                                }
+                            DragLabel.Visibility = System.Windows.Visibility.Visible;
+                            theBox.Visibility = System.Windows.Visibility.Visible;
+                            switch (difficulty)
+                            {
+                                case 0:
+                                    {
+                                        difficultyButton.Content = "Easy";
+                                        Canvas.SetTop(dragRectangle, 380);
+                                        Canvas.SetLeft(dragRectangle, 430);
+                                        dragRectangle.Width = 300;
+                                        dragRectangle.Height = 300;
+                                        Canvas.SetTop(theBox, 264);
+                                        Canvas.SetLeft(theBox, 1077);
+                                        theBox.Width = 600;
+                                        theBox.Height = 600;
+                                        break;
+                                    }
+                                case 1:
+                                    {
+                                        difficultyButton.Content = "Medium";
+                                        Canvas.SetTop(dragRectangle, 400);
+                                        Canvas.SetLeft(dragRectangle, 150);
+                                        dragRectangle.Width = 250;
+                                        dragRectangle.Height = 250;
+                                        Canvas.SetTop(theBox, 350);
+                                        Canvas.SetLeft(theBox, 1400);
+                                        theBox.Width = 400;
+                                        theBox.Height = 400;
+                                        break;
+                                    }
+                                case 2:
+                                    {
+                                        difficultyButton.Content = "Hard";
+                                        Canvas.SetTop(dragRectangle, 425);
+                                        Canvas.SetLeft(dragRectangle, 50);
+                                        dragRectangle.Width = 125;
+                                        dragRectangle.Height = 125;
+                                        Canvas.SetTop(theBox, 410);
+                                        Canvas.SetLeft(theBox, 1700);
+                                        theBox.Width = 150;
+                                        theBox.Height = 150;
+                                        break;
+                                    }
+                            }
+                        }
+                        else
+                        {
+                            // show train label
+                            trainigButton.Visibility = System.Windows.Visibility.Visible;
+                            Canvas.SetTop(dragRectangle, 400);
+                            Canvas.SetLeft(dragRectangle, 150);
+                            dragRectangle.Width = 250;
+                            dragRectangle.Height = 250;
                         }
                         break;
                     }
@@ -957,47 +933,62 @@ namespace FinalVersion
                         {
                             drawButton.Visibility = System.Windows.Visibility.Visible;
                         }
-                        switch (difficulty)
+                        if (!trainingMode)
                         {
-                            case 0:
-                                {
-                                    difficultyButton.Content = "Easy";
-                                    wordDrawLabel.Content = "PALERMO";
-                                    wordDrawLabel.FontSize = 200;
-                                    wordDrawLabel.FontFamily = new FontFamily("Segoe360");
-                                    break;
-                                }
-                            case 1:
-                                {
-                                    difficultyButton.Content = "Medium";
-                                    wordDrawLabel.Content = "Forza Palermo";
-                                    wordDrawLabel.FontSize = 180;
-                                    wordDrawLabel.FontFamily = new FontFamily("Gabriola");
-                                    break;
-                                }
-                            case 2:
-                                {
-                                    difficultyButton.Content = "Hard";
-                                    wordDrawLabel.Content = "Andrea's ITU Internship";
-                                    wordDrawLabel.FontSize = 72;
-                                    wordDrawLabel.FontFamily = new FontFamily("Segoe Script");
-                                    break;
-                                }
+                            drawLable.Visibility = System.Windows.Visibility.Visible;
+                            switch (difficulty)
+                            {
+                                case 0:
+                                    {
+                                        difficultyButton.Content = "Easy";
+                                        wordDrawLabel.Content = "PALERMO";
+                                        wordDrawLabel.FontSize = 200;
+                                        wordDrawLabel.FontFamily = new FontFamily("Segoe360");
+                                        break;
+                                    }
+                                case 1:
+                                    {
+                                        difficultyButton.Content = "Medium";
+                                        wordDrawLabel.Content = "Forza Palermo";
+                                        wordDrawLabel.FontSize = 180;
+                                        wordDrawLabel.FontFamily = new FontFamily("Gabriola");
+                                        break;
+                                    }
+                                case 2:
+                                    {
+                                        difficultyButton.Content = "Hard";
+                                        wordDrawLabel.Content = "Andrea's ITU Internship";
+                                        wordDrawLabel.FontSize = 72;
+                                        wordDrawLabel.FontFamily = new FontFamily("Segoe Script");
+                                        break;
+                                    }
+                            }
+                        }
+                        else
+                        {
+                            //show train label
+                            trainigButton.Visibility = System.Windows.Visibility.Visible;
                         }
                         break;
                     }
             }
         }
 
-        private void HideThis(int task, int technique, int difficulty)
+        private void HideContent()
         {
             switch (task)
             {
                 case 0:
                     {
-
-                        highlightLabel.Visibility = System.Windows.Visibility.Hidden;
-
+                        if (!trainingMode)
+                        {
+                            highlightLabel.Visibility = System.Windows.Visibility.Hidden;
+                        }
+                        else
+                        {
+                            // hide training label
+                            trainigButton.Visibility = System.Windows.Visibility.Collapsed;
+                        }
                         highlightBoard.EditingMode = SurfaceInkEditingMode.None;
                         highlightBoard.Visibility = System.Windows.Visibility.Collapsed;
                         highlightBoard.Strokes.Clear();
@@ -1015,9 +1006,15 @@ namespace FinalVersion
                 case 1:
                     {
                         drag = false;
-
-                        DragLabel.Visibility = System.Windows.Visibility.Hidden;
-
+                        if (!trainingMode)
+                        {
+                            DragLabel.Visibility = System.Windows.Visibility.Hidden;
+                        }
+                        else
+                        {
+                            // hide training label
+                            trainigButton.Visibility = System.Windows.Visibility.Collapsed;
+                        }
                         dragRectangle.Visibility = System.Windows.Visibility.Collapsed;
                         theBox.Visibility = System.Windows.Visibility.Collapsed;
 
@@ -1033,9 +1030,15 @@ namespace FinalVersion
                         drawBoard.EditingMode = SurfaceInkEditingMode.None;
                         drawBoard.Visibility = System.Windows.Visibility.Collapsed;
                         drawBoard.Strokes.Clear();
-
-                        drawLable.Visibility = System.Windows.Visibility.Hidden;
-
+                        if (!trainingMode)
+                        {
+                            drawLable.Visibility = System.Windows.Visibility.Hidden;
+                        }
+                        else
+                        {
+                            // hide training label
+                            trainigButton.Visibility = System.Windows.Visibility.Collapsed;
+                        }
                         doneButton.Visibility = System.Windows.Visibility.Collapsed;
 
                         wordDrawLabel.Visibility = System.Windows.Visibility.Hidden;
@@ -1048,6 +1051,247 @@ namespace FinalVersion
                         break;
                     }
             }
+        }
+
+        private void UserInformations()
+        {
+            showNameLabel.Content = "Name: " + userName;
+            showGroupLabel.Content = "Group: " + groupName;
+            showNameLabel.Visibility = System.Windows.Visibility.Visible;
+            showGroupLabel.Visibility = System.Windows.Visibility.Visible;
+            showPercentualLabel.Visibility = System.Windows.Visibility.Visible;
+        }
+
+        private void OnNextClick(object s, RoutedEventArgs e)
+        {
+            // to decide how to do this!
+            HideDoneTask();
+            HideContent();
+            if (groupName != "T")
+            {
+                trainingMode = true;
+                if (difficulty != 2)
+                {
+                    difficulty++;
+                }
+                else
+                {
+                    if (task != 2)
+                    {
+                        task++;
+                    }
+                    else
+                    {
+                        ChangeTechnique();
+                        task = 0;
+                    }
+                }
+                ShowContent();
+            }
+        }
+
+        private void ChangeTechnique()
+        {
+            switch (groupName)
+            {
+                // technique: 0-1-3-2
+                case "A":
+                    {
+                        switch (technique)
+                        {
+                            case 0:
+                                {
+                                    technique = 1;
+                                    break;
+                                }
+                            case 1:
+                                {
+                                    technique = 3;
+                                    break;
+                                }
+                            case 2:
+                                {
+                                    thankyou = true;
+                                    break;
+                                }
+                            case 3:
+                                {
+                                    technique = 2;
+                                    break;
+                                }
+                        }
+                        break;
+                    }
+                // technique: 1-2-0-3
+                case "B":
+                    {
+                        switch (technique)
+                        {
+                            case 0:
+                                {
+                                    technique = 3;
+                                    break;
+                                }
+                            case 1:
+                                {
+                                    technique = 2;
+                                    break;
+                                }
+                            case 2:
+                                {
+                                    technique = 0;
+                                    break;
+                                }
+                            case 3:
+                                {
+                                    thankyou = true;
+                                    break;
+                                }
+                        }
+                        break;
+                    }
+                // technique: 2-3-1-0
+                case "C":
+                    {
+                        switch (technique)
+                        {
+                            case 0:
+                                {
+                                    thankyou = true;
+                                    break;
+                                }
+                            case 1:
+                                {
+                                    technique = 0;
+                                    break;
+                                }
+                            case 2:
+                                {
+                                    technique = 3;
+                                    break;
+                                }
+                            case 3:
+                                {
+                                    technique = 1;
+                                    break;
+                                }
+                        }
+                        break;
+                    }
+                // techinique: 3-0-2-1
+                case "D":
+                    {
+                        switch (technique)
+                        {
+                            case 0:
+                                {
+                                    technique = 2;
+                                    break;
+                                }
+                            case 1:
+                                {
+                                    thankyou = true;
+                                    break;
+                                }
+                            case 2:
+                                {
+                                    technique = 1;
+                                    break;
+                                }
+                            case 3:
+                                {
+                                    technique = 0;
+                                    break;
+                                }
+                        }
+                        break;
+                    }
+            }
+        }
+
+        private void StartWith()
+        {
+            switch (groupName)
+            {
+                case "A":
+                    {
+                        // technique: 0-1-3-2
+                        technique = 0;
+                        trainingMode = true;
+                        ShowContent();
+                        UserInformations();
+                        break;
+                    }
+                case "B":
+                    {
+                        // technique: 1-2-0-3
+                        technique = 1;
+                        trainingMode = true;
+                        ShowContent();
+                        UserInformations();
+                        break;
+                    }
+                case "C":
+                    {
+                        // technique: 2-3-1-0
+                        technique = 2;
+                        trainingMode = true;
+                        ShowContent();
+                        UserInformations();
+                        break;
+                    }
+                case "D":
+                    {
+                        // techinique: 3-0-2-1
+                        technique = 3;
+                        trainingMode = true;
+                        ShowContent();
+                        UserInformations();
+                        break;
+                    }
+                case "T":
+                    {
+                        // test mode
+                        trainingMode = false;
+                        difficultyButton.Visibility = System.Windows.Visibility.Visible;
+                        taskButton.Visibility = System.Windows.Visibility.Visible;
+                        modeButton.Visibility = System.Windows.Visibility.Visible;
+                        ShowContent();
+                        break;
+                    }
+            }
+        }
+
+        private void ShowDoneTask()
+        {
+            // Show labels and the button for Done Tasks
+            nextLabel1.Visibility = System.Windows.Visibility.Visible;
+            nextLabel2.Visibility = System.Windows.Visibility.Visible;
+            nextButton.Visibility = System.Windows.Visibility.Visible;
+        }
+
+        private void HideDoneTask()
+        {
+            // Hide labels and the button for Done Tasks
+            nextLabel1.Visibility = System.Windows.Visibility.Hidden;
+            nextLabel2.Visibility = System.Windows.Visibility.Hidden;
+            nextButton.Visibility = System.Windows.Visibility.Collapsed;
+        }
+
+        private void OnTrainingClick(object s, RoutedEventArgs e)
+        {
+            HideContent();
+            trainingMode = false;
+            ShowContent();
+        }
+
+        private void HideLogin()
+        {
+            userNameButton.Visibility = System.Windows.Visibility.Collapsed;
+            userNameLabel.Visibility = System.Windows.Visibility.Collapsed;
+            userTB.Visibility = System.Windows.Visibility.Collapsed;
+            groupTB.Visibility = System.Windows.Visibility.Collapsed;
+            groupLabel.Visibility = System.Windows.Visibility.Collapsed;
         }
     }
 }
