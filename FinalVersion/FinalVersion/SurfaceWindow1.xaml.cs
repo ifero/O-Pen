@@ -116,7 +116,7 @@ namespace FinalVersion
             // Trying to get serial communication with port: COM5
             try
             {
-                sp = new SerialPort("COM5", 19200);
+                sp = new SerialPort("COM6", 19200);
                 sp.Open();
                 sp.ReadTimeout = 100;
             }
@@ -1385,12 +1385,12 @@ namespace FinalVersion
                                     {
                                         // need to be modified threshold, cause is blowing after click on the word! <-----
                                         if (!hlShort &&
-                                            Math.Abs(Canvas.GetTop(shortRect) - (strk.GetBounds().Top + Canvas.GetTop(highlightBoard))) < 50 &&
-                                            Math.Abs(Canvas.GetLeft(shortRect) - (strk.GetBounds().Left + Canvas.GetLeft(highlightBoard))) < 50 &&
+                                            Math.Abs(Canvas.GetTop(shortRect) - (strk.GetBounds().Top + Canvas.GetTop(highlightBoard))) < 20 &&
+                                            Math.Abs(Canvas.GetLeft(shortRect) - (strk.GetBounds().Left + Canvas.GetLeft(highlightBoard))) < 20 &&
                                             Math.Abs((Canvas.GetLeft(shortRect) - Canvas.GetLeft(highlightBoard) + shortRect.Width) -
-                                                (strk.GetBounds().Left + strk.GetBounds().Width)) < 50 &&
+                                                (strk.GetBounds().Left + strk.GetBounds().Width)) < 20 &&
                                             Math.Abs((Canvas.GetTop(shortRect) - Canvas.GetTop(highlightBoard) + shortRect.Height) -
-                                                (strk.GetBounds().Top + strk.GetBounds().Height)) < 50)
+                                                (strk.GetBounds().Top + strk.GetBounds().Height)) < 20)
                                         {
                                             hlShort = true;
                                             Console.WriteLine("YES - 1");
@@ -1413,12 +1413,12 @@ namespace FinalVersion
                                     foreach (System.Windows.Ink.Stroke strk in highlightBoard.Strokes)
                                     {
                                         if (!hlMedium &&
-                                            Math.Abs(Canvas.GetTop(mediumRect) - (strk.GetBounds().Top + Canvas.GetTop(highlightBoard))) < 50 &&
-                                            Math.Abs(Canvas.GetLeft(mediumRect) - (strk.GetBounds().Left + Canvas.GetLeft(highlightBoard))) < 50 &&
+                                            Math.Abs(Canvas.GetTop(mediumRect) - (strk.GetBounds().Top + Canvas.GetTop(highlightBoard))) < 20 &&
+                                            Math.Abs(Canvas.GetLeft(mediumRect) - (strk.GetBounds().Left + Canvas.GetLeft(highlightBoard))) < 20 &&
                                             Math.Abs((Canvas.GetLeft(mediumRect) - Canvas.GetLeft(highlightBoard) + mediumRect.Width) -
-                                                (strk.GetBounds().Left + strk.GetBounds().Width)) < 50 &&
+                                                (strk.GetBounds().Left + strk.GetBounds().Width)) < 20 &&
                                             Math.Abs((Canvas.GetTop(mediumRect) - Canvas.GetTop(highlightBoard) + mediumRect.Height) -
-                                                (strk.GetBounds().Top + strk.GetBounds().Height)) < 50)
+                                                (strk.GetBounds().Top + strk.GetBounds().Height)) < 20)
                                         {
                                             hlMedium = true;
                                             Console.WriteLine("YES - 2");
@@ -1441,12 +1441,12 @@ namespace FinalVersion
                                     foreach (System.Windows.Ink.Stroke strk in highlightBoard.Strokes)
                                     {
                                         if (!hlLong &&
-                                            Math.Abs(Canvas.GetTop(longRect) - (strk.GetBounds().Top + Canvas.GetTop(highlightBoard))) < 50 &&
-                                            Math.Abs(Canvas.GetLeft(longRect) - (strk.GetBounds().Left + Canvas.GetLeft(highlightBoard))) < 50 &&
+                                            Math.Abs(Canvas.GetTop(longRect) - (strk.GetBounds().Top + Canvas.GetTop(highlightBoard))) < 20 &&
+                                            Math.Abs(Canvas.GetLeft(longRect) - (strk.GetBounds().Left + Canvas.GetLeft(highlightBoard))) < 20 &&
                                             Math.Abs((Canvas.GetLeft(longRect) - Canvas.GetLeft(highlightBoard) + longRect.Width) -
-                                                (strk.GetBounds().Left + strk.GetBounds().Width)) < 50 &&
+                                                (strk.GetBounds().Left + strk.GetBounds().Width)) < 20 &&
                                             Math.Abs((Canvas.GetTop(longRect) - Canvas.GetTop(highlightBoard) + longRect.Height) -
-                                                (strk.GetBounds().Top + strk.GetBounds().Height)) < 50)
+                                                (strk.GetBounds().Top + strk.GetBounds().Height)) < 20)
                                         {
                                             hlLong = true;
                                             Console.WriteLine("YES - 3");
@@ -1497,8 +1497,7 @@ namespace FinalVersion
                     }
                 }
             }
-            else
-                return false;
+            return false;
         }
     }
 }
