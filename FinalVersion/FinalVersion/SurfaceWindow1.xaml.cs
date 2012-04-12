@@ -73,27 +73,47 @@ namespace FinalVersion
         private ScreenCapture sc;
         //float[] rwGyro;
         int button;
+
         /// <summary>
         /// Default constructor.
         /// </summary>
         public SurfaceWindow1()
         {
+            // suppress, if there is, the virtual keyboard of the System.
+            Microsoft.Surface.SurfaceKeyboard.SuppressTextInputPanel(hwnd);
+
             sc = new ScreenCapture();
+            trackLED = new Tracking();
+
+            // link logger to the related Nlog logger.
+            logger = LogManager.GetCurrentClassLogger();
+
             thankyou = false;
             groupName = null;
-            Microsoft.Surface.SurfaceKeyboard.SuppressTextInputPanel(hwnd);
-            logger = LogManager.GetCurrentClassLogger();
+
+            highlight = false;
             buttonTechnique = false;
             tiltTechnique = false;
+
             hlMedium = false;
             hlShort = false;
             hlLong = false;
+            
             split = null;
+            
             isStarted = false;
             trainingMode = false;
+
+            button = 0;
             rwAcc = new float[3];
             //rwGyro = new float[3];
-            trackLED = new Tracking();
+
+            technique = 0;
+            difficulty = 0;
+            task = 0;
+            
+
+            // Trying to get serial communication with port: COM5
             try
             {
                 sp = new SerialPort("COM5", 19200);
@@ -104,20 +124,26 @@ namespace FinalVersion
             {
                 logger.Warn(ex);
             }
+            
             // Set current date time
             currentTime = DateTime.Now;
+            
             InitializeComponent();
-            technique = 0;
-            difficulty = 0;
-            task = 0;
-            highlight = false;
+
+            // Set the color of the strokes of the Ink Boards    
             highlightBoard.DefaultDrawingAttributes.Color = System.Windows.Media.Colors.Yellow;
             drawBoard.DefaultDrawingAttributes.Color = System.Windows.Media.Colors.White;
+            
+            // Initialize inputs of Surface
             InitializeSurfaceInput();
+
             // Add handlers for window availability events
             AddWindowAvailabilityHandlers();
         }
 
+        /// <summary>
+        /// Initialize Surface Input.
+        /// </summary> 
         private void InitializeSurfaceInput()
         {
             // Release all inputs
@@ -126,8 +152,10 @@ namespace FinalVersion
             theBox.ReleaseAllCaptures();
             highlightBoard.ReleaseAllCaptures();
             drawBoard.ReleaseAllCaptures();
+
             // Get the hWnd for the SurfaceWindow object after it has been loaded.
             hwnd = new System.Windows.Interop.WindowInteropHelper(this).Handle;
+            // Initialize the touchTarget for the hWnd loaded
             touchTarget = new TouchTarget(hwnd);
             // Set up the TouchTarget object for the entire SurfaceWindow object.
             touchTarget.EnableInput();
@@ -137,17 +165,32 @@ namespace FinalVersion
 
         }
 
+        /// <summary>
+        /// Occurs on every frame that touchTarget receive (60 frame per second). 
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void OnTouchTargetFrameReceived(object sender, Microsoft.Surface.Core.FrameReceivedEventArgs e)
         {
+            // Check if the serial connection is opened
             if (sp.IsOpen)
             {
+                // Check if there is some Byte to read
                 if (sp.BytesToRead != 0)
                 {
+                    // Trying to receive the Bytes and save it all in a String.
                     try
                     {
                         String str = sp.ReadLine();
+                        // Split the message received on every ';' that occurs
                         split = str.Split(';');
-                        Console.WriteLine(str);
+                        // If it is on Tester mode show the message received on Console.
+                        if (groupName == "T")
+                        {
+                            Console.WriteLine(str);   
+                        }
+                        // Based on the technique in use get information 
+                        // from the message received from the pen.
                         switch (technique)
                         {
                             case 1:
@@ -179,6 +222,8 @@ namespace FinalVersion
             }
 
             imageAvailable = false;
+
+            // Get the RAW Byte captured from the surface
             if (normalizedImage == null)
             {
                 imageAvailable = e.TryGetRawImage(ImageType.Normalized,
@@ -213,221 +258,21 @@ namespace FinalVersion
                 currentTime = DateTime.Now;
             }
 
+            // If the pen is working then check actions 
+            // and enable interaction based on the task in use.    
             if (split != null)
             {
-                switch (technique)
-                {
-                    case 1:
-                        {
-                            if (button == 1)
-                            {
-                                buttonTechnique = true;
-                                switch (task)
-                                {
-                                    case 0:
-                                        {
-                                            highlightBoard.EditingMode = SurfaceInkEditingMode.Ink;
-                                            break;
-                                        }
-                                    case 1:
-                                        {
-                                            drag = true;
-                                            break;
-                                        }
-                                    case 2:
-                                        {
-                                            drawBoard.EditingMode = SurfaceInkEditingMode.Ink;
-                                            break;
-                                        }
-                                }
-                            }
-                            else
-                            {
-                                buttonTechnique = false;
-                                switch (task)
-                                {
-                                    case 0:
-                                        {
-                                            highlightBoard.EditingMode = SurfaceInkEditingMode.None;
-                                            break;
-                                        }
-                                    case 1:
-                                        {
-                                            drag = false;
-                                            break;
-                                        }
-                                    case 2:
-                                        {
-                                            drawBoard.EditingMode = SurfaceInkEditingMode.None;
-                                            break;
-                                        }
-                                }
-                            }
-                            break;
-                        }
-                    case 2:
-                        {
-                            if (((rwAcc[0] <= 0.75) && (rwAcc[1] >= 0.65)) || ((rwAcc[0] <= 0.6) && (rwAcc[1] <= -0.6))
-                                || ((rwAcc[0] <= 0.7) && (rwAcc[2] <= -0.4 || rwAcc[2] >= 0.7)))
-                            {
-                                tiltTechnique = true;
-                                switch (task)
-                                {
-                                    case 0:
-                                        {
-                                            highlightBoard.EditingMode = SurfaceInkEditingMode.Ink;
-                                            break;
-                                        }
-                                    case 1:
-                                        {
-                                            drag = true;
-                                            break;
-                                        }
-                                    case 2:
-                                        {
-                                            drawBoard.EditingMode = SurfaceInkEditingMode.Ink;
-                                            break;
-                                        }
-                                }
-                            }
-                            else
-                            {
-                                tiltTechnique = false;
-                                switch (task)
-                                {
-                                    case 0:
-                                        {
-                                            highlightBoard.EditingMode = SurfaceInkEditingMode.None;
-                                            break;
-                                        }
-                                    case 1:
-                                        {
-                                            drag = false;
-                                            break;
-                                        }
-                                    case 2:
-                                        {
-                                            drawBoard.EditingMode = SurfaceInkEditingMode.None;
-                                            break;
-                                        }
-                                }
-                            }
-                            break;
-                        }
-                }
+                TechniqueEnabler();
             }
             imageAvailable = false;
 
-            if (!trainingMode)
+            // Show a dialog in the case in which the user complete a task    
+            if(IsTaskComplete())
             {
-                if (task == 0)
-                {
-                    if (highlightBoard.Strokes.Count() != 0)
-                    {
-                        switch (difficulty)
-                        {
-                            case 0:
-                                {
-                                    foreach (System.Windows.Ink.Stroke strk in highlightBoard.Strokes)
-                                    {
-                                        if (!hlShort &&
-                                            Math.Abs(Canvas.GetTop(shortRect) - (strk.GetBounds().Top + Canvas.GetTop(highlightBoard))) < 50 &&
-                                            Math.Abs(Canvas.GetLeft(shortRect) - (strk.GetBounds().Left + Canvas.GetLeft(highlightBoard))) < 50 &&
-                                            Math.Abs((Canvas.GetLeft(shortRect) - Canvas.GetLeft(highlightBoard) + shortRect.Width) -
-                                                (strk.GetBounds().Left + strk.GetBounds().Width)) < 50 &&
-                                            Math.Abs((Canvas.GetTop(shortRect) - Canvas.GetTop(highlightBoard) + shortRect.Height) -
-                                                (strk.GetBounds().Top + strk.GetBounds().Height)) < 50)
-                                        {
-                                            hlShort = true;
-                                            Console.WriteLine("YES - 1");
-                                            //send log
-                                            logger.Info("{0} ; {1} ; {2} ; {3} ; {4} ; {5} ; {6}", startLog, userName, groupName, task, technique, difficulty, DateTime.Now);
-                                            if (groupName != "T")
-                                            {
-                                                ShowDoneTask();
-                                            }
-                                        }
-                                    }
-                                    break;
-                                }
-                            case 1:
-                                {
-                                    foreach (System.Windows.Ink.Stroke strk in highlightBoard.Strokes)
-                                    {
-                                        if (!hlMedium &&
-                                            Math.Abs(Canvas.GetTop(mediumRect) - (strk.GetBounds().Top + Canvas.GetTop(highlightBoard))) < 50 &&
-                                            Math.Abs(Canvas.GetLeft(mediumRect) - (strk.GetBounds().Left + Canvas.GetLeft(highlightBoard))) < 50 &&
-                                            Math.Abs((Canvas.GetLeft(mediumRect) - Canvas.GetLeft(highlightBoard) + mediumRect.Width) -
-                                                (strk.GetBounds().Left + strk.GetBounds().Width)) < 50 &&
-                                            Math.Abs((Canvas.GetTop(mediumRect) - Canvas.GetTop(highlightBoard) + mediumRect.Height) -
-                                                (strk.GetBounds().Top + strk.GetBounds().Height)) < 50)
-                                        {
-                                            hlMedium = true;
-                                            Console.WriteLine("YES - 2");
-                                            //send log
-                                            logger.Info("{0} ; {1} ; {2} ; {3} ; {4} ; {5} ; {6}", startLog, userName, groupName, task, technique, difficulty, DateTime.Now);
-                                            if (groupName != "T")
-                                            {
-                                                ShowDoneTask();
-                                            }
-                                        }
-                                    }
-                                    break;
-                                }
-                            case 2:
-                                {
-                                    foreach (System.Windows.Ink.Stroke strk in highlightBoard.Strokes)
-                                    {
-                                        if (!hlLong &&
-                                            Math.Abs(Canvas.GetTop(longRect) - (strk.GetBounds().Top + Canvas.GetTop(highlightBoard))) < 50 &&
-                                            Math.Abs(Canvas.GetLeft(longRect) - (strk.GetBounds().Left + Canvas.GetLeft(highlightBoard))) < 50 &&
-                                            Math.Abs((Canvas.GetLeft(longRect) - Canvas.GetLeft(highlightBoard) + longRect.Width) -
-                                                (strk.GetBounds().Left + strk.GetBounds().Width)) < 50 &&
-                                            Math.Abs((Canvas.GetTop(longRect) - Canvas.GetTop(highlightBoard) + longRect.Height) -
-                                                (strk.GetBounds().Top + strk.GetBounds().Height)) < 50)
-                                        {
-                                            hlLong = true;
-                                            Console.WriteLine("YES - 3");
-                                            //send log
-                                            logger.Info("{0} ; {1} ; {2} ; {3} ; {4} ; {5} ; {6}", startLog, userName, groupName, task, technique, difficulty, DateTime.Now);
-                                            if (groupName != "T")
-                                            {
-                                                ShowDoneTask();
-                                            }
-                                        }
-                                    }
-                                    break;
-                                }
-                        }
-                    }
-                }
-                if (task == 1)
-                {
-                    if (rectangleControlTouchDevice == null)
-                    {
-                        if (Canvas.GetTop(this.dragRectangle) > Canvas.GetTop(this.theBox) &&
-                            (Canvas.GetTop(this.dragRectangle) + dragRectangle.Height < Canvas.GetTop(theBox) + theBox.Height) &&
-                            Canvas.GetLeft(this.dragRectangle) > Canvas.GetLeft(this.theBox) &&
-                            (Canvas.GetLeft(this.dragRectangle) + dragRectangle.Width < Canvas.GetLeft(theBox) + theBox.Width))
-                        {
-                            if (!isInside)
-                            {
-                                Console.WriteLine("YAY");
-                                //send log
-                                isInside = true;
-                                // wait 5 seconds then show alert/dialogs
-                                logger.Info("{0} ; {1} ; {2} ; {3} ; {4} ; {5} ; {6}", startLog, userName, groupName, task, technique, difficulty, DateTime.Now);
-                                if (groupName != "T")
-                                {
-                                    ShowDoneTask();
-                                }
-                            }
-                        }
-                        else isInside = false;
-                    }
-                }
+                ShowDoneTask();
             }
         }
+
         /// <summary>
         /// Occurs when the window is about to close. 
         /// </summary>
@@ -494,6 +339,13 @@ namespace FinalVersion
             //TODO: disable audio, animations here
         }
 
+        /// <summary>
+        /// Occurs when technique button is pressed.
+        /// It change the technique in use.
+        /// Showed only on Tester Mode
+        /// </summary>
+        /// <param name="s"></param>
+        /// <param name="e"></param>
         private void OnTechniqueClick(object s, RoutedEventArgs e)
         {
             switch (technique)
@@ -529,6 +381,13 @@ namespace FinalVersion
             }
         }
 
+        /// <summary>
+        /// Occurs when highlight enabler button is pressed.
+        /// It allow users to highlight on finger and always-on-pen Mode
+        /// Showed only on finger and always-on-pen Mode.
+        /// </summary>
+        /// <param name="s"></param>
+        /// <param name="e"></param>
         private void OnHlClick(object s, RoutedEventArgs e)
         {
             if (!highlight)
@@ -546,24 +405,33 @@ namespace FinalVersion
             }
         }
 
+        /// <summary>
+        /// Occurs when TouchDown Event inside a specific object is called.
+        /// </summary>
+        /// <param name="s"></param>
+        /// <param name="e"></param>
         private void OnTouchDown(object s, System.Windows.Input.TouchEventArgs e)
         {
             e.Handled = true;
+            // Check if the TouchEvent is caused by a finger or a Pen.
             if (trackLED.isAPen())
             {
                 if (contourCircles != null)
                 {
                     foreach (CircleF circle in contourCircles)
                     {
+                        // Check if the TouchDevice is the pen, of finger, found processing the RAW image.
                         if ((System.Math.Abs(((int)e.TouchDevice.GetCenterPosition(this).X - (int)(circle.Center.X * 2))) < 15) &&
                             (System.Math.Abs(((int)e.TouchDevice.GetCenterPosition(this).Y - (int)(circle.Center.Y * 2 - 15))) < 15))
                         {
+                            // Based on the task that is running and if actions are performed it allow to write/highlight/drag
                             switch (task)
                             {
                                 case 0:
                                     {
                                         if (technique == 0 || (buttonTechnique && technique == 1) || (tiltTechnique && technique == 2) || technique == 3)
                                         {
+                                            // Save the time in which user start touching the surface to complete a task
                                             if (!isStarted)
                                             {
                                                 startLog = DateTime.Now;
@@ -620,6 +488,13 @@ namespace FinalVersion
             }
         }
 
+        /// <summary>
+        /// Occurs when task button is pressed.
+        /// It change the task in use.
+        /// Showed only on Tester Mode
+        /// </summary>
+        /// <param name="s"></param>
+        /// <param name="e"></param>
         private void OnTaskClick(object s, RoutedEventArgs e)
         {
             switch (task)
@@ -648,6 +523,13 @@ namespace FinalVersion
             }
         }
 
+        /// <summary>
+        /// Occurs when draw enabler button is pressed.
+        /// It allow users to draw on finger and always-on-pen Mode
+        /// Showed only on finger and always-on-pen Mode.
+        /// </summary>
+        /// <param name="s"></param>
+        /// <param name="e"></param>
         private void OnDrawClick(object s, RoutedEventArgs e)
         {
             if (!draw)
@@ -664,6 +546,14 @@ namespace FinalVersion
             }
         }
 
+        /// <summary>
+        /// Occurs on draw task when done button is pressed.
+        /// It will be pressed when users are done drawing.
+        /// It also send the log of the specific task and take a snapshot
+        /// of the image drawed.
+        /// </summary>
+        /// <param name="s"></param>
+        /// <param name="e"></param>
         private void OnDoneClick(object s, RoutedEventArgs e)
         {
             logger.Info("{0} ; {1} ; {2} ; {3} ; {4} ; {5} ; {6} ;", startLog, userName, groupName, task, technique, difficulty, DateTime.Now);
@@ -677,6 +567,11 @@ namespace FinalVersion
             };
         }
 
+        /// <summary>
+        /// Occurs when TouchMove Event on Drag 'n Drop task is called.
+        /// </summary>
+        /// <param name="s"></param>
+        /// <param name="e"></param>
         private void OnTouchMove(object s, System.Windows.Input.TouchEventArgs e)
         {
             e.Handled = true;
@@ -691,10 +586,11 @@ namespace FinalVersion
                 double deltaX = currentTouchPoint.X - lastPoint.X;
                 double deltaY = currentTouchPoint.Y - lastPoint.Y;
 
-                // Get and then set a new top position and a new left position for the ellipse.  
+                // Get and then set a new top position and a new left position for the square.  
                 double newTop = Canvas.GetTop(this.dragRectangle) + deltaY;
                 double newLeft = Canvas.GetLeft(this.dragRectangle) + deltaX;
 
+                // Update top and left position of the square
                 Canvas.SetTop(this.dragRectangle, newTop);
                 Canvas.SetLeft(this.dragRectangle, newLeft);
 
@@ -703,6 +599,11 @@ namespace FinalVersion
             }
         }
 
+        /// <summary>
+        /// Occurs when TouchLeave Event on Drag 'n Drop task is called.
+        /// </summary>
+        /// <param name="s"></param>
+        /// <param name="e"></param>
         private void OnTouchLeave(object s, System.Windows.Input.TouchEventArgs e)
         {
             // If this contact is the one that was remembered  
@@ -716,6 +617,13 @@ namespace FinalVersion
             e.Handled = true;
         }
 
+        /// <summary>
+        /// Occurs when drag enabler button is pressed.
+        /// It allow users to drag on finger and always-on-pen Mode
+        /// Showed only on finger and always-on-pen Mode.
+        /// </summary>
+        /// <param name="s"></param>
+        /// <param name="e"></param>
         private void OnDragClick(object s, RoutedEventArgs e)
         {
             if (!drag)
@@ -730,6 +638,13 @@ namespace FinalVersion
             }
         }
 
+        /// <summary>
+        /// Occurs when difficulty button is pressed.
+        /// It change the difficulty in use.
+        /// Showed only on Tester Mode
+        /// </summary>
+        /// <param name="s"></param>
+        /// <param name="e"></param>
         private void OnDifficultyClick(object s, RoutedEventArgs e)
         {
             switch (difficulty)
@@ -758,7 +673,13 @@ namespace FinalVersion
             }
         }
 
-        private void OnUserNameClick(object s, RoutedEventArgs e)
+        /// <summary>
+        /// Ocurs when login button is pressed.
+        /// It register users and group of appartenience --->(??!! is it a right word ??!!)
+        /// </summary>
+        /// <param name="s"></param>
+        /// <param name="e"></param>
+        private void OnUserNameClick(object s, RoutedEventArgs e) // Change Method name on "OnLoginClick"
         {
             if (userTB.Text.Length != 0 && 
                 (groupTB.Text == "A" || groupTB.Text == "B" || 
@@ -772,9 +693,13 @@ namespace FinalVersion
             }
         }
 
+        /// <summary>
+        /// Show content based on technique in use, task to do and difficulty to perform
+        /// </summary>
         private void ShowContent()
         {
             isStarted = false;
+            // Check if all combinations are done, if they are it show final content.
             if (!thankyou)
             {
                 switch (technique)
@@ -811,6 +736,9 @@ namespace FinalVersion
             }
         }
 
+        /// <summary>
+        /// Show content. It is called by ShowContent method.
+        /// </summary>
         private void ShowTaskAndDifficulty()
         {
             switch (task)
@@ -820,6 +748,8 @@ namespace FinalVersion
                         taskButton.Content = "Task1 - HL";
                         highlightBoard.Visibility = System.Windows.Visibility.Visible;
                         textBoard.Visibility = System.Windows.Visibility.Visible;
+
+                        // If technique is finger or always-on-pen Mode show relative button
                         if (technique == 0 || technique == 3)
                         {
                             highlightButton.Visibility = System.Windows.Visibility.Visible;
@@ -851,7 +781,7 @@ namespace FinalVersion
                         }
                         else
                         {
-                            //show train label
+                            // to show train label
                             trainigButton.Visibility = System.Windows.Visibility.Visible;
                         }
                         break;
@@ -974,6 +904,9 @@ namespace FinalVersion
             }
         }
 
+        /// <summary>
+        /// Hide content based on technique in use, task to do and difficulty to perform
+        /// </summary>
         private void HideContent()
         {
             switch (task)
@@ -1053,6 +986,9 @@ namespace FinalVersion
             }
         }
 
+        /// <summary>
+        /// Show user name and appartenience group
+        /// </summary>
         private void UserInformations()
         {
             showNameLabel.Content = "Name: " + userName;
@@ -1062,8 +998,15 @@ namespace FinalVersion
             showPercentualLabel.Visibility = System.Windows.Visibility.Visible;
         }
 
+        /// <summary>
+        /// Occurs when next task button is pressed.
+        /// Based on group, technique, task and difficulty it change contents.
+        /// </summary>
+        /// <param name="s"></param>
+        /// <param name="e"></param>
         private void OnNextClick(object s, RoutedEventArgs e)
         {
+            // ---> LOOK OUT!!!!! WARNING!!! <---
             // to decide how to do this!
             HideDoneTask();
             HideContent();
@@ -1090,6 +1033,10 @@ namespace FinalVersion
             }
         }
 
+        /// <summary>
+        /// It change technique in use, based on group type.
+        /// It is called by OnNextClick method.
+        /// </summary>
         private void ChangeTechnique()
         {
             switch (groupName)
@@ -1178,7 +1125,7 @@ namespace FinalVersion
                         }
                         break;
                     }
-                // techinique: 3-0-2-1
+                // technique: 3-0-2-1
                 case "D":
                     {
                         switch (technique)
@@ -1209,6 +1156,9 @@ namespace FinalVersion
             }
         }
 
+        /// <summary>
+        /// based on group name, decide with which technique start experiment.
+        /// </summary>
         private void StartWith()
         {
             switch (groupName)
@@ -1242,7 +1192,7 @@ namespace FinalVersion
                     }
                 case "D":
                     {
-                        // techinique: 3-0-2-1
+                        // technique: 3-0-2-1
                         technique = 3;
                         trainingMode = true;
                         ShowContent();
@@ -1262,6 +1212,9 @@ namespace FinalVersion
             }
         }
 
+        /// <summary>
+        /// Show labels and the button for every task that is done.
+        /// </summary>
         private void ShowDoneTask()
         {
             // Show labels and the button for Done Tasks
@@ -1270,6 +1223,9 @@ namespace FinalVersion
             nextButton.Visibility = System.Windows.Visibility.Visible;
         }
 
+        /// <summary>
+        /// Hide labels and the button for every task that is done.
+        /// </summary>
         private void HideDoneTask()
         {
             // Hide labels and the button for Done Tasks
@@ -1278,6 +1234,10 @@ namespace FinalVersion
             nextButton.Visibility = System.Windows.Visibility.Collapsed;
         }
 
+        /// <summary>
+        /// Occurs when training button is pressed.
+        /// It stop training mode and start the experiment.
+        /// </summary>
         private void OnTrainingClick(object s, RoutedEventArgs e)
         {
             HideContent();
@@ -1285,6 +1245,9 @@ namespace FinalVersion
             ShowContent();
         }
 
+        /// <summary>
+        /// It hide all login contents
+        /// </summary>
         private void HideLogin()
         {
             userNameButton.Visibility = System.Windows.Visibility.Collapsed;
@@ -1292,6 +1255,250 @@ namespace FinalVersion
             userTB.Visibility = System.Windows.Visibility.Collapsed;
             groupTB.Visibility = System.Windows.Visibility.Collapsed;
             groupLabel.Visibility = System.Windows.Visibility.Collapsed;
+        }
+
+        /// <summary>
+        /// It check, depending on technique in use, if all condictions are verified
+        /// and enable TouchEvent.
+        /// </summary>
+        private void TechniqueEnabler()
+        {
+            switch (technique)
+                {
+                    case 1:
+                        {
+                            if (button == 1)
+                            {
+                                buttonTechnique = true;
+                                switch (task)
+                                {
+                                    case 0:
+                                        {
+                                            highlightBoard.EditingMode = SurfaceInkEditingMode.Ink;
+                                            break;
+                                        }
+                                    case 1:
+                                        {
+                                            drag = true;
+                                            break;
+                                        }
+                                    case 2:
+                                        {
+                                            drawBoard.EditingMode = SurfaceInkEditingMode.Ink;
+                                            break;
+                                        }
+                                }
+                            }
+                            else
+                            {
+                                buttonTechnique = false;
+                                switch (task)
+                                {
+                                    case 0:
+                                        {
+                                            highlightBoard.EditingMode = SurfaceInkEditingMode.None;
+                                            break;
+                                        }
+                                    case 1:
+                                        {
+                                            drag = false;
+                                            break;
+                                        }
+                                    case 2:
+                                        {
+                                            drawBoard.EditingMode = SurfaceInkEditingMode.None;
+                                            break;
+                                        }
+                                }
+                            }
+                            break;
+                        }
+                    case 2:
+                        {
+                            if (((rwAcc[0] <= 0.75) && (rwAcc[1] >= 0.65)) || ((rwAcc[0] <= 0.6) && (rwAcc[1] <= -0.6))
+                                || ((rwAcc[0] <= 0.7) && (rwAcc[2] <= -0.4 || rwAcc[2] >= 0.7)))
+                            {
+                                tiltTechnique = true;
+                                switch (task)
+                                {
+                                    case 0:
+                                        {
+                                            highlightBoard.EditingMode = SurfaceInkEditingMode.Ink;
+                                            break;
+                                        }
+                                    case 1:
+                                        {
+                                            drag = true;
+                                            break;
+                                        }
+                                    case 2:
+                                        {
+                                            drawBoard.EditingMode = SurfaceInkEditingMode.Ink;
+                                            break;
+                                        }
+                                }
+                            }
+                            else
+                            {
+                                tiltTechnique = false;
+                                switch (task)
+                                {
+                                    case 0:
+                                        {
+                                            highlightBoard.EditingMode = SurfaceInkEditingMode.None;
+                                            break;
+                                        }
+                                    case 1:
+                                        {
+                                            drag = false;
+                                            break;
+                                        }
+                                    case 2:
+                                        {
+                                            drawBoard.EditingMode = SurfaceInkEditingMode.None;
+                                            break;
+                                        }
+                                }
+                            }
+                            break;
+                        }
+                }
+        }
+
+        /// <summary>
+        /// It check if the task is completed.
+        /// </summary>
+        private bool IsTaskComplete()
+        {
+            if (!trainingMode)
+            {
+                if (task == 0)
+                {
+                    // ---> WRITE HERE!!
+                    if (highlightBoard.Strokes.Count() != 0)
+                    {
+                        switch (difficulty)
+                        {
+                            case 0:
+                                {
+                                    foreach (System.Windows.Ink.Stroke strk in highlightBoard.Strokes)
+                                    {
+                                        // need to be modified threshold, cause is blowing after click on the word! <-----
+                                        if (!hlShort &&
+                                            Math.Abs(Canvas.GetTop(shortRect) - (strk.GetBounds().Top + Canvas.GetTop(highlightBoard))) < 50 &&
+                                            Math.Abs(Canvas.GetLeft(shortRect) - (strk.GetBounds().Left + Canvas.GetLeft(highlightBoard))) < 50 &&
+                                            Math.Abs((Canvas.GetLeft(shortRect) - Canvas.GetLeft(highlightBoard) + shortRect.Width) -
+                                                (strk.GetBounds().Left + strk.GetBounds().Width)) < 50 &&
+                                            Math.Abs((Canvas.GetTop(shortRect) - Canvas.GetTop(highlightBoard) + shortRect.Height) -
+                                                (strk.GetBounds().Top + strk.GetBounds().Height)) < 50)
+                                        {
+                                            hlShort = true;
+                                            Console.WriteLine("YES - 1");
+                                            //send log
+                                            logger.Info("{0} ; {1} ; {2} ; {3} ; {4} ; {5} ; {6}", startLog, userName, groupName, task, technique, difficulty, DateTime.Now);
+                                            if (groupName != "T")
+                                            {
+                                                return true;
+                                            }
+                                        }
+                                        else
+                                        {
+                                            return false;
+                                        }
+                                    }
+                                    break;
+                                }
+                            case 1:
+                                {
+                                    foreach (System.Windows.Ink.Stroke strk in highlightBoard.Strokes)
+                                    {
+                                        if (!hlMedium &&
+                                            Math.Abs(Canvas.GetTop(mediumRect) - (strk.GetBounds().Top + Canvas.GetTop(highlightBoard))) < 50 &&
+                                            Math.Abs(Canvas.GetLeft(mediumRect) - (strk.GetBounds().Left + Canvas.GetLeft(highlightBoard))) < 50 &&
+                                            Math.Abs((Canvas.GetLeft(mediumRect) - Canvas.GetLeft(highlightBoard) + mediumRect.Width) -
+                                                (strk.GetBounds().Left + strk.GetBounds().Width)) < 50 &&
+                                            Math.Abs((Canvas.GetTop(mediumRect) - Canvas.GetTop(highlightBoard) + mediumRect.Height) -
+                                                (strk.GetBounds().Top + strk.GetBounds().Height)) < 50)
+                                        {
+                                            hlMedium = true;
+                                            Console.WriteLine("YES - 2");
+                                            //send log
+                                            logger.Info("{0} ; {1} ; {2} ; {3} ; {4} ; {5} ; {6}", startLog, userName, groupName, task, technique, difficulty, DateTime.Now);
+                                            if (groupName != "T")
+                                            {
+                                                return true;
+                                            }
+                                        }
+                                        else
+                                        {
+                                            return false;
+                                        }
+                                    }
+                                    break;
+                                }
+                            case 2:
+                                {
+                                    foreach (System.Windows.Ink.Stroke strk in highlightBoard.Strokes)
+                                    {
+                                        if (!hlLong &&
+                                            Math.Abs(Canvas.GetTop(longRect) - (strk.GetBounds().Top + Canvas.GetTop(highlightBoard))) < 50 &&
+                                            Math.Abs(Canvas.GetLeft(longRect) - (strk.GetBounds().Left + Canvas.GetLeft(highlightBoard))) < 50 &&
+                                            Math.Abs((Canvas.GetLeft(longRect) - Canvas.GetLeft(highlightBoard) + longRect.Width) -
+                                                (strk.GetBounds().Left + strk.GetBounds().Width)) < 50 &&
+                                            Math.Abs((Canvas.GetTop(longRect) - Canvas.GetTop(highlightBoard) + longRect.Height) -
+                                                (strk.GetBounds().Top + strk.GetBounds().Height)) < 50)
+                                        {
+                                            hlLong = true;
+                                            Console.WriteLine("YES - 3");
+                                            //send log
+                                            logger.Info("{0} ; {1} ; {2} ; {3} ; {4} ; {5} ; {6}", startLog, userName, groupName, task, technique, difficulty, DateTime.Now);
+                                            if (groupName != "T")
+                                            {
+                                                return true;
+                                            }
+                                        }
+                                        else
+                                        {
+                                            return false;
+                                        }
+                                    }
+                                    break;
+                                }
+                        }
+                    }
+                }
+                if (task == 1)
+                {
+                    if (rectangleControlTouchDevice == null)
+                    {
+                        if (Canvas.GetTop(this.dragRectangle) > Canvas.GetTop(this.theBox) &&
+                            (Canvas.GetTop(this.dragRectangle) + dragRectangle.Height < Canvas.GetTop(theBox) + theBox.Height) &&
+                            Canvas.GetLeft(this.dragRectangle) > Canvas.GetLeft(this.theBox) &&
+                            (Canvas.GetLeft(this.dragRectangle) + dragRectangle.Width < Canvas.GetLeft(theBox) + theBox.Width))
+                        {
+                            if (!isInside)
+                            {
+                                Console.WriteLine("YAY");
+                                //send log
+                                isInside = true;
+                                // wait 5 seconds then show alert/dialogs
+                                logger.Info("{0} ; {1} ; {2} ; {3} ; {4} ; {5} ; {6}", startLog, userName, groupName, task, technique, difficulty, DateTime.Now);
+                                if (groupName != "T")
+                                {
+                                    return true;
+                                }
+                            }
+                        }
+                        else
+                        {
+                            isInside = false;
+                            return false;
+                        }            
+                    }
+                }
+            }
+            else
+                return false;
         }
     }
 }
