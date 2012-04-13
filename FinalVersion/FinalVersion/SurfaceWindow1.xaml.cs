@@ -1315,8 +1315,8 @@ namespace FinalVersion
                         }
                     case 2:
                         {
-                            if (((rwAcc[0] <= 0.75) && (rwAcc[1] >= 0.65)) || ((rwAcc[0] <= 0.6) && (rwAcc[1] <= -0.6))
-                                || ((rwAcc[0] <= 0.7) && (rwAcc[2] <= -0.4 || rwAcc[2] >= 0.7)))
+                            if (((rwAcc[0] <= 0.8) && (rwAcc[1] >= 0.55 || rwAcc[1] <= -0.55))
+                                || ((rwAcc[0] <= 0.8) && (rwAcc[2] <= -0.55 || rwAcc[2] >= 0.55)))
                             {
                                 tiltTechnique = true;
                                 switch (task)
@@ -1383,7 +1383,6 @@ namespace FinalVersion
                                 {
                                     foreach (System.Windows.Ink.Stroke strk in highlightBoard.Strokes)
                                     {
-                                        // need to be modified threshold, cause is blowing after click on the word! <-----
                                         if (!hlShort &&
                                             Math.Abs(Canvas.GetTop(shortRect) - (strk.GetBounds().Top + Canvas.GetTop(highlightBoard))) < 20 &&
                                             Math.Abs(Canvas.GetLeft(shortRect) - (strk.GetBounds().Left + Canvas.GetLeft(highlightBoard))) < 20 &&
