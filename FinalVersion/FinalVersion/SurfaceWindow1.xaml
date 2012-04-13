@@ -97,8 +97,8 @@ is PixelSense technology." Visibility="Collapsed"
                Name="showNameLabel" Visibility="Hidden"/>
         <Label Canvas.Left="55" Canvas.Top="91" Content="Group:" FontSize="24" Foreground="Black" 
                Name="showGroupLabel" Visibility="Hidden"/>
-        <Label Canvas.Left="55" Canvas.Top="137" Content="Complete: 0%" FontSize="24" Foreground="Black" 
-               Name="showPercentualLabel" Visibility="Hidden"/>
+        <Label Canvas.Left="55" Canvas.Top="137" FontSize="24" Foreground="Black" 
+               Name="showTechnique" Visibility="Hidden"/>
         <s:SurfaceButton Background="Silver" Canvas.Left="11" Canvas.Top="745" Content="Stop Training" FontSize="24" 
                          Foreground="Black" Height="59" HorizontalContentAlignment="Center" Name="trainigButton" 
                          VerticalContentAlignment="Center" Width="172" Click="OnTrainingClick" Visibility="Hidden"/>
