@@ -104,6 +104,9 @@ is PixelSense technology." Visibility="Collapsed"
                          VerticalContentAlignment="Center" Width="172" Click="OnTrainingClick" Visibility="Hidden"/>
         <Label Name="finishLabel" Content="Thank You from Science" FontSize="200" Canvas.Left="215" Canvas.Top="381" 
                FontFamily="Gabriola" Visibility="Hidden"/>
+        <Label Name="trainingLabel" Content="Try to highlight some words for training. Use the button on your 
+right (also with your finger) to activate highlight event." Visibility="Collapsed"
+               FontSize="32" Foreground="DarkGreen" Canvas.Left="465" Canvas.Top="58" Height="105" Width="982" />
     </Canvas>
 
 </s:SurfaceWindow>
