@@ -38,6 +38,7 @@ namespace FinalVersion
         private TimeSpan diffTime;
         private DateTime currentTime;
         private DateTime startLog;
+        private DateTime tmpTime;
         private byte[] normalizedImage;
         private bool imageAvailable;
         private Tracking trackLED;
@@ -284,8 +285,8 @@ namespace FinalVersion
                                         {
                                             hlShort = true;
                                             Console.WriteLine("YES - 1");
-                                            //send log
-                                            logger.Info("{0} ; {1} ; {2} ; {3} ; {4} ; {5} ; {6} ; {7}", startLog, userName, groupName, task, technique, difficulty, errors, DateTime.Now);
+                                            tmpTime = DateTime.Now;
+                                            logger.Info("{0}:{1} ; {2} ; {3} ; {4} ; {5} ; {6} ; {7} ; {8}:{9}", startLog, startLog.Millisecond, userName, groupName, task, technique, difficulty, errors, tmpTime, tmpTime.Millisecond);
                                             if (groupName != "T")
                                             {
                                                 ShowDoneTask();
@@ -317,7 +318,8 @@ namespace FinalVersion
                                             hlMedium = true;
                                             Console.WriteLine("YES - 2");
                                             //send log
-                                            logger.Info("{0} ; {1} ; {2} ; {3} ; {4} ; {5} ; {6} ; {7}", startLog, userName, groupName, task, technique, difficulty, errors, DateTime.Now);
+                                            tmpTime = DateTime.Now;
+                                            logger.Info("{0}:{1} ; {2} ; {3} ; {4} ; {5} ; {6} ; {7} ; {8}:{9}", startLog, startLog.Millisecond, userName, groupName, task, technique, difficulty, errors, tmpTime, tmpTime.Millisecond);
                                             if (groupName != "T")
                                             {
                                                 ShowDoneTask();
@@ -349,7 +351,8 @@ namespace FinalVersion
                                             hlLong = true;
                                             Console.WriteLine("YES - 3");
                                             //send log
-                                            logger.Info("{0} ; {1} ; {2} ; {3} ; {4} ; {5} ; {6} ; {7}", startLog, userName, groupName, task, technique, difficulty, errors, DateTime.Now);
+                                            tmpTime = DateTime.Now;
+                                            logger.Info("{0}:{1} ; {2} ; {3} ; {4} ; {5} ; {6} ; {7} ; {8}:{9}", startLog, startLog.Millisecond, userName, groupName, task, technique, difficulty, errors, tmpTime, tmpTime.Millisecond);
                                             if (groupName != "T")
                                             {
                                                 ShowDoneTask();
@@ -383,8 +386,8 @@ namespace FinalVersion
                                 Console.WriteLine("YAY");
                                 //send log
                                 isInside = true;
-                                // wait 5 seconds then show alert/dialogs
-                                logger.Info("{0} ; {1} ; {2} ; {3} ; {4} ; {5} ; {6} ; {7}", startLog, userName, groupName, task, technique, difficulty, errors, DateTime.Now);
+                                tmpTime = DateTime.Now;
+                                logger.Info("{0}:{1} ; {2} ; {3} ; {4} ; {5} ; {6} ; {7} ; {8}:{9}", startLog, startLog.Millisecond, userName, groupName, task, technique, difficulty, errors, tmpTime, tmpTime.Millisecond);
                                 if (groupName != "T")
                                 {
                                     ShowDoneTask();
@@ -743,7 +746,8 @@ namespace FinalVersion
         /// <param name="e"></param>
         private void OnDoneClick(object s, RoutedEventArgs e)
         {
-            logger.Info("{0} ; {1} ; {2} ; {3} ; {4} ; {5} ; {6} ; {7}", startLog, userName, groupName, task, technique, difficulty, -1, DateTime.Now);
+            tmpTime = DateTime.Now;
+            logger.Info("{0}:{1} ; {2} ; {3} ; {4} ; {5} ; {6} ; {7} ; {8}:{9}", startLog, startLog.Millisecond, userName, groupName, task, technique, difficulty, errors, tmpTime, tmpTime.Millisecond);
             //take a snapshot
             string tmp = userName+difficulty+".bmp";
             sc.CaptureScreenToFile(tmp, System.Drawing.Imaging.ImageFormat.Bmp);
