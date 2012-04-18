@@ -37,9 +37,9 @@ it feeds that to the brain which is our vision input processor that
 recognizes the image and does something with it. Taken in whole…this 
 is PixelSense technology." Visibility="Collapsed"
                FontSize="24" Foreground="Black" Height="597" Width="826" />
-        <Label Name="permanentLabel1" Foreground="Black" Content="Andrea Pacino" Canvas.Left="1662" Canvas.Top="982" Height="40" Width="129" />
-        <Label Name="permanentLabel2" Foreground="Black" Content="University of Pisa" Canvas.Left="1662" Canvas.Top="1006" />
-        <Label Name="permanentLabel3" Foreground="Black" Content="IT-University of Copenhagen" Canvas.Left="1662" Canvas.Top="1028" />
+        <Label Name="permanentLabel1" Foreground="Black" Content="Andrea Pacino" Canvas.Left="1558" Canvas.Top="982" Height="40" Width="129" />
+        <Label Name="permanentLabel2" Foreground="Black" Content="University of Pisa" Canvas.Left="1558" Canvas.Top="1005" />
+        <Label Name="permanentLabel3" Foreground="Black" Content="IT-University of Copenhagen" Canvas.Left="1558" Canvas.Top="1028" />
         <Label x:Name="wordDrawLabel" Background="Black" Foreground="Pink" Canvas.Top="250" Canvas.Left="440" Width="983" Height="720"
                Content="PALERMO" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" FontSize="200" Visibility="Hidden"/>
         <s:SurfaceInkCanvas x:Name="highlightBoard" Canvas.Left="533" Canvas.Top="267" Height="597" Width="826" Background="Transparent" UsesTouchShape="False" 
