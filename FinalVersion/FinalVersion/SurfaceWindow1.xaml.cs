@@ -127,7 +127,7 @@ namespace FinalVersion
 
             // Set the color of the strokes of the Ink Boards    
             highlightBoard.DefaultDrawingAttributes.Color = System.Windows.Media.Colors.Yellow;
-            drawBoard.DefaultDrawingAttributes.Color = System.Windows.Media.Colors.White;
+            drawBoard.DefaultDrawingAttributes.Color = System.Windows.Media.Colors.Green;
             
             // Initialize inputs of Surface
             InitializeSurfaceInput();
