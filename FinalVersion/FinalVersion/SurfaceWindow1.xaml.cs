@@ -38,7 +38,8 @@ namespace FinalVersion
         private TimeSpan diffTime;
         private DateTime currentTime;
         private DateTime startLog;
-        private DateTime tmpTime;
+        private DateTime stopLog;
+        private long epochStart, epochStop;
         private byte[] normalizedImage;
         private bool imageAvailable;
         private Tracking trackLED;
@@ -285,8 +286,10 @@ namespace FinalVersion
                                         {
                                             hlShort = true;
                                             Console.WriteLine("YES - 1");
-                                            tmpTime = DateTime.Now;
-                                            logger.Info("{0}:{1} ; {2} ; {3} ; {4} ; {5} ; {6} ; {7} ; {8}:{9}", startLog, startLog.Millisecond, userName, groupName, task, technique, difficulty, errors, tmpTime, tmpTime.Millisecond);
+                                            stopLog = DateTime.Now;
+                                            epochStart = (long)(startLog - new DateTime(1970, 1, 1)).TotalMilliseconds;
+                                            epochStop = (long)(stopLog - new DateTime(1970, 1, 1)).TotalMilliseconds;
+                                            logger.Info("{0} ; {1} ; {2} ; {3} ; {4} ; {5} ; {6} ; {7}", epochStart, userName, groupName, task, technique, difficulty, errors, epochStop);
                                             if (groupName != "T")
                                             {
                                                 ShowDoneTask();
@@ -318,8 +321,10 @@ namespace FinalVersion
                                             hlMedium = true;
                                             Console.WriteLine("YES - 2");
                                             //send log
-                                            tmpTime = DateTime.Now;
-                                            logger.Info("{0}:{1} ; {2} ; {3} ; {4} ; {5} ; {6} ; {7} ; {8}:{9}", startLog, startLog.Millisecond, userName, groupName, task, technique, difficulty, errors, tmpTime, tmpTime.Millisecond);
+                                            stopLog = DateTime.Now;
+                                            epochStart = (long)(startLog - new DateTime(1970, 1, 1)).TotalMilliseconds;
+                                            epochStop = (long)(stopLog - new DateTime(1970, 1, 1)).TotalMilliseconds;
+                                            logger.Info("{0} ; {1} ; {2} ; {3} ; {4} ; {5} ; {6} ; {7}", epochStart, userName, groupName, task, technique, difficulty, errors, epochStop);
                                             if (groupName != "T")
                                             {
                                                 ShowDoneTask();
@@ -351,8 +356,10 @@ namespace FinalVersion
                                             hlLong = true;
                                             Console.WriteLine("YES - 3");
                                             //send log
-                                            tmpTime = DateTime.Now;
-                                            logger.Info("{0}:{1} ; {2} ; {3} ; {4} ; {5} ; {6} ; {7} ; {8}:{9}", startLog, startLog.Millisecond, userName, groupName, task, technique, difficulty, errors, tmpTime, tmpTime.Millisecond);
+                                            stopLog = DateTime.Now;
+                                            epochStart = (long)(startLog - new DateTime(1970, 1, 1)).TotalMilliseconds;
+                                            epochStop = (long)(stopLog - new DateTime(1970, 1, 1)).TotalMilliseconds;
+                                            logger.Info("{0} ; {1} ; {2} ; {3} ; {4} ; {5} ; {6} ; {7}", epochStart, userName, groupName, task, technique, difficulty, errors, epochStop);
                                             if (groupName != "T")
                                             {
                                                 ShowDoneTask();
@@ -386,8 +393,10 @@ namespace FinalVersion
                                 Console.WriteLine("YAY");
                                 //send log
                                 isInside = true;
-                                tmpTime = DateTime.Now;
-                                logger.Info("{0}:{1} ; {2} ; {3} ; {4} ; {5} ; {6} ; {7} ; {8}:{9}", startLog, startLog.Millisecond, userName, groupName, task, technique, difficulty, errors, tmpTime, tmpTime.Millisecond);
+                                stopLog = DateTime.Now;
+                                epochStart = (long)(startLog - new DateTime(1970, 1, 1)).TotalMilliseconds;
+                                epochStop = (long)(stopLog - new DateTime(1970, 1, 1)).TotalMilliseconds;
+                                logger.Info("{0} ; {1} ; {2} ; {3} ; {4} ; {5} ; {6} ; {7}", epochStart, userName, groupName, task, technique, difficulty, errors, epochStop);
                                 if (groupName != "T")
                                 {
                                     ShowDoneTask();
@@ -746,8 +755,10 @@ namespace FinalVersion
         /// <param name="e"></param>
         private void OnDoneClick(object s, RoutedEventArgs e)
         {
-            tmpTime = DateTime.Now;
-            logger.Info("{0}:{1} ; {2} ; {3} ; {4} ; {5} ; {6} ; {7} ; {8}:{9}", startLog, startLog.Millisecond, userName, groupName, task, technique, difficulty, errors, tmpTime, tmpTime.Millisecond);
+            stopLog = DateTime.Now;
+            epochStart = (long)(startLog - new DateTime(1970, 1, 1)).TotalMilliseconds;
+            epochStop = (long)(stopLog - new DateTime(1970, 1, 1)).TotalMilliseconds;
+            logger.Info("{0} ; {1} ; {2} ; {3} ; {4} ; {5} ; {6} ; {7}", epochStart, userName, groupName, task, technique, difficulty, errors, epochStop);
             //take a snapshot
             string tmp = userName+difficulty+".bmp";
             sc.CaptureScreenToFile(tmp, System.Drawing.Imaging.ImageFormat.Bmp);
