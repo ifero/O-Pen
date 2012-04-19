@@ -20,6 +20,7 @@ using Emgu.CV.Structure;
 using Emgu.Util;
 using Pen;
 using ScreenShotDemo;
+using NLog.Targets;
 
 namespace FinalVersion
 {
@@ -128,6 +129,10 @@ namespace FinalVersion
             InitializeComponent();
 
             // Set the color of the strokes of the Ink Boards    
+            highlightBoard.UsesTouchShape = false;
+            highlightBoard.DefaultDrawingAttributes.Height = 18;
+            highlightBoard.DefaultDrawingAttributes.Width = 2;
+            highlightBoard.DefaultDrawingAttributes.FitToCurve = false;
             highlightBoard.DefaultDrawingAttributes.Color = System.Windows.Media.Colors.Yellow;
             drawBoard.DefaultDrawingAttributes.Color = System.Windows.Media.Colors.Green;
             
@@ -277,12 +282,12 @@ namespace FinalVersion
                                     foreach (System.Windows.Ink.Stroke strk in highlightBoard.Strokes)
                                     {
                                         if (!hlShort &&
-                                            Math.Abs(Canvas.GetTop(shortRect) - (strk.GetBounds().Top + Canvas.GetTop(highlightBoard))) < 20 &&
-                                            Math.Abs(Canvas.GetLeft(shortRect) - (strk.GetBounds().Left + Canvas.GetLeft(highlightBoard))) < 20 &&
+                                            Math.Abs(Canvas.GetTop(shortRect) - (strk.GetBounds().Top + Canvas.GetTop(highlightBoard))) < 50 &&
+                                            Math.Abs(Canvas.GetLeft(shortRect) - (strk.GetBounds().Left + Canvas.GetLeft(highlightBoard))) < 50 &&
                                             Math.Abs((Canvas.GetLeft(shortRect) - Canvas.GetLeft(highlightBoard) + shortRect.Width) -
-                                                (strk.GetBounds().Left + strk.GetBounds().Width)) < 20 &&
+                                                (strk.GetBounds().Left + strk.GetBounds().Width)) < 50 &&
                                             Math.Abs((Canvas.GetTop(shortRect) - Canvas.GetTop(highlightBoard) + shortRect.Height) -
-                                                (strk.GetBounds().Top + strk.GetBounds().Height)) < 20)
+                                                (strk.GetBounds().Top + strk.GetBounds().Height)) < 50)
                                         {
                                             hlShort = true;
                                             Console.WriteLine("YES - 1");
@@ -346,12 +351,12 @@ namespace FinalVersion
                                     foreach (System.Windows.Ink.Stroke strk in highlightBoard.Strokes)
                                     {
                                         if (!hlLong &&
-                                            Math.Abs(Canvas.GetTop(longRect) - (strk.GetBounds().Top + Canvas.GetTop(highlightBoard))) < 20 &&
-                                            Math.Abs(Canvas.GetLeft(longRect) - (strk.GetBounds().Left + Canvas.GetLeft(highlightBoard))) < 20 &&
+                                            Math.Abs(Canvas.GetTop(longRect) - (strk.GetBounds().Top + Canvas.GetTop(highlightBoard))) < 5 &&
+                                            Math.Abs(Canvas.GetLeft(longRect) - (strk.GetBounds().Left + Canvas.GetLeft(highlightBoard))) < 5 &&
                                             Math.Abs((Canvas.GetLeft(longRect) - Canvas.GetLeft(highlightBoard) + longRect.Width) -
-                                                (strk.GetBounds().Left + strk.GetBounds().Width)) < 20 &&
+                                                (strk.GetBounds().Left + strk.GetBounds().Width)) < 5 &&
                                             Math.Abs((Canvas.GetTop(longRect) - Canvas.GetTop(highlightBoard) + longRect.Height) -
-                                                (strk.GetBounds().Top + strk.GetBounds().Height)) < 20)
+                                                (strk.GetBounds().Top + strk.GetBounds().Height)) < 5)
                                         {
                                             hlLong = true;
                                             Console.WriteLine("YES - 3");
@@ -577,10 +582,7 @@ namespace FinalVersion
                                                 isStarted = true;
                                             }
                                             e.Handled = false;
-                                            highlightBoard.UsesTouchShape = false;
-                                            highlightBoard.DefaultDrawingAttributes.Height = circle.Radius * 2;
-                                            highlightBoard.DefaultDrawingAttributes.Width = circle.Radius * 2;
-                                            highlightBoard.DefaultDrawingAttributes.FitToCurve = false;
+                                            
                                         }
                                         break;
                                     }
@@ -616,8 +618,8 @@ namespace FinalVersion
                                             }
                                             e.Handled = false;
                                             highlightBoard.UsesTouchShape = false;
-                                            drawBoard.DefaultDrawingAttributes.Height = circle.Radius * 2;
-                                            drawBoard.DefaultDrawingAttributes.Width = circle.Radius * 2;
+                                            drawBoard.DefaultDrawingAttributes.Height = 16;
+                                            drawBoard.DefaultDrawingAttributes.Width = 16;
                                             drawBoard.DefaultDrawingAttributes.FitToCurve = false;
                                         }
                                         break;
@@ -635,17 +637,13 @@ namespace FinalVersion
                     {
                         case 0:
                             {
-                                if (technique == 0 || (buttonTechnique && technique == 1) || (tiltTechnique && technique == 2) || technique == 3)
+                                // Save the time in which user start touching the surface to complete a task
+                                if (!isStarted)
                                 {
-                                    // Save the time in which user start touching the surface to complete a task
-                                    if (!isStarted)
-                                    {
-                                        startLog = DateTime.Now;
-                                        isStarted = true;
-                                    }
-                                    e.Handled = false;
-                                    highlightBoard.UsesTouchShape = true;
+                                    startLog = DateTime.Now;
+                                    isStarted = true;
                                 }
+                                e.Handled = false;
                                 break;
                             }
                         case 1:
@@ -677,9 +675,10 @@ namespace FinalVersion
                                     isStarted = true;
                                 }
                                 e.Handled = false;
-
-                                highlightBoard.UsesTouchShape = true;
-
+                                highlightBoard.UsesTouchShape = false;
+                                drawBoard.DefaultDrawingAttributes.Height = 16;
+                                drawBoard.DefaultDrawingAttributes.Width = 16;
+                                drawBoard.DefaultDrawingAttributes.FitToCurve = false;
                                 break;
                             }
                     }
@@ -894,6 +893,10 @@ namespace FinalVersion
                 groupName = groupTB.Text;
                 HideLogin();
                 StartWith();
+                
+                FileTarget target = LogManager.Configuration.FindTargetByName("logFile") as FileTarget;
+                String logfile = "C:\\AndreaInternship\\FinalVersion\\Logs\\" + userName + "Log.txt";
+                target.FileName = logfile; 
             }
         }
 
@@ -966,19 +969,19 @@ namespace FinalVersion
                                 case 0:
                                     {
                                         difficultyButton.Content = "Easy";
-                                        highlightLabel.Content = "Please highlight the word 'inputs'";
+                                        shortRect.Visibility = System.Windows.Visibility.Visible;
                                         break;
                                     }
                                 case 1:
                                     {
                                         difficultyButton.Content = "Medium";
-                                        highlightLabel.Content = "Please highlight the word 'immediately'";
+                                        mediumRect.Visibility = System.Windows.Visibility.Visible;
                                         break;
                                     }
                                 case 2:
                                     {
                                         difficultyButton.Content = "Hard";
-                                        highlightLabel.Content = "Please highlight the word 'PixelSense technology'";
+                                        longRect.Visibility = System.Windows.Visibility.Visible;
                                         break;
                                     }
                             }
@@ -1008,40 +1011,40 @@ namespace FinalVersion
                                 case 0:
                                     {
                                         difficultyButton.Content = "Easy";
-                                        Canvas.SetTop(dragRectangle, 380);
-                                        Canvas.SetLeft(dragRectangle, 430);
-                                        dragRectangle.Width = 300;
-                                        dragRectangle.Height = 300;
-                                        Canvas.SetTop(theBox, 264);
-                                        Canvas.SetLeft(theBox, 1077);
-                                        theBox.Width = 600;
-                                        theBox.Height = 600;
+                                        //Canvas.SetTop(dragRectangle, 380);
+                                        //Canvas.SetLeft(dragRectangle, 430);
+                                        //dragRectangle.Width = 300;
+                                        //dragRectangle.Height = 300;
+                                        //Canvas.SetTop(theBox, 264);
+                                        //Canvas.SetLeft(theBox, 1077);
+                                        theBox.Width = 182;
+                                        theBox.Height = 182;
                                         break;
                                     }
                                 case 1:
                                     {
                                         difficultyButton.Content = "Medium";
-                                        Canvas.SetTop(dragRectangle, 400);
-                                        Canvas.SetLeft(dragRectangle, 150);
-                                        dragRectangle.Width = 250;
-                                        dragRectangle.Height = 250;
-                                        Canvas.SetTop(theBox, 350);
-                                        Canvas.SetLeft(theBox, 1400);
-                                        theBox.Width = 400;
-                                        theBox.Height = 400;
+                                        //Canvas.SetTop(dragRectangle, 400);
+                                        //Canvas.SetLeft(dragRectangle, 150);
+                                        //dragRectangle.Width = 250;
+                                        //dragRectangle.Height = 250;
+                                        //Canvas.SetTop(theBox, 350);
+                                        //Canvas.SetLeft(theBox, 1400);
+                                        theBox.Width = 166;
+                                        theBox.Height = 166;
                                         break;
                                     }
                                 case 2:
                                     {
                                         difficultyButton.Content = "Hard";
-                                        Canvas.SetTop(dragRectangle, 425);
-                                        Canvas.SetLeft(dragRectangle, 50);
-                                        dragRectangle.Width = 125;
-                                        dragRectangle.Height = 125;
-                                        Canvas.SetTop(theBox, 410);
-                                        Canvas.SetLeft(theBox, 1700);
-                                        theBox.Width = 150;
-                                        theBox.Height = 150;
+                                        //Canvas.SetTop(dragRectangle, 425);
+                                        //Canvas.SetLeft(dragRectangle, 50);
+                                        //dragRectangle.Width = 125;
+                                        //dragRectangle.Height = 125;
+                                        //Canvas.SetTop(theBox, 410);
+                                        //Canvas.SetLeft(theBox, 1700);
+                                        theBox.Width = 158;
+                                        theBox.Height = 158;
                                         break;
                                     }
                             }
@@ -1144,6 +1147,9 @@ namespace FinalVersion
                             highlightButton.Background = Brushes.Silver;
 
                         }
+                        mediumRect.Visibility = System.Windows.Visibility.Collapsed;
+                        shortRect.Visibility = System.Windows.Visibility.Collapsed;
+                        longRect.Visibility = System.Windows.Visibility.Collapsed;
                         break;
                     }
                 case 1:

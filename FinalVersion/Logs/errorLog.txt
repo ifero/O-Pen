@@ -1,30 +1,6 @@
-2012-04-18 12:57:27.1121|WARN|FinalVersion.SurfaceWindow1|System.IO.IOException: The semaphore timeout period has expired.
+2012-04-19 16:09:33.9188|WARN|FinalVersion.SurfaceWindow1|System.IO.IOException: The semaphore timeout period has expired.
 
    at System.IO.Ports.InternalResources.WinIOError(Int32 errorCode, String str)
    at System.IO.Ports.SerialStream..ctor(String portName, Int32 baudRate, Parity parity, Int32 dataBits, StopBits stopBits, Int32 readTimeout, Int32 writeTimeout, Handshake handshake, Boolean dtrEnable, Boolean rtsEnable, Boolean discardNull, Byte parityReplace)
    at System.IO.Ports.SerialPort.Open()
-   at FinalVersion.SurfaceWindow1..ctor() in C:\AndreaInternship\FinalVersion\FinalVersion\SurfaceWindow1.xaml.cs:line 116
-2012-04-18 13:01:19.5091|WARN|FinalVersion.SurfaceWindow1|System.IO.IOException: The semaphore timeout period has expired.
-
-   at System.IO.Ports.InternalResources.WinIOError(Int32 errorCode, String str)
-   at System.IO.Ports.SerialStream..ctor(String portName, Int32 baudRate, Parity parity, Int32 dataBits, StopBits stopBits, Int32 readTimeout, Int32 writeTimeout, Handshake handshake, Boolean dtrEnable, Boolean rtsEnable, Boolean discardNull, Byte parityReplace)
-   at System.IO.Ports.SerialPort.Open()
-   at FinalVersion.SurfaceWindow1..ctor() in C:\AndreaInternship\FinalVersion\FinalVersion\SurfaceWindow1.xaml.cs:line 116
-2012-04-18 14:32:59.2668|WARN|FinalVersion.SurfaceWindow1|System.IO.IOException: The semaphore timeout period has expired.
-
-   at System.IO.Ports.InternalResources.WinIOError(Int32 errorCode, String str)
-   at System.IO.Ports.SerialStream..ctor(String portName, Int32 baudRate, Parity parity, Int32 dataBits, StopBits stopBits, Int32 readTimeout, Int32 writeTimeout, Handshake handshake, Boolean dtrEnable, Boolean rtsEnable, Boolean discardNull, Byte parityReplace)
-   at System.IO.Ports.SerialPort.Open()
-   at FinalVersion.SurfaceWindow1..ctor() in C:\AndreaInternship\FinalVersion\FinalVersion\SurfaceWindow1.xaml.cs:line 116
-2012-04-18 16:15:45.7986|WARN|FinalVersion.SurfaceWindow1|System.IO.IOException: The semaphore timeout period has expired.
-
-   at System.IO.Ports.InternalResources.WinIOError(Int32 errorCode, String str)
-   at System.IO.Ports.SerialStream..ctor(String portName, Int32 baudRate, Parity parity, Int32 dataBits, StopBits stopBits, Int32 readTimeout, Int32 writeTimeout, Handshake handshake, Boolean dtrEnable, Boolean rtsEnable, Boolean discardNull, Byte parityReplace)
-   at System.IO.Ports.SerialPort.Open()
-   at FinalVersion.SurfaceWindow1..ctor() in C:\AndreaInternship\FinalVersion\FinalVersion\SurfaceWindow1.xaml.cs:line 118
-2012-04-19 11:09:36.1955|WARN|FinalVersion.SurfaceWindow1|System.IO.IOException: The semaphore timeout period has expired.
-
-   at System.IO.Ports.InternalResources.WinIOError(Int32 errorCode, String str)
-   at System.IO.Ports.SerialStream..ctor(String portName, Int32 baudRate, Parity parity, Int32 dataBits, StopBits stopBits, Int32 readTimeout, Int32 writeTimeout, Handshake handshake, Boolean dtrEnable, Boolean rtsEnable, Boolean discardNull, Byte parityReplace)
-   at System.IO.Ports.SerialPort.Open()
-   at FinalVersion.SurfaceWindow1..ctor() in C:\AndreaInternship\FinalVersion\FinalVersion\SurfaceWindow1.xaml.cs:line 117
+   at FinalVersion.SurfaceWindow1..ctor() in C:\AndreaInternship\FinalVersion\FinalVersion\SurfaceWindow1.xaml.cs:line 119

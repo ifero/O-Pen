@@ -5,38 +5,44 @@
     Title="FinalVersion">
 
     <Canvas x:Name="myCanvas" Background="Gray" MaxHeight="1080" MaxWidth="1920" Height="1080" Width="1920">
-        <Rectangle x:Name="dragRectangle" Visibility="Hidden"
-                   Width="300" Height="300" 
-                   Canvas.Top="380" Canvas.Left="430" 
+        <Rectangle x:Name="dragRectangle" Visibility="Collapsed"
+                   Width="150" Height="150" 
+                   Canvas.Top="400" Canvas.Left="550" 
                    Canvas.ZIndex ="2"
                    TouchDown="OnTouchDown"  
                    TouchMove="OnTouchMove"
                    TouchLeave="OnTouchLeave"
                    Fill="Brown" Cursor="None" ClipToBounds="False" />
-        <Rectangle x:Name="theBox" Visibility="Hidden"
-                   Width="600" Height="600"
+        <Rectangle x:Name="theBox" Visibility="Collapsed"
+                   Width="150" Height="150"
                    Canvas.ZIndex ="1"
-                   Canvas.Top="264" Canvas.Left="1077"
+                   Canvas.Top="400" Canvas.Left="1212"
                    Fill="DarkGreen"/>
-        <Label x:Name="textBoard" Canvas.Left="533" Canvas.Top="267" Content=
-            "The Microsoft Surface® platform brings people together to connect,
-learn, and decide. It enables experiences that change the way people
-collaborate and connect with a 360-degree interface. And, with 
-PixelSense™, Microsoft Surface sees and responds to touch and real 
-world objects—supporting more than 50 simultaneous inputs. This 
-experience comes to life in the new 40 inch Samsung SUR40 for 
-Microsoft Surface that can be used as a table, on the wall, or 
-embedded in other fixtures or furniture. PixelSense allows a display to 
-recognize fingers, hands, and objects placed on the screen, enabling 
-vision-based interaction without the use of cameras. The individual 
-pixels in the display see what's touching the screen and that information 
-is immediately processed and interpreted. Think of it like the connection 
-between the eye and the brain. You need both, working together, to see. 
-In this case, the eye is the sensor in the panel, it picks up the image and 
-it feeds that to the brain which is our vision input processor that 
-recognizes the image and does something with it. Taken in whole…this 
-is PixelSense technology." Visibility="Collapsed"
-               FontSize="24" Foreground="Black" Height="597" Width="826" />
+        <Label x:Name="textBoard" Canvas.Left="712" Canvas.Top="265" Content=
+            "The Microsoft Surface® platform brings people together 
+to connect, learn, and decide. It enables experiences that 
+change the way people collaborate and connect with a 
+360-degree interface. And, with PixelSense™, Microsoft
+Surface sees and responds to touch and real world objects
+—supporting more than 50 simultaneous inputs. This 
+experience comes to life in the new 40 inch Samsung 
+SUR40 for Microsoft Surface that can be used as a table, 
+on the wall, or embedded in other fixtures or furniture. 
+PixelSense allows a display to recognize fingers, hands, 
+and objects placed on the screen, enabling vision-based 
+interaction without the use of cameras. The individual 
+pixels in the display see what's touching the screen and 
+that information is immediately processed and interpreted. 
+Think of it like the connection between the eye and the 
+brain. You need both, working together, to see. In this case, 
+the eye is the sensor in the panel, it picks up the image
+and it feeds that to the brain which is our vision input 
+processor that recognizes the image and does something 
+with it. Taken in whole…this is PixelSense technology." 
+               FontSize="18" Foreground="Black" Height="540" Width="512" Visibility="Collapsed"/>
+        <Rectangle x:Name="mediumRect" Height="28" Width="512" Canvas.Left="712" Canvas.Top="580" Fill="#39000000" Visibility="Hidden"/>
+        <Rectangle x:Name="shortRect" Canvas.Left="712" Canvas.Top="693" Height="40"  Width="512" Fill="#39000000" Visibility="Hidden"/>
+        <Rectangle x:Name="longRect" Canvas.Left="717" Canvas.Top="367" Height="20"  Width="497" Fill="#39000000" Visibility="Hidden"/>
         <Label Name="permanentLabel1" Foreground="Black" Content="Andrea Pacino" Canvas.Left="1558" Canvas.Top="982" Height="40" Width="129" />
         <Label Name="permanentLabel2" Foreground="Black" Content="University of Pisa" Canvas.Left="1558" Canvas.Top="1005" />
         <Label Name="permanentLabel3" Foreground="Black" Content="IT-University of Copenhagen" Canvas.Left="1558" Canvas.Top="1028" />
@@ -68,24 +74,23 @@ is PixelSense technology." Visibility="Collapsed"
                          FontSize="24" Foreground="Black" Height="50" HorizontalContentAlignment="Center" 
                          VerticalContentAlignment="Center" Width="200" Visibility="Hidden"
                          Click="OnDragClick"/>
-        <s:SurfaceButton x:Name="userNameButton" Background="Silver" HorizontalContentAlignment="Center" VerticalContentAlignment="Center"
-                         Click="OnUserNameClick" Canvas.Left="1162" Canvas.Top="413" Height="59" Width="172" 
-                         Content="START" Foreground="Black" FontSize="24"/>
-        <Rectangle x:Name="mediumRect" Height="12" Width="130" Canvas.Left="567" Canvas.Top="634" />
-        <Rectangle x:Name="shortRect" Canvas.Left="1163" Canvas.Top="413" Height="8"  Width="61" />
-        <Rectangle x:Name="longRect" Canvas.Left="567" Canvas.Top="793" Height="12"  Width="242" />
-        <Label Canvas.Left="567" Canvas.Top="140" Content="Please, highlight the word 'inputs'" FontSize="32" Foreground="Black" x:Name="highlightLabel" Visibility="Hidden"/>
+
+
+        <Label Canvas.Left="567" Canvas.Top="140" Content="Please highlight the line with the black background" FontSize="32" Foreground="Black" x:Name="highlightLabel" Visibility="Hidden"/>
         <Label Canvas.Left="400" Canvas.Top="140" Content="Please, drag the red square and drop it into the green square" FontSize="32" Foreground="Black" x:Name="DragLabel" Visibility="Hidden"/>
         <Label Canvas.Left="700" Canvas.Top="140" Content="Please, write on the letters" FontSize="32" Foreground="Black" Visibility="Hidden" x:Name="drawLable"/>
-        
-        
+        <!-- qui devo togliere poi l'hidden-->
+        <s:SurfaceButton x:Name="userNameButton" Background="Silver" HorizontalContentAlignment="Center" VerticalContentAlignment="Center"
+                         Click="OnUserNameClick" Canvas.Left="1162" Canvas.Top="413" Height="59" Width="172" 
+                         Content="START" Foreground="Black" FontSize="24" Visibility="Visible"/>
         <s:SurfaceTextBox x:Name="userTB" Height="60" Width="595" Canvas.Left="566" Canvas.Top="412"
-                          KeyboardLayout="Alphanumeric" FontSize="32"/>
+                          KeyboardLayout="Alphanumeric" FontSize="32" Visibility="Visible"/>
         <Label x:Name="userNameLabel" Canvas.Left="567" Canvas.Top="381" Content="Insert Name and Surname"
-               FontSize="24" Foreground="Black"/>
+               FontSize="24" Foreground="Black" Visibility="Visible"/>
         <s:SurfaceTextBox Canvas.Left="883" Canvas.Top="478" Height="55" KeyboardLayout="Alphanumeric" Name="groupTB" 
-                          Width="38" FontSize="32" CharacterCasing="Upper" MaxLength="1"/>
-        <Label Canvas.Left="567" Canvas.Top="479" Content="Insert group name(A,B,C,D)" FontSize="24" Name="groupLabel" Foreground="Black"/>
+                          Width="38" FontSize="32" CharacterCasing="Upper" MaxLength="1" Visibility="Visible"/>
+        <Label Visibility="Visible" Canvas.Left="567" Canvas.Top="479" Content="Insert group name(A,B,C,D)" FontSize="24" Name="groupLabel" Foreground="Black"/>
+        <!-- qui finisce -->
         <s:SurfaceButton Background="Silver" Canvas.Left="142" Canvas.Top="540" Content="NEXT" FontSize="24" Foreground="Black" Height="59" 
                          HorizontalContentAlignment="Center" Name="nextButton" VerticalContentAlignment="Center" Width="172" 
                          Click="OnNextClick" Visibility="Hidden"/>
