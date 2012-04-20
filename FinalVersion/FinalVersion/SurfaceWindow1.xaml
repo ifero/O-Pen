@@ -61,6 +61,9 @@ with it. Taken in whole…this is PixelSense technology."
         <s:SurfaceButton x:Name="highlightButton" Width="200" Height="50" Content="Highlight" Canvas.Left="1517" Canvas.Top="146" 
                          HorizontalContentAlignment="Center" VerticalContentAlignment="Center" FontSize="24" Background="Silver"
                          Click="OnHlClick" Foreground="Black" Visibility="Collapsed"/>
+        <s:SurfaceButton x:Name="ClearButton" Width="200" Height="50" Content="Clear" Canvas.Left="1517" Canvas.Top="210" 
+                         HorizontalContentAlignment="Center" VerticalContentAlignment="Center" FontSize="24" Background="Silver"
+                         Click="OnClearClick" Foreground="Black" Visibility="Collapsed"/>
         <s:SurfaceButton x:Name="difficultyButton" Canvas.Left="20" Canvas.Top="266" Content="Easy" FontSize="32" Height="100" 
                          HorizontalContentAlignment="Center"  VerticalContentAlignment="Center" Width="250" 
                          Click="OnDifficultyClick" Visibility="Collapsed"/>

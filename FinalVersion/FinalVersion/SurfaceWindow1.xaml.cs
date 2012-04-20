@@ -130,8 +130,8 @@ namespace FinalVersion
 
             // Set the color of the strokes of the Ink Boards    
             highlightBoard.UsesTouchShape = false;
-            highlightBoard.DefaultDrawingAttributes.Height = 18;
-            highlightBoard.DefaultDrawingAttributes.Width = 2;
+            highlightBoard.DefaultDrawingAttributes.Height = 16;
+            highlightBoard.DefaultDrawingAttributes.Width = 1;
             highlightBoard.DefaultDrawingAttributes.FitToCurve = false;
             highlightBoard.DefaultDrawingAttributes.Color = System.Windows.Media.Colors.Yellow;
             drawBoard.DefaultDrawingAttributes.Color = System.Windows.Media.Colors.Green;
@@ -282,19 +282,19 @@ namespace FinalVersion
                                     foreach (System.Windows.Ink.Stroke strk in highlightBoard.Strokes)
                                     {
                                         if (!hlShort &&
-                                            Math.Abs(Canvas.GetTop(shortRect) - (strk.GetBounds().Top + Canvas.GetTop(highlightBoard))) < 50 &&
+                                            Math.Abs(Canvas.GetTop(shortRect) - (strk.GetBounds().Top + Canvas.GetTop(highlightBoard))) < 22 &&
                                             Math.Abs(Canvas.GetLeft(shortRect) - (strk.GetBounds().Left + Canvas.GetLeft(highlightBoard))) < 50 &&
                                             Math.Abs((Canvas.GetLeft(shortRect) - Canvas.GetLeft(highlightBoard) + shortRect.Width) -
                                                 (strk.GetBounds().Left + strk.GetBounds().Width)) < 50 &&
                                             Math.Abs((Canvas.GetTop(shortRect) - Canvas.GetTop(highlightBoard) + shortRect.Height) -
-                                                (strk.GetBounds().Top + strk.GetBounds().Height)) < 50)
+                                                (strk.GetBounds().Top + strk.GetBounds().Height)) < 22)
                                         {
                                             hlShort = true;
                                             Console.WriteLine("YES - 1");
                                             stopLog = DateTime.Now;
                                             epochStart = (long)(startLog - new DateTime(1970, 1, 1)).TotalMilliseconds;
                                             epochStop = (long)(stopLog - new DateTime(1970, 1, 1)).TotalMilliseconds;
-                                            logger.Info("{0} ; {1} ; {2} ; {3} ; {4} ; {5} ; {6} ; {7}", epochStart, userName, groupName, task, technique, difficulty, errors, epochStop);
+                                            logger.Info("; {0} ; {1} ; {2} ; {3} ; {4} ; {5} ; {6} ; {7}", epochStart, userName, groupName, task, technique, difficulty, errors, epochStop);
                                             if (groupName != "T")
                                             {
                                                 ShowDoneTask();
@@ -316,12 +316,12 @@ namespace FinalVersion
                                     foreach (System.Windows.Ink.Stroke strk in highlightBoard.Strokes)
                                     {
                                         if (!hlMedium &&
-                                            Math.Abs(Canvas.GetTop(mediumRect) - (strk.GetBounds().Top + Canvas.GetTop(highlightBoard))) < 20 &&
+                                            Math.Abs(Canvas.GetTop(mediumRect) - (strk.GetBounds().Top + Canvas.GetTop(highlightBoard))) < 10 &&
                                             Math.Abs(Canvas.GetLeft(mediumRect) - (strk.GetBounds().Left + Canvas.GetLeft(highlightBoard))) < 20 &&
                                             Math.Abs((Canvas.GetLeft(mediumRect) - Canvas.GetLeft(highlightBoard) + mediumRect.Width) -
                                                 (strk.GetBounds().Left + strk.GetBounds().Width)) < 20 &&
                                             Math.Abs((Canvas.GetTop(mediumRect) - Canvas.GetTop(highlightBoard) + mediumRect.Height) -
-                                                (strk.GetBounds().Top + strk.GetBounds().Height)) < 20)
+                                                (strk.GetBounds().Top + strk.GetBounds().Height)) < 10)
                                         {
                                             hlMedium = true;
                                             Console.WriteLine("YES - 2");
@@ -329,7 +329,7 @@ namespace FinalVersion
                                             stopLog = DateTime.Now;
                                             epochStart = (long)(startLog - new DateTime(1970, 1, 1)).TotalMilliseconds;
                                             epochStop = (long)(stopLog - new DateTime(1970, 1, 1)).TotalMilliseconds;
-                                            logger.Info("{0} ; {1} ; {2} ; {3} ; {4} ; {5} ; {6} ; {7}", epochStart, userName, groupName, task, technique, difficulty, errors, epochStop);
+                                            logger.Info("; {0} ; {1} ; {2} ; {3} ; {4} ; {5} ; {6} ; {7}", epochStart, userName, groupName, task, technique, difficulty, errors, epochStop);
                                             if (groupName != "T")
                                             {
                                                 ShowDoneTask();
@@ -351,12 +351,12 @@ namespace FinalVersion
                                     foreach (System.Windows.Ink.Stroke strk in highlightBoard.Strokes)
                                     {
                                         if (!hlLong &&
-                                            Math.Abs(Canvas.GetTop(longRect) - (strk.GetBounds().Top + Canvas.GetTop(highlightBoard))) < 5 &&
+                                            Math.Abs(Canvas.GetTop(longRect) - (strk.GetBounds().Top + Canvas.GetTop(highlightBoard))) < 1 &&
                                             Math.Abs(Canvas.GetLeft(longRect) - (strk.GetBounds().Left + Canvas.GetLeft(highlightBoard))) < 5 &&
                                             Math.Abs((Canvas.GetLeft(longRect) - Canvas.GetLeft(highlightBoard) + longRect.Width) -
                                                 (strk.GetBounds().Left + strk.GetBounds().Width)) < 5 &&
                                             Math.Abs((Canvas.GetTop(longRect) - Canvas.GetTop(highlightBoard) + longRect.Height) -
-                                                (strk.GetBounds().Top + strk.GetBounds().Height)) < 5)
+                                                (strk.GetBounds().Top + strk.GetBounds().Height)) < 1)
                                         {
                                             hlLong = true;
                                             Console.WriteLine("YES - 3");
@@ -364,7 +364,7 @@ namespace FinalVersion
                                             stopLog = DateTime.Now;
                                             epochStart = (long)(startLog - new DateTime(1970, 1, 1)).TotalMilliseconds;
                                             epochStop = (long)(stopLog - new DateTime(1970, 1, 1)).TotalMilliseconds;
-                                            logger.Info("{0} ; {1} ; {2} ; {3} ; {4} ; {5} ; {6} ; {7}", epochStart, userName, groupName, task, technique, difficulty, errors, epochStop);
+                                            logger.Info("; {0} ; {1} ; {2} ; {3} ; {4} ; {5} ; {6} ; {7}", epochStart, userName, groupName, task, technique, difficulty, errors, epochStop);
                                             if (groupName != "T")
                                             {
                                                 ShowDoneTask();
@@ -401,7 +401,7 @@ namespace FinalVersion
                                 stopLog = DateTime.Now;
                                 epochStart = (long)(startLog - new DateTime(1970, 1, 1)).TotalMilliseconds;
                                 epochStop = (long)(stopLog - new DateTime(1970, 1, 1)).TotalMilliseconds;
-                                logger.Info("{0} ; {1} ; {2} ; {3} ; {4} ; {5} ; {6} ; {7}", epochStart, userName, groupName, task, technique, difficulty, errors, epochStop);
+                                logger.Info("; {0} ; {1} ; {2} ; {3} ; {4} ; {5} ; {6} ; {7}", epochStart, userName, groupName, task, technique, difficulty, errors, epochStop);
                                 if (groupName != "T")
                                 {
                                     ShowDoneTask();
@@ -573,7 +573,7 @@ namespace FinalVersion
                             {
                                 case 0:
                                     {
-                                        if (technique == 0 || (buttonTechnique && technique == 1) || (tiltTechnique && technique == 2))
+                                        if ((technique == 0 && highlight) || (buttonTechnique && technique == 1) || (tiltTechnique && technique == 2))
                                         {
                                             // Save the time in which user start touching the surface to complete a task
                                             if (!isStarted)
@@ -588,7 +588,7 @@ namespace FinalVersion
                                     }
                                 case 1:
                                     {
-                                        if (technique == 0 || (buttonTechnique && technique == 1) || (tiltTechnique && technique == 2))
+                                        if ((technique == 0 && drag) || (buttonTechnique && technique == 1) || (tiltTechnique && technique == 2))
                                         {
                                             if (!isStarted)
                                             {
@@ -618,8 +618,8 @@ namespace FinalVersion
                                             }
                                             e.Handled = false;
                                             highlightBoard.UsesTouchShape = false;
-                                            drawBoard.DefaultDrawingAttributes.Height = 16;
-                                            drawBoard.DefaultDrawingAttributes.Width = 16;
+                                            drawBoard.DefaultDrawingAttributes.Height = 8;
+                                            drawBoard.DefaultDrawingAttributes.Width = 8;
                                             drawBoard.DefaultDrawingAttributes.FitToCurve = false;
                                         }
                                         break;
@@ -637,13 +637,16 @@ namespace FinalVersion
                     {
                         case 0:
                             {
-                                // Save the time in which user start touching the surface to complete a task
-                                if (!isStarted)
+                                if (highlight)
                                 {
-                                    startLog = DateTime.Now;
-                                    isStarted = true;
+                                    if (!isStarted)
+                                    {
+                                        // Save the time in which user start touching the surface to complete a task
+                                        startLog = DateTime.Now;
+                                        isStarted = true;
+                                    }
+                                    e.Handled = false;
                                 }
-                                e.Handled = false;
                                 break;
                             }
                         case 1:
@@ -675,10 +678,7 @@ namespace FinalVersion
                                     isStarted = true;
                                 }
                                 e.Handled = false;
-                                highlightBoard.UsesTouchShape = false;
-                                drawBoard.DefaultDrawingAttributes.Height = 16;
-                                drawBoard.DefaultDrawingAttributes.Width = 16;
-                                drawBoard.DefaultDrawingAttributes.FitToCurve = false;
+                                highlightBoard.UsesTouchShape = true;
                                 break;
                             }
                     }
@@ -757,9 +757,9 @@ namespace FinalVersion
             stopLog = DateTime.Now;
             epochStart = (long)(startLog - new DateTime(1970, 1, 1)).TotalMilliseconds;
             epochStop = (long)(stopLog - new DateTime(1970, 1, 1)).TotalMilliseconds;
-            logger.Info("{0} ; {1} ; {2} ; {3} ; {4} ; {5} ; {6} ; {7}", epochStart, userName, groupName, task, technique, difficulty, errors, epochStop);
+            logger.Info("; {0} ; {1} ; {2} ; {3} ; {4} ; {5} ; {6} ; {7}", epochStart, userName, groupName, task, technique, difficulty, errors, epochStop);
             //take a snapshot
-            string tmp = userName+difficulty+".bmp";
+            string tmp = "C:\\AndreaInternship\\FinalVersion\\Logs\\"+userName+difficulty+"-"+DateTime.Today+".bmp";
             sc.CaptureScreenToFile(tmp, System.Drawing.Imaging.ImageFormat.Bmp);
             //show alert.
             if (groupName != "T")
@@ -778,7 +778,7 @@ namespace FinalVersion
         {
             e.Handled = true;
 
-            if (e.TouchDevice == rectangleControlTouchDevice)
+            if (e.TouchDevice == rectangleControlTouchDevice && drag)
             {
                 // Get the current position of the contact.  
                 System.Windows.Point currentTouchPoint = rectangleControlTouchDevice.GetCenterPosition(this);
@@ -906,6 +906,7 @@ namespace FinalVersion
         private void ShowContent()
         {
             isStarted = false;
+            errors = 0;
             // Check if all combinations are done, if they are it show final content.
             if (!thankyou)
             {
@@ -955,7 +956,7 @@ namespace FinalVersion
                         taskButton.Content = "Task1 - HL";
                         highlightBoard.Visibility = System.Windows.Visibility.Visible;
                         textBoard.Visibility = System.Windows.Visibility.Visible;
-
+                        ClearButton.Visibility = System.Windows.Visibility.Visible;
                         // If technique is finger or always-on-pen Mode show relative button
                         if (technique == 0 || technique == 3)
                         {
@@ -1011,8 +1012,8 @@ namespace FinalVersion
                                 case 0:
                                     {
                                         difficultyButton.Content = "Easy";
-                                        //Canvas.SetTop(dragRectangle, 380);
-                                        //Canvas.SetLeft(dragRectangle, 430);
+                                        Canvas.SetTop(dragRectangle, 400);
+                                        Canvas.SetLeft(dragRectangle, 550);
                                         //dragRectangle.Width = 300;
                                         //dragRectangle.Height = 300;
                                         //Canvas.SetTop(theBox, 264);
@@ -1024,8 +1025,8 @@ namespace FinalVersion
                                 case 1:
                                     {
                                         difficultyButton.Content = "Medium";
-                                        //Canvas.SetTop(dragRectangle, 400);
-                                        //Canvas.SetLeft(dragRectangle, 150);
+                                        Canvas.SetTop(dragRectangle, 400);
+                                        Canvas.SetLeft(dragRectangle, 550);
                                         //dragRectangle.Width = 250;
                                         //dragRectangle.Height = 250;
                                         //Canvas.SetTop(theBox, 350);
@@ -1037,8 +1038,8 @@ namespace FinalVersion
                                 case 2:
                                     {
                                         difficultyButton.Content = "Hard";
-                                        //Canvas.SetTop(dragRectangle, 425);
-                                        //Canvas.SetLeft(dragRectangle, 50);
+                                        Canvas.SetTop(dragRectangle, 400);
+                                        Canvas.SetLeft(dragRectangle, 550);
                                         //dragRectangle.Width = 125;
                                         //dragRectangle.Height = 125;
                                         //Canvas.SetTop(theBox, 410);
@@ -1064,6 +1065,7 @@ namespace FinalVersion
                 case 2:
                     {
                         taskButton.Content = "Task3 - INK";
+                        ClearButton.Visibility = System.Windows.Visibility.Visible;
                         drawBoard.Visibility = System.Windows.Visibility.Visible;
                         drawBoard.Background = System.Windows.Media.Brushes.Black;
                         if (technique == 0 || technique == 3)
@@ -1137,6 +1139,7 @@ namespace FinalVersion
                         highlightBoard.EditingMode = SurfaceInkEditingMode.None;
                         highlightBoard.Visibility = System.Windows.Visibility.Collapsed;
                         highlightBoard.Strokes.Clear();
+                        ClearButton.Visibility = System.Windows.Visibility.Collapsed;
                         hlLong = hlShort = hlMedium = false;
 
                         textBoard.Visibility = System.Windows.Visibility.Collapsed;
@@ -1179,6 +1182,7 @@ namespace FinalVersion
                         drawBoard.EditingMode = SurfaceInkEditingMode.None;
                         drawBoard.Visibility = System.Windows.Visibility.Collapsed;
                         drawBoard.Strokes.Clear();
+                        ClearButton.Visibility = System.Windows.Visibility.Collapsed;
                         if (!trainingMode)
                         {
                             drawLable.Visibility = System.Windows.Visibility.Hidden;
@@ -1803,6 +1807,20 @@ namespace FinalVersion
                         }
                         break;
                     }
+            }
+        }
+
+        private void OnClearClick(object s, RoutedEventArgs e)
+        {
+            if (highlightBoard.Strokes.Count() != 0)
+            {
+                highlightBoard.Strokes.Clear();
+                errors++;
+                numberOfStrokes = 0;
+            }
+            if (drawBoard.Strokes.Count() != 0)
+            {
+                drawBoard.Strokes.Clear();
             }
         }
     }

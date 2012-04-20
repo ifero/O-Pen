@@ -1,0 +1,2 @@
+2012-04-20 10:04:14.0058|INFO|FinalVersion.SurfaceWindow1|1334916251167 ; andrea pacino ; T ; 0 ; 3 ; 0 ; 1 ; 1334916254003
+2012-04-20 10:04:46.8487|INFO|FinalVersion.SurfaceWindow1|1334916276557 ; andrea pacino ; T ; 1 ; 3 ; 1 ; 2 ; 1334916286848
