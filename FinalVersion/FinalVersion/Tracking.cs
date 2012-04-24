@@ -15,7 +15,7 @@ namespace Pen
     {
         private bool isPen;
         private Image<Gray, Byte> image;
-        private const int size = 50;
+        private const int size = 30;
         private const int threshold = 254;
 
         public Tracking()
@@ -50,7 +50,7 @@ namespace Pen
             IList<CircleF> circles = new List<CircleF>();
             for (; contours.HNext != null; contours = contours.HNext)
             {
-                if (contours.Area >= 1)
+                if (contours.Area >= 1 && contours.Area <= size)
                 {
                     circles.Add(new CircleF(
                       new PointF(contours.BoundingRectangle.Left + (contours.BoundingRectangle.Width / 2),
@@ -62,7 +62,7 @@ namespace Pen
 
             }
 
-            if (contours.Area >= 1)
+            if (contours.Area >= 1 && contours.Area <= size)
             {
                 circles.Add(new CircleF(
                   new PointF(contours.BoundingRectangle.Left + contours.BoundingRectangle.Width / 2,

@@ -1,0 +1,2 @@
+2012-04-23 12:01:46.7557|INFO|FinalVersion.SurfaceWindow1|; 1335182483194 ; test ; T ; 0 ; 0 ; 0 ; 7 ; 1335182506754
+2012-04-23 12:01:55.4952|INFO|FinalVersion.SurfaceWindow1|; 1335182511976 ; test ; T ; 0 ; 0 ; 1 ; 1 ; 1335182515495

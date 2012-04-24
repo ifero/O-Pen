@@ -73,6 +73,7 @@ namespace FinalVersion
         /// </summary>
         public SurfaceWindow1()
         {
+            
             // suppress, if there is, the virtual keyboard of the System.
             Microsoft.Surface.SurfaceKeyboard.SuppressTextInputPanel(hwnd);
 
@@ -283,9 +284,9 @@ namespace FinalVersion
                                     {
                                         if (!hlShort &&
                                             Math.Abs(Canvas.GetTop(shortRect) - (strk.GetBounds().Top + Canvas.GetTop(highlightBoard))) < 22 &&
-                                            Math.Abs(Canvas.GetLeft(shortRect) - (strk.GetBounds().Left + Canvas.GetLeft(highlightBoard))) < 50 &&
+                                            Math.Abs(Canvas.GetLeft(shortRect) - (strk.GetBounds().Left + Canvas.GetLeft(highlightBoard))) < 22 &&
                                             Math.Abs((Canvas.GetLeft(shortRect) - Canvas.GetLeft(highlightBoard) + shortRect.Width) -
-                                                (strk.GetBounds().Left + strk.GetBounds().Width)) < 50 &&
+                                                (strk.GetBounds().Left + strk.GetBounds().Width)) < 22 &&
                                             Math.Abs((Canvas.GetTop(shortRect) - Canvas.GetTop(highlightBoard) + shortRect.Height) -
                                                 (strk.GetBounds().Top + strk.GetBounds().Height)) < 22)
                                         {
@@ -317,9 +318,9 @@ namespace FinalVersion
                                     {
                                         if (!hlMedium &&
                                             Math.Abs(Canvas.GetTop(mediumRect) - (strk.GetBounds().Top + Canvas.GetTop(highlightBoard))) < 10 &&
-                                            Math.Abs(Canvas.GetLeft(mediumRect) - (strk.GetBounds().Left + Canvas.GetLeft(highlightBoard))) < 20 &&
+                                            Math.Abs(Canvas.GetLeft(mediumRect) - (strk.GetBounds().Left + Canvas.GetLeft(highlightBoard))) < 10 &&
                                             Math.Abs((Canvas.GetLeft(mediumRect) - Canvas.GetLeft(highlightBoard) + mediumRect.Width) -
-                                                (strk.GetBounds().Left + strk.GetBounds().Width)) < 20 &&
+                                                (strk.GetBounds().Left + strk.GetBounds().Width)) < 10 &&
                                             Math.Abs((Canvas.GetTop(mediumRect) - Canvas.GetTop(highlightBoard) + mediumRect.Height) -
                                                 (strk.GetBounds().Top + strk.GetBounds().Height)) < 10)
                                         {
@@ -351,12 +352,12 @@ namespace FinalVersion
                                     foreach (System.Windows.Ink.Stroke strk in highlightBoard.Strokes)
                                     {
                                         if (!hlLong &&
-                                            Math.Abs(Canvas.GetTop(longRect) - (strk.GetBounds().Top + Canvas.GetTop(highlightBoard))) < 1 &&
+                                            Math.Abs(Canvas.GetTop(longRect) - (strk.GetBounds().Top + Canvas.GetTop(highlightBoard))) < 3 &&
                                             Math.Abs(Canvas.GetLeft(longRect) - (strk.GetBounds().Left + Canvas.GetLeft(highlightBoard))) < 5 &&
                                             Math.Abs((Canvas.GetLeft(longRect) - Canvas.GetLeft(highlightBoard) + longRect.Width) -
                                                 (strk.GetBounds().Left + strk.GetBounds().Width)) < 5 &&
                                             Math.Abs((Canvas.GetTop(longRect) - Canvas.GetTop(highlightBoard) + longRect.Height) -
-                                                (strk.GetBounds().Top + strk.GetBounds().Height)) < 1)
+                                                (strk.GetBounds().Top + strk.GetBounds().Height)) < 3)
                                         {
                                             hlLong = true;
                                             Console.WriteLine("YES - 3");
@@ -582,7 +583,10 @@ namespace FinalVersion
                                                 isStarted = true;
                                             }
                                             e.Handled = false;
-                                            
+                                            highlightBoard.UsesTouchShape = false;
+                                            highlightBoard.DefaultDrawingAttributes.Height = 16;
+                                            highlightBoard.DefaultDrawingAttributes.Width = 1;
+                                            highlightBoard.DefaultDrawingAttributes.FitToCurve = false;
                                         }
                                         break;
                                     }
@@ -609,7 +613,7 @@ namespace FinalVersion
                                     }
                                 case 2:
                                     {
-                                        if (technique == 0 || (buttonTechnique && technique == 1) || (tiltTechnique && technique == 2))
+                                        if ((technique == 0 && draw) || (buttonTechnique && technique == 1) || (tiltTechnique && technique == 2))
                                         {
                                             if (!isStarted)
                                             {
@@ -618,8 +622,8 @@ namespace FinalVersion
                                             }
                                             e.Handled = false;
                                             highlightBoard.UsesTouchShape = false;
-                                            drawBoard.DefaultDrawingAttributes.Height = 8;
-                                            drawBoard.DefaultDrawingAttributes.Width = 8;
+                                            drawBoard.DefaultDrawingAttributes.Height = circle.Radius * 2;
+                                            drawBoard.DefaultDrawingAttributes.Width = circle.Radius * 2;
                                             drawBoard.DefaultDrawingAttributes.FitToCurve = false;
                                         }
                                         break;
@@ -646,6 +650,10 @@ namespace FinalVersion
                                         isStarted = true;
                                     }
                                     e.Handled = false;
+                                    highlightBoard.UsesTouchShape = false;
+                                    highlightBoard.DefaultDrawingAttributes.Height = 16;
+                                    highlightBoard.DefaultDrawingAttributes.Width = 1;
+                                    highlightBoard.DefaultDrawingAttributes.FitToCurve = false;
                                 }
                                 break;
                             }
@@ -672,13 +680,16 @@ namespace FinalVersion
                             }
                         case 2:
                             {
-                                if (!isStarted)
+                                if (draw)
                                 {
-                                    startLog = DateTime.Now;
-                                    isStarted = true;
+                                    if (!isStarted)
+                                    {
+                                        startLog = DateTime.Now;
+                                        isStarted = true;
+                                    }
+                                    e.Handled = false;
+                                    highlightBoard.UsesTouchShape = true;
                                 }
-                                e.Handled = false;
-                                highlightBoard.UsesTouchShape = true;
                                 break;
                             }
                     }
@@ -759,7 +770,7 @@ namespace FinalVersion
             epochStop = (long)(stopLog - new DateTime(1970, 1, 1)).TotalMilliseconds;
             logger.Info("; {0} ; {1} ; {2} ; {3} ; {4} ; {5} ; {6} ; {7}", epochStart, userName, groupName, task, technique, difficulty, errors, epochStop);
             //take a snapshot
-            string tmp = "C:\\AndreaInternship\\FinalVersion\\Logs\\"+userName+difficulty+"-"+DateTime.Today+".bmp";
+            string tmp = "C:\\AndreaInternship\\FinalVersion\\Logs\\"+userName+technique+difficulty+".bmp";
             sc.CaptureScreenToFile(tmp, System.Drawing.Imaging.ImageFormat.Bmp);
             //show alert.
             if (groupName != "T")
@@ -809,7 +820,7 @@ namespace FinalVersion
         private void OnTouchLeave(object s, System.Windows.Input.TouchEventArgs e)
         {
             // If this contact is the one that was remembered  
-            if (e.TouchDevice == rectangleControlTouchDevice)
+            if (e.TouchDevice == rectangleControlTouchDevice && drag)
             {
                 // Forget about this contact.
                 rectangleControlTouchDevice = null;
@@ -893,7 +904,7 @@ namespace FinalVersion
                 groupName = groupTB.Text;
                 HideLogin();
                 StartWith();
-                
+                // Create a single-user Log file
                 FileTarget target = LogManager.Configuration.FindTargetByName("logFile") as FileTarget;
                 String logfile = "C:\\AndreaInternship\\FinalVersion\\Logs\\" + userName + "Log.txt";
                 target.FileName = logfile; 
@@ -1053,12 +1064,10 @@ namespace FinalVersion
                         else
                         {
                             ShowTrainingLabel();
+                            Canvas.SetTop(dragRectangle, 400);
+                            Canvas.SetLeft(dragRectangle, 550);
                             trainingLabel.Visibility = System.Windows.Visibility.Visible;
                             trainigButton.Visibility = System.Windows.Visibility.Visible;
-                            Canvas.SetTop(dragRectangle, 400);
-                            Canvas.SetLeft(dragRectangle, 150);
-                            dragRectangle.Width = 250;
-                            dragRectangle.Height = 250;
                         }
                         break;
                     }
@@ -1084,7 +1093,7 @@ namespace FinalVersion
                                 case 0:
                                     {
                                         difficultyButton.Content = "Easy";
-                                        wordDrawLabel.Content = "PALERMO";
+                                        wordDrawLabel.Content = "pIT lab";
                                         wordDrawLabel.FontSize = 200;
                                         wordDrawLabel.FontFamily = new FontFamily("Segoe360");
                                         break;
@@ -1815,7 +1824,6 @@ namespace FinalVersion
             if (highlightBoard.Strokes.Count() != 0)
             {
                 highlightBoard.Strokes.Clear();
-                errors++;
                 numberOfStrokes = 0;
             }
             if (drawBoard.Strokes.Count() != 0)

@@ -1,0 +1,12 @@
+2012-04-23 12:46:53.7360|INFO|FinalVersion.SurfaceWindow1|; 1335185211434 ; andrea ; T ; 0 ; 0 ; 0 ; 1 ; 1335185213734
+2012-04-23 13:24:33.6618|INFO|FinalVersion.SurfaceWindow1|; -62135596800000 ; andrea ; T ; 2 ; 3 ; 0 ; 0 ; 1335187473660
+2012-04-23 13:33:04.1931|INFO|FinalVersion.SurfaceWindow1|; -62135596800000 ; andrea ; T ; 2 ; 3 ; 2 ; 0 ; 1335187984191
+2012-04-23 13:34:53.6845|INFO|FinalVersion.SurfaceWindow1|; 1335188061006 ; andrea ; T ; 2 ; 3 ; 0 ; 0 ; 1335188093683
+2012-04-23 13:36:38.2176|INFO|FinalVersion.SurfaceWindow1|; -62135596800000 ; andrea ; T ; 2 ; 3 ; 0 ; 0 ; 1335188198216
+2012-04-23 13:38:03.5710|INFO|FinalVersion.SurfaceWindow1|; -62135596800000 ; andrea ; T ; 2 ; 3 ; 0 ; 0 ; 1335188283570
+2012-04-23 13:40:00.9050|INFO|FinalVersion.SurfaceWindow1|; -62135596800000 ; andrea ; T ; 2 ; 3 ; 0 ; 0 ; 1335188400904
+2012-04-23 14:12:57.2431|INFO|FinalVersion.SurfaceWindow1|; -62135596800000 ; andrea ; T ; 0 ; 0 ; 0 ; 2 ; 1335190377241
+2012-04-23 14:13:08.5618|INFO|FinalVersion.SurfaceWindow1|; -62135596800000 ; andrea ; T ; 0 ; 0 ; 1 ; 4 ; 1335190388561
+2012-04-23 14:15:19.4042|INFO|FinalVersion.SurfaceWindow1|; -62135596800000 ; andrea ; A ; 0 ; 0 ; 0 ; 2 ; 1335190519402
+2012-04-23 14:15:26.6617|INFO|FinalVersion.SurfaceWindow1|; -62135596800000 ; andrea ; A ; 0 ; 0 ; 1 ; 2 ; 1335190526661
+2012-04-23 14:15:41.6075|INFO|FinalVersion.SurfaceWindow1|; -62135596800000 ; andrea ; A ; 0 ; 0 ; 2 ; 6 ; 1335190541607
