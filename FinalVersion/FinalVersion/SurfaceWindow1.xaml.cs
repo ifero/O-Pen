@@ -47,9 +47,7 @@ namespace FinalVersion
         private System.Windows.Point lastPoint;
         private int technique, task, difficulty;
         private bool buttonTechnique, tiltTechnique;
-        private bool highlight;
-        private bool draw;
-        private bool drag;
+        private bool highlight, draw, drag;
         private bool hlShort, hlMedium, hlLong;
         private bool isStarted;
         private String userName;
@@ -87,6 +85,8 @@ namespace FinalVersion
             groupName = null;
 
             highlight = false;
+            drag = false;
+            draw = false;
             buttonTechnique = false;
             tiltTechnique = false;
 
