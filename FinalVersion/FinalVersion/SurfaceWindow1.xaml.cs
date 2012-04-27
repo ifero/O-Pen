@@ -62,6 +62,7 @@ namespace FinalVersion
         //float[] rwGyro;
         int button;
         private int errors;
+        private int loop;
         private int numberOfStrokes;
         private int lastDifficulty;
         private int numDifficulty;
@@ -567,7 +568,7 @@ namespace FinalVersion
                     {
                         // Check if the TouchDevice is the pen, of finger, found processing the RAW image.
                         if ((System.Math.Abs(((int)e.TouchDevice.GetCenterPosition(this).X - (int)(circle.Center.X * 2))) < 15) &&
-                            (System.Math.Abs(((int)e.TouchDevice.GetCenterPosition(this).Y - (int)(circle.Center.Y * 2 - 15))) < 15))
+                            (System.Math.Abs(((int)e.TouchDevice.GetCenterPosition(this).Y - (int)(circle.Center.Y * 2))) < 15))
                         {
                             // Based on the task that is running and if actions are performed it allow to write/highlight/drag
                             switch (task)
@@ -583,10 +584,6 @@ namespace FinalVersion
                                                 isStarted = true;
                                             }
                                             e.Handled = false;
-                                            highlightBoard.UsesTouchShape = false;
-                                            highlightBoard.DefaultDrawingAttributes.Height = 16;
-                                            highlightBoard.DefaultDrawingAttributes.Width = 1;
-                                            highlightBoard.DefaultDrawingAttributes.FitToCurve = false;
                                         }
                                         break;
                                     }
@@ -621,7 +618,7 @@ namespace FinalVersion
                                                 isStarted = true;
                                             }
                                             e.Handled = false;
-                                            highlightBoard.UsesTouchShape = false;
+                                            drawBoard.UsesTouchShape = false;
                                             drawBoard.DefaultDrawingAttributes.Height = circle.Radius * 2;
                                             drawBoard.DefaultDrawingAttributes.Width = circle.Radius * 2;
                                             drawBoard.DefaultDrawingAttributes.FitToCurve = false;
@@ -650,10 +647,6 @@ namespace FinalVersion
                                         isStarted = true;
                                     }
                                     e.Handled = false;
-                                    highlightBoard.UsesTouchShape = false;
-                                    highlightBoard.DefaultDrawingAttributes.Height = 16;
-                                    highlightBoard.DefaultDrawingAttributes.Width = 1;
-                                    highlightBoard.DefaultDrawingAttributes.FitToCurve = false;
                                 }
                                 break;
                             }
@@ -688,7 +681,10 @@ namespace FinalVersion
                                         isStarted = true;
                                     }
                                     e.Handled = false;
-                                    highlightBoard.UsesTouchShape = true;
+                                    drawBoard.UsesTouchShape = false;
+                                    drawBoard.DefaultDrawingAttributes.Height = 4;
+                                    drawBoard.DefaultDrawingAttributes.Width = 4;
+                                    drawBoard.DefaultDrawingAttributes.FitToCurve = false;
                                 }
                                 break;
                             }
@@ -770,7 +766,7 @@ namespace FinalVersion
             epochStop = (long)(stopLog - new DateTime(1970, 1, 1)).TotalMilliseconds;
             logger.Info("; {0} ; {1} ; {2} ; {3} ; {4} ; {5} ; {6} ; {7}", epochStart, userName, groupName, task, technique, difficulty, errors, epochStop);
             //take a snapshot
-            string tmp = "C:\\AndreaInternship\\FinalVersion\\Logs\\"+userName+technique+difficulty+".bmp";
+            string tmp = "C:\\AndreaInternship\\FinalVersion\\Logs\\" + userName + "-" + technique + "-" + difficulty + ".bmp";
             sc.CaptureScreenToFile(tmp, System.Drawing.Imaging.ImageFormat.Bmp);
             //show alert.
             if (groupName != "T")
@@ -820,7 +816,7 @@ namespace FinalVersion
         private void OnTouchLeave(object s, System.Windows.Input.TouchEventArgs e)
         {
             // If this contact is the one that was remembered  
-            if (e.TouchDevice == rectangleControlTouchDevice && drag)
+            if (e.TouchDevice == rectangleControlTouchDevice)
             {
                 // Forget about this contact.
                 rectangleControlTouchDevice = null;
@@ -906,7 +902,7 @@ namespace FinalVersion
                 StartWith();
                 // Create a single-user Log file
                 FileTarget target = LogManager.Configuration.FindTargetByName("logFile") as FileTarget;
-                String logfile = "C:\\AndreaInternship\\FinalVersion\\Logs\\" + userName + "Log.txt";
+                String logfile = "C:\\AndreaInternship\\FinalVersion\\Logs\\" + userName + "_Log.txt";
                 target.FileName = logfile; 
             }
         }
@@ -1025,10 +1021,6 @@ namespace FinalVersion
                                         difficultyButton.Content = "Easy";
                                         Canvas.SetTop(dragRectangle, 400);
                                         Canvas.SetLeft(dragRectangle, 550);
-                                        //dragRectangle.Width = 300;
-                                        //dragRectangle.Height = 300;
-                                        //Canvas.SetTop(theBox, 264);
-                                        //Canvas.SetLeft(theBox, 1077);
                                         theBox.Width = 182;
                                         theBox.Height = 182;
                                         break;
@@ -1038,10 +1030,6 @@ namespace FinalVersion
                                         difficultyButton.Content = "Medium";
                                         Canvas.SetTop(dragRectangle, 400);
                                         Canvas.SetLeft(dragRectangle, 550);
-                                        //dragRectangle.Width = 250;
-                                        //dragRectangle.Height = 250;
-                                        //Canvas.SetTop(theBox, 350);
-                                        //Canvas.SetLeft(theBox, 1400);
                                         theBox.Width = 166;
                                         theBox.Height = 166;
                                         break;
@@ -1051,10 +1039,6 @@ namespace FinalVersion
                                         difficultyButton.Content = "Hard";
                                         Canvas.SetTop(dragRectangle, 400);
                                         Canvas.SetLeft(dragRectangle, 550);
-                                        //dragRectangle.Width = 125;
-                                        //dragRectangle.Height = 125;
-                                        //Canvas.SetTop(theBox, 410);
-                                        //Canvas.SetLeft(theBox, 1700);
                                         theBox.Width = 158;
                                         theBox.Height = 158;
                                         break;
@@ -1240,7 +1224,6 @@ namespace FinalVersion
             HideContent();
             if (groupName != "T")
             {
-                
                 if (numDifficulty != 2)
                 {
                     numDifficulty++;
@@ -1250,15 +1233,23 @@ namespace FinalVersion
                 {
                     numDifficulty = 0;
                     WhichDifficulty();
-                    trainingMode = true;
-                    if (task != 2)
+                    if (loop != 2 && task != 2)
                     {
-                        task++;
+                        loop++;
                     }
                     else
                     {
-                        ChangeTechnique();
-                        task = 0;
+                        loop = 0;
+                        trainingMode = true;
+                        if (task != 2)
+                        {
+                            task++;
+                        }
+                        else
+                        {
+                            ChangeTechnique();
+                            task = 0;
+                        }
                     }
                 }
                 ShowContent();

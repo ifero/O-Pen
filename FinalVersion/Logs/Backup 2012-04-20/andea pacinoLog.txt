@@ -1,2 +1,0 @@
-2012-04-20 10:11:49.1442|INFO|FinalVersion.SurfaceWindow1|1334916699995 ; andea pacino ; T ; 0 ; 0 ; 0 ; 1 ; 1334916709143
-2012-04-20 10:12:06.2897|INFO|FinalVersion.SurfaceWindow1|1334916723420 ; andea pacino ; T ; 0 ; 3 ; 0 ; 1 ; 1334916726289
