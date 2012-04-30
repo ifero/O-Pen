@@ -132,8 +132,6 @@ namespace FinalVersion
 
             // Set the color of the strokes of the Ink Boards    
             highlightBoard.UsesTouchShape = false;
-            highlightBoard.DefaultDrawingAttributes.Height = 16;
-            highlightBoard.DefaultDrawingAttributes.Width = 1;
             highlightBoard.DefaultDrawingAttributes.FitToCurve = false;
             highlightBoard.DefaultDrawingAttributes.Color = System.Windows.Media.Colors.Yellow;
             drawBoard.DefaultDrawingAttributes.Color = System.Windows.Media.Colors.Green;
@@ -297,10 +295,10 @@ namespace FinalVersion
                                             epochStart = (long)(startLog - new DateTime(1970, 1, 1)).TotalMilliseconds;
                                             epochStop = (long)(stopLog - new DateTime(1970, 1, 1)).TotalMilliseconds;
                                             logger.Info("; {0} ; {1} ; {2} ; {3} ; {4} ; {5} ; {6} ; {7}", epochStart, userName, groupName, task, technique, difficulty, errors, epochStop);
-                                            if (groupName != "T")
-                                            {
+                                            //if (groupName != "T")
+                                            //{
                                                 ShowDoneTask();
-                                            }
+                                            //}
                                         }
                                         else
                                         {
@@ -584,6 +582,8 @@ namespace FinalVersion
                                                 isStarted = true;
                                             }
                                             e.Handled = false;
+                                            highlightBoard.DefaultDrawingAttributes.Height = 16;
+                                            highlightBoard.DefaultDrawingAttributes.Width = 1;
                                         }
                                         break;
                                     }
@@ -647,6 +647,8 @@ namespace FinalVersion
                                         isStarted = true;
                                     }
                                     e.Handled = false;
+                                    highlightBoard.DefaultDrawingAttributes.Height = 8;
+                                    highlightBoard.DefaultDrawingAttributes.Width = 1;
                                 }
                                 break;
                             }
@@ -766,8 +768,8 @@ namespace FinalVersion
             epochStop = (long)(stopLog - new DateTime(1970, 1, 1)).TotalMilliseconds;
             logger.Info("; {0} ; {1} ; {2} ; {3} ; {4} ; {5} ; {6} ; {7}", epochStart, userName, groupName, task, technique, difficulty, errors, epochStop);
             //take a snapshot
-            string tmp = "C:\\AndreaInternship\\FinalVersion\\Logs\\" + userName + "-" + technique + "-" + difficulty + ".bmp";
-            sc.CaptureScreenToFile(tmp, System.Drawing.Imaging.ImageFormat.Bmp);
+            string tmp = "C:\\AndreaInternship\\FinalVersion\\Logs\\" + userName + "-" + technique + "-" + difficulty + ".jpeg";
+            sc.CaptureScreenToFile(tmp, System.Drawing.Imaging.ImageFormat.Jpeg);
             //show alert.
             if (groupName != "T")
             {
@@ -1126,26 +1128,26 @@ namespace FinalVersion
                         }
                         else
                         {
-                            trainingLabel.Visibility = System.Windows.Visibility.Collapsed;
-                            trainigButton.Visibility = System.Windows.Visibility.Collapsed;
+                            trainingLabel.Visibility = System.Windows.Visibility.Hidden;
+                            trainigButton.Visibility = System.Windows.Visibility.Hidden;
                         }
                         highlightBoard.EditingMode = SurfaceInkEditingMode.None;
-                        highlightBoard.Visibility = System.Windows.Visibility.Collapsed;
+                        highlightBoard.Visibility = System.Windows.Visibility.Hidden;
                         highlightBoard.Strokes.Clear();
-                        ClearButton.Visibility = System.Windows.Visibility.Collapsed;
+                        ClearButton.Visibility = System.Windows.Visibility.Hidden;
                         hlLong = hlShort = hlMedium = false;
 
-                        textBoard.Visibility = System.Windows.Visibility.Collapsed;
+                        textBoard.Visibility = System.Windows.Visibility.Hidden;
 
                         if (technique == 0 || technique == 3)
                         {
-                            highlightButton.Visibility = System.Windows.Visibility.Collapsed;
+                            highlightButton.Visibility = System.Windows.Visibility.Hidden;
                             highlightButton.Background = Brushes.Silver;
 
                         }
-                        mediumRect.Visibility = System.Windows.Visibility.Collapsed;
-                        shortRect.Visibility = System.Windows.Visibility.Collapsed;
-                        longRect.Visibility = System.Windows.Visibility.Collapsed;
+                        mediumRect.Visibility = System.Windows.Visibility.Hidden;
+                        shortRect.Visibility = System.Windows.Visibility.Hidden;
+                        longRect.Visibility = System.Windows.Visibility.Hidden;
                         break;
                     }
                 case 1:
@@ -1157,11 +1159,11 @@ namespace FinalVersion
                         }
                         else
                         {
-                            trainingLabel.Visibility = System.Windows.Visibility.Collapsed;
-                            trainigButton.Visibility = System.Windows.Visibility.Collapsed;
+                            trainingLabel.Visibility = System.Windows.Visibility.Hidden;
+                            trainigButton.Visibility = System.Windows.Visibility.Hidden;
                         }
-                        dragRectangle.Visibility = System.Windows.Visibility.Collapsed;
-                        theBox.Visibility = System.Windows.Visibility.Collapsed;
+                        dragRectangle.Visibility = System.Windows.Visibility.Hidden;
+                        theBox.Visibility = System.Windows.Visibility.Hidden;
 
                         if (technique == 0 || technique == 3)
                         {
@@ -1173,26 +1175,26 @@ namespace FinalVersion
                 case 2:
                     {
                         drawBoard.EditingMode = SurfaceInkEditingMode.None;
-                        drawBoard.Visibility = System.Windows.Visibility.Collapsed;
+                        drawBoard.Visibility = System.Windows.Visibility.Hidden;
                         drawBoard.Strokes.Clear();
-                        ClearButton.Visibility = System.Windows.Visibility.Collapsed;
+                        ClearButton.Visibility = System.Windows.Visibility.Hidden;
                         if (!trainingMode)
                         {
                             drawLable.Visibility = System.Windows.Visibility.Hidden;
                         }
                         else
                         {
-                            trainingLabel.Visibility = System.Windows.Visibility.Collapsed;
-                            trainigButton.Visibility = System.Windows.Visibility.Collapsed;
+                            trainingLabel.Visibility = System.Windows.Visibility.Hidden;
+                            trainigButton.Visibility = System.Windows.Visibility.Hidden;
                         }
-                        doneButton.Visibility = System.Windows.Visibility.Collapsed;
+                        doneButton.Visibility = System.Windows.Visibility.Hidden;
 
                         wordDrawLabel.Visibility = System.Windows.Visibility.Hidden;
 
                         if (technique == 0 || technique == 3)
                         {
                             drawButton.Background = Brushes.Silver;
-                            drawButton.Visibility = System.Windows.Visibility.Collapsed;
+                            drawButton.Visibility = System.Windows.Visibility.Hidden;
                         }
                         break;
                     }
@@ -1474,7 +1476,7 @@ namespace FinalVersion
             // Hide labels and the button for Done Tasks
             nextLabel1.Visibility = System.Windows.Visibility.Hidden;
             nextLabel2.Visibility = System.Windows.Visibility.Hidden;
-            nextButton.Visibility = System.Windows.Visibility.Collapsed;
+            nextButton.Visibility = System.Windows.Visibility.Hidden;
         }
 
         /// <summary>
@@ -1493,11 +1495,11 @@ namespace FinalVersion
         /// </summary>
         private void HideLogin()
         {
-            userNameButton.Visibility = System.Windows.Visibility.Collapsed;
-            userNameLabel.Visibility = System.Windows.Visibility.Collapsed;
-            userTB.Visibility = System.Windows.Visibility.Collapsed;
-            groupTB.Visibility = System.Windows.Visibility.Collapsed;
-            groupLabel.Visibility = System.Windows.Visibility.Collapsed;
+            userNameButton.Visibility = System.Windows.Visibility.Hidden;
+            userNameLabel.Visibility = System.Windows.Visibility.Hidden;
+            userTB.Visibility = System.Windows.Visibility.Hidden;
+            groupTB.Visibility = System.Windows.Visibility.Hidden;
+            groupLabel.Visibility = System.Windows.Visibility.Hidden;
         }
 
         /// <summary>

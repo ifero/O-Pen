@@ -5,7 +5,7 @@
     Title="IPS" ResizeMode="NoResize" WindowStyle="None">
 
     <Canvas x:Name="myCanvas" Background="Gray" MaxHeight="1080" MaxWidth="1920" Height="1080" Width="1920">
-        <Rectangle x:Name="dragRectangle" Visibility="Collapsed"
+        <Rectangle x:Name="dragRectangle" Visibility="Hidden"
                    Width="150" Height="150" 
                    Canvas.Top="400" Canvas.Left="550" 
                    Canvas.ZIndex ="2"
@@ -13,7 +13,7 @@
                    TouchMove="OnTouchMove"
                    TouchLeave="OnTouchLeave"
                    Fill="Brown" Cursor="None" ClipToBounds="False" />
-        <Rectangle x:Name="theBox" Visibility="Collapsed"
+        <Rectangle x:Name="theBox" Visibility="Hidden"
                    Width="150" Height="150"
                    Canvas.ZIndex ="1"
                    Canvas.Top="400" Canvas.Left="1212"
@@ -39,7 +39,7 @@ the eye is the sensor in the panel, it picks up the image
 and it feeds that to the brain which is our vision input 
 processor that recognizes the image and does something 
 with it. Taken in whole…this is PixelSense technology." 
-               FontSize="18" Foreground="Black" Height="540" Width="512" Visibility="Collapsed"/>
+               FontSize="18" Foreground="Black" Height="540" Width="512" Visibility="Hidden"/>
         <Rectangle x:Name="mediumRect" Height="28" Width="512" Canvas.Left="712" Canvas.Top="580" Fill="#39000000" Visibility="Hidden"/>
         <Rectangle x:Name="shortRect" Canvas.Left="712" Canvas.Top="693" Height="40"  Width="512" Fill="#39000000" Visibility="Hidden"/>
         <Rectangle x:Name="longRect" Canvas.Left="717" Canvas.Top="367" Height="20"  Width="497" Fill="#39000000" Visibility="Hidden"/>
@@ -54,19 +54,19 @@ with it. Taken in whole…this is PixelSense technology."
                             EditingMode="None" TouchDown="OnTouchDown" TouchMove="OnTouchDown" PreviewTouchDown="OnTouchDown" Visibility="Hidden"/>
         <s:SurfaceButton x:Name="modeButton" Canvas.Left="20" Canvas.Top="20" Content="Pen Mode 1" Width="250" Height="100" 
                          HorizontalContentAlignment="Center" VerticalContentAlignment="Center" FontSize="32"
-                         Click="OnTechniqueClick" Visibility="Collapsed"/>
+                         Click="OnTechniqueClick" Visibility="Hidden"/>
         <s:SurfaceButton x:Name="taskButton" Canvas.Left="20" Canvas.Top="139" Content="Task1 - HL" 
                          FontSize="32" Height="100" HorizontalContentAlignment="Center"  VerticalContentAlignment="Center" Width="250" 
-                         Click="OnTaskClick" Visibility="Collapsed"/>
+                         Click="OnTaskClick" Visibility="Hidden"/>
         <s:SurfaceButton x:Name="highlightButton" Width="200" Height="50" Content="Highlight" Canvas.Left="1517" Canvas.Top="146" 
                          HorizontalContentAlignment="Center" VerticalContentAlignment="Center" FontSize="24" Background="Silver"
-                         Click="OnHlClick" Foreground="Black" Visibility="Collapsed"/>
+                         Click="OnHlClick" Foreground="Black" Visibility="Hidden"/>
         <s:SurfaceButton x:Name="ClearButton" Width="200" Height="50" Content="Clear" Canvas.Left="1517" Canvas.Top="210" 
                          HorizontalContentAlignment="Center" VerticalContentAlignment="Center" FontSize="24" Background="Silver"
-                         Click="OnClearClick" Foreground="Black" Visibility="Collapsed"/>
+                         Click="OnClearClick" Foreground="Black" Visibility="Hidden"/>
         <s:SurfaceButton x:Name="difficultyButton" Canvas.Left="20" Canvas.Top="266" Content="Easy" FontSize="32" Height="100" 
                          HorizontalContentAlignment="Center"  VerticalContentAlignment="Center" Width="250" 
-                         Click="OnDifficultyClick" Visibility="Collapsed"/>
+                         Click="OnDifficultyClick" Visibility="Hidden"/>
         <s:SurfaceButton x:Name="drawButton" Background="Silver" Canvas.Left="1517" Canvas.Top="146" Content="Ink" FontSize="24" 
                          Foreground="Black" Height="50" HorizontalContentAlignment="Center"  VerticalContentAlignment="Center" Width="200" 
                          Click="OnDrawClick" Visibility="Hidden"/>
@@ -82,7 +82,6 @@ with it. Taken in whole…this is PixelSense technology."
         <Label Canvas.Left="567" Canvas.Top="140" Content="Please highlight the line with the black background" FontSize="32" Foreground="Black" x:Name="highlightLabel" Visibility="Hidden"/>
         <Label Canvas.Left="400" Canvas.Top="140" Content="Please, drag the red square and drop it into the green square" FontSize="32" Foreground="Black" x:Name="DragLabel" Visibility="Hidden"/>
         <Label Canvas.Left="700" Canvas.Top="140" Content="Please, write on the letters" FontSize="32" Foreground="Black" Visibility="Hidden" x:Name="drawLable"/>
-        <!-- qui devo togliere poi l'hidden-->
         <s:SurfaceButton x:Name="userNameButton" Background="Silver" HorizontalContentAlignment="Center" VerticalContentAlignment="Center"
                          Click="OnUserNameClick" Canvas.Left="1162" Canvas.Top="413" Height="59" Width="172" 
                          Content="START" Foreground="Black" FontSize="24" Visibility="Visible"/>
@@ -93,7 +92,6 @@ with it. Taken in whole…this is PixelSense technology."
         <s:SurfaceTextBox Canvas.Left="883" Canvas.Top="478" Height="55" KeyboardLayout="Alphanumeric" Name="groupTB" 
                           Width="38" FontSize="32" CharacterCasing="Upper" MaxLength="1" Visibility="Visible"/>
         <Label Visibility="Visible" Canvas.Left="567" Canvas.Top="479" Content="Insert group name(A,B,C,D)" FontSize="24" Name="groupLabel" Foreground="Black"/>
-        <!-- qui finisce -->
         <s:SurfaceButton Background="Silver" Canvas.Left="142" Canvas.Top="540" Content="NEXT" FontSize="24" Foreground="Black" Height="59" 
                          HorizontalContentAlignment="Center" Name="nextButton" VerticalContentAlignment="Center" Width="172" 
                          Click="OnNextClick" Visibility="Hidden"/>
@@ -113,8 +111,8 @@ with it. Taken in whole…this is PixelSense technology."
         <Label Name="finishLabel" Content="Thank You from Science" FontSize="200" Canvas.Left="215" Canvas.Top="381" 
                FontFamily="Gabriola" Visibility="Hidden"/>
         <Label Name="trainingLabel" Content="Try to highlight some words for training. Use the button on your 
-right (also with your finger) to activate highlight event." Visibility="Collapsed"
-               FontSize="32" Foreground="DarkGreen" Canvas.Left="465" Canvas.Top="58" Height="305" Width="982" />
+right (also with your finger) to activate highlight event." Visibility="Hidden"
+               FontSize="32" Foreground="DarkGreen" Canvas.Left="465" Canvas.Top="58" Height="203" Width="982" />
     </Canvas>
 
 </s:SurfaceWindow>
