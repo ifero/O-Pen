@@ -9,7 +9,6 @@ C:\AndreaInternship\FinalVersion\FinalVersion\bin\Release\FinalVersion.pdb
 C:\AndreaInternship\FinalVersion\FinalVersion\bin\Release\Emgu.CV.dll
 C:\AndreaInternship\FinalVersion\FinalVersion\bin\Release\Emgu.CV.UI.dll
 C:\AndreaInternship\FinalVersion\FinalVersion\bin\Release\Emgu.Util.dll
-C:\AndreaInternship\FinalVersion\FinalVersion\bin\Release\NLog.dll
 C:\AndreaInternship\FinalVersion\FinalVersion\bin\Release\NLog.pdb
 C:\AndreaInternship\FinalVersion\FinalVersion\bin\Release\NLog.xml
 C:\AndreaInternship\FinalVersion\FinalVersion\obj\Release\ResolveAssemblyReference.cache

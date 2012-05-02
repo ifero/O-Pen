@@ -88,3 +88,13 @@
    at System.IO.Ports.SerialStream..ctor(String portName, Int32 baudRate, Parity parity, Int32 dataBits, StopBits stopBits, Int32 readTimeout, Int32 writeTimeout, Handshake handshake, Boolean dtrEnable, Boolean rtsEnable, Boolean discardNull, Byte parityReplace)
    at System.IO.Ports.SerialPort.Open()
    at FinalVersion.SurfaceWindow1..ctor() in C:\AndreaInternship\FinalVersion\FinalVersion\SurfaceWindow1.xaml.cs:line 121
+2012-05-02 19:40:57.6918|WARN|FinalVersion.SurfaceWindow1|System.IO.IOException: The port 'COM6' does not exist.
+   at System.IO.Ports.InternalResources.WinIOError(Int32 errorCode, String str)
+   at System.IO.Ports.SerialStream..ctor(String portName, Int32 baudRate, Parity parity, Int32 dataBits, StopBits stopBits, Int32 readTimeout, Int32 writeTimeout, Handshake handshake, Boolean dtrEnable, Boolean rtsEnable, Boolean discardNull, Byte parityReplace)
+   at System.IO.Ports.SerialPort.Open()
+   at FinalVersion.SurfaceWindow1..ctor() in C:\AndreaInternship\FinalVersion\FinalVersion\SurfaceWindow1.xaml.cs:line 121
+2012-05-02 19:43:21.7926|WARN|FinalVersion.SurfaceWindow1|System.IO.IOException: The port 'COM6' does not exist.
+   at System.IO.Ports.InternalResources.WinIOError(Int32 errorCode, String str)
+   at System.IO.Ports.SerialStream..ctor(String portName, Int32 baudRate, Parity parity, Int32 dataBits, StopBits stopBits, Int32 readTimeout, Int32 writeTimeout, Handshake handshake, Boolean dtrEnable, Boolean rtsEnable, Boolean discardNull, Byte parityReplace)
+   at System.IO.Ports.SerialPort.Open()
+   at FinalVersion.SurfaceWindow1..ctor() in C:\AndreaInternship\FinalVersion\FinalVersion\SurfaceWindow1.xaml.cs:line 121

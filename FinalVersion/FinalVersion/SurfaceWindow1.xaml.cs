@@ -1514,6 +1514,8 @@ namespace FinalVersion
             userTB.Visibility = System.Windows.Visibility.Hidden;
             groupTB.Visibility = System.Windows.Visibility.Hidden;
             groupLabel.Visibility = System.Windows.Visibility.Hidden;
+            taskTB.Visibility = System.Windows.Visibility.Hidden;
+            techniqueTB.Visibility = System.Windows.Visibility.Hidden;
         }
 
         /// <summary>
