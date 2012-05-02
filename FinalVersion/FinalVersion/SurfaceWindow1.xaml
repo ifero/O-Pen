@@ -58,22 +58,22 @@ with it. Taken in whole…this is PixelSense technology."
         <s:SurfaceButton x:Name="taskButton" Canvas.Left="20" Canvas.Top="139" Content="Task1 - HL" 
                          FontSize="32" Height="100" HorizontalContentAlignment="Center"  VerticalContentAlignment="Center" Width="250" 
                          Click="OnTaskClick" Visibility="Hidden"/>
-        <s:SurfaceButton x:Name="highlightButton" Width="200" Height="50" Content="Highlight" Canvas.Left="1517" Canvas.Top="146" 
+        <s:SurfaceButton x:Name="highlightButton" Width="200" Height="50" Content="Highlight" Canvas.Left="142" Canvas.Top="919" 
                          HorizontalContentAlignment="Center" VerticalContentAlignment="Center" FontSize="24" Background="Silver"
                          Click="OnHlClick" Foreground="Black" Visibility="Hidden"/>
-        <s:SurfaceButton x:Name="ClearButton" Width="200" Height="50" Content="Clear" Canvas.Left="1517" Canvas.Top="210" 
+        <s:SurfaceButton x:Name="ClearButton" Width="200" Height="50" Content="Clear" Canvas.Left="1517" Canvas.Top="813" 
                          HorizontalContentAlignment="Center" VerticalContentAlignment="Center" FontSize="24" Background="Silver"
                          Click="OnClearClick" Foreground="Black" Visibility="Hidden"/>
         <s:SurfaceButton x:Name="difficultyButton" Canvas.Left="20" Canvas.Top="266" Content="Easy" FontSize="32" Height="100" 
                          HorizontalContentAlignment="Center"  VerticalContentAlignment="Center" Width="250" 
                          Click="OnDifficultyClick" Visibility="Hidden"/>
-        <s:SurfaceButton x:Name="drawButton" Background="Silver" Canvas.Left="1517" Canvas.Top="146" Content="Ink" FontSize="24" 
+        <s:SurfaceButton x:Name="drawButton" Background="Silver" Canvas.Left="142" Canvas.Top="919" Content="Ink" FontSize="24" 
                          Foreground="Black" Height="50" HorizontalContentAlignment="Center"  VerticalContentAlignment="Center" Width="200" 
                          Click="OnDrawClick" Visibility="Hidden"/>
         <s:SurfaceButton x:Name="doneButton" Background="Silver" Canvas.Left="1517" Canvas.Top="754" Content="Done" FontSize="24" 
                          Foreground="Black" Height="50" HorizontalContentAlignment="Center"  VerticalContentAlignment="Center" Width="200" 
                          Click="OnDoneClick" Visibility="Hidden"/>
-        <s:SurfaceButton x:Name="selectButton" Background="Silver" Canvas.Left="1517" Canvas.Top="146" Content="Select" 
+        <s:SurfaceButton x:Name="selectButton" Background="Silver" Canvas.Left="142" Canvas.Top="919" Content="Select" 
                          FontSize="24" Foreground="Black" Height="50" HorizontalContentAlignment="Center" 
                          VerticalContentAlignment="Center" Width="200" Visibility="Hidden"
                          Click="OnDragClick"/>
@@ -89,6 +89,10 @@ with it. Taken in whole…this is PixelSense technology."
                           KeyboardLayout="Alphanumeric" FontSize="32" Visibility="Visible"/>
         <Label x:Name="userNameLabel" Canvas.Left="567" Canvas.Top="381" Content="Insert Name and Surname"
                FontSize="24" Foreground="Black" Visibility="Visible"/>
+        <s:SurfaceTextBox Canvas.Left="1072" Canvas.Top="478" Height="55" KeyboardLayout="Numeric"  Name="techniqueTB" 
+                          Width="38" FontSize="32" MaxLength="1" Visibility="Visible"/>
+        <s:SurfaceTextBox Canvas.Left="1123" Canvas.Top="478" Height="55" KeyboardLayout="Numeric" Name="taskTB" 
+                          Width="38" FontSize="32" CharacterCasing="Upper" MaxLength="1" Visibility="Visible"/>
         <s:SurfaceTextBox Canvas.Left="883" Canvas.Top="478" Height="55" KeyboardLayout="Alphanumeric" Name="groupTB" 
                           Width="38" FontSize="32" CharacterCasing="Upper" MaxLength="1" Visibility="Visible"/>
         <Label Visibility="Visible" Canvas.Left="567" Canvas.Top="479" Content="Insert group name(A,B,C,D)" FontSize="24" Name="groupLabel" Foreground="Black"/>
@@ -97,7 +101,7 @@ with it. Taken in whole…this is PixelSense technology."
                          Click="OnNextClick" Visibility="Hidden"/>
         <Label Canvas.Left="118" Canvas.Top="353" Content="Well Done!" FontSize="48" Name="nextLabel1" 
                Height="68" Width="306" Foreground="Black" Visibility="Hidden"/>
-        <Label Canvas.Left="49" Canvas.Top="433" Content="Take your time. When you're ready press NEXT to continue the experimet" 
+        <Label Canvas.Left="21" Canvas.Top="433" Content="Take your time. When you're ready press NEXT to continue the experimet" 
                FontSize="24" Name="nextLabel2" Height="101" Width="405" Foreground="Black" Visibility="Hidden"/>
         <Label Canvas.Left="55" Canvas.Top="45" Content="Name:" FontSize="24" Foreground="Black" 
                Name="showNameLabel" Visibility="Hidden"/>
@@ -111,7 +115,7 @@ with it. Taken in whole…this is PixelSense technology."
         <Label Name="finishLabel" Content="Thank You from Science" FontSize="200" Canvas.Left="215" Canvas.Top="381" 
                FontFamily="Gabriola" Visibility="Hidden"/>
         <Label Name="trainingLabel" Content="Try to highlight some words for training. Use the button on your 
-right (also with your finger) to activate highlight event." Visibility="Hidden"
+bottom left (also with your finger) to activate highlight event." Visibility="Hidden"
                FontSize="32" Foreground="DarkGreen" Canvas.Left="465" Canvas.Top="58" Height="203" Width="982" />
     </Canvas>
 

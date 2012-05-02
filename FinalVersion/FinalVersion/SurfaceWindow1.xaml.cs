@@ -901,7 +901,21 @@ namespace FinalVersion
                 userName = userTB.Text;
                 groupName = groupTB.Text;
                 HideLogin();
-                StartWith();
+                if ((techniqueTB.Text == "0" || techniqueTB.Text == "1" ||
+                    techniqueTB.Text == "2" || techniqueTB.Text == "3") &&
+                    (taskTB.Text == "0" || taskTB.Text == "1" || taskTB.Text == "2"))
+                {
+                    technique = int.Parse(techniqueTB.Text);
+                    task = int.Parse(taskTB.Text);
+                    trainingMode = true;
+                    WhichDifficulty();
+                    ShowContent();
+                    UserInformations();
+                }
+                else
+                {
+                    StartWith();
+                }
                 // Create a single-user Log file
                 FileTarget target = LogManager.Configuration.FindTargetByName("logFile") as FileTarget;
                 String logfile = "C:\\AndreaInternship\\FinalVersion\\Logs\\" + userName + "_Log.txt";
@@ -1626,13 +1640,13 @@ namespace FinalVersion
                             case 1:
                                 {
                                     trainingLabel.Content = "Try to drag and drop the red square around, with the pen, for training." +
-                                        " Use the button on your right (also with your finger) to activate drag 'n drop event.";
+                                        " Use the button on your bottom left (also with your finger) to activate drag 'n drop event.";
                                     break;
                                 }
                             case 2:
                                 {
                                     trainingLabel.Content = "Try to draw some words, with the pen, for training." +
-                                        " Use the button on your right (also with your finger) to activate highlight event.";
+                                        " Use the button on your bottom left (also with your finger) to activate highlight event.";
                                     break;
                                 }
                         }
@@ -1695,19 +1709,19 @@ namespace FinalVersion
                             case 0:
                                 {
                                     trainingLabel.Content = "Try to highlight some words, with the finger, for training." +
-                                        " Use the button on your right to activate highlight event.";
+                                        " Use the button on your bottom left to activate highlight event.";
                                     break;
                                 }
                             case 1:
                                 {
                                     trainingLabel.Content = "Try to drag and drop the red square around, with the finger, for training." +
-                                        " Use the button on your right to activate drag 'n drop event.";
+                                        " Use the button on your bottom left to activate drag 'n drop event.";
                                     break;
                                 }
                             case 2:
                                 {
                                     trainingLabel.Content = "Try to draw some words, with the finger, for training." +
-                                        " Use the button on your right to activate highlight event.";
+                                        " Use the button on your bottom left to activate highlight event.";
                                     break;
                                 }
                         }
