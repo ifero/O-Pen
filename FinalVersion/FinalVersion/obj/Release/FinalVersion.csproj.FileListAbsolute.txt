@@ -24,3 +24,4 @@ C:\AndreaInternship\FinalVersion\FinalVersion\obj\Release\GenerateResource.read.
 C:\AndreaInternship\FinalVersion\FinalVersion\obj\Release\GenerateResource.write.1.tlog
 C:\AndreaInternship\FinalVersion\FinalVersion\obj\Release\FinalVersion.exe
 C:\AndreaInternship\FinalVersion\FinalVersion\obj\Release\FinalVersion.pdb
+C:\AndreaInternship\FinalVersion\FinalVersion\bin\Release\NLog.dll
