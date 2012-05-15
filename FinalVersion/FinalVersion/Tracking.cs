@@ -30,7 +30,6 @@ namespace Pen
         {
             image = new Image<Gray,byte>(normalizedMetrics.Width, normalizedMetrics.Height) { Bytes = normalizedImage };
             image = image.ThresholdBinary(new Gray(threshold), new Gray(255)); //Show just the very bright things
-
             //detecy Contours from Thresholded image.
             Contour<System.Drawing.Point> contours = image.FindContours(Emgu.CV.CvEnum.CHAIN_APPROX_METHOD.CV_CHAIN_APPROX_SIMPLE,
             Emgu.CV.CvEnum.RETR_TYPE.CV_RETR_LIST);

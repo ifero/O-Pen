@@ -6,8 +6,8 @@ instructions.
 -->
 <ss:ApplicationInfo xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:ss="http://schemas.microsoft.com/Surface/2007/ApplicationMetadata">
   <Application>
-    <Title>TIP</Title>
-    <Description>Tabletop's Interactive Pen</Description>
+    <Title>aPen</Title>
+    <Description>Design and Evaluation of an open IR-pen for Tabletops</Description>
     <ExecutableFile>FinalVersion.exe</ExecutableFile>
     <Arguments>
     </Arguments>
