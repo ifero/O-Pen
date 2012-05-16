@@ -1,4 +1,0 @@
-2012-05-15 16:03:16.2275|INFO|FinalVersion.SurfaceWindow1|; 1337097774103 ; andrea ; D ; 2 ; 0 ; 1 ; 0 ; 1337097796226
-2012-05-15 16:03:19.4447|INFO|FinalVersion.SurfaceWindow1|; 1337097774103 ; andrea ; D ; 2 ; 0 ; 0 ; 0 ; 1337097799444
-2012-05-15 16:04:57.8283|INFO|FinalVersion.SurfaceWindow1|; -62135596800000 ; andrea ; D ; 2 ; 0 ; 0 ; 0 ; 1337097897826
-2012-05-15 16:05:00.6855|INFO|FinalVersion.SurfaceWindow1|; -62135596800000 ; andrea ; D ; 2 ; 0 ; 1 ; 0 ; 1337097900685

@@ -56,6 +56,7 @@ namespace FinalVersion
         private bool isInside;
         private bool trainingMode;
         private bool thankyou;
+        private bool demoMode;
         private Random random;
         float[] rwAcc;
         private ScreenCapture sc;
@@ -82,6 +83,7 @@ namespace FinalVersion
             // link logger to the related Nlog logger.
             logger = LogManager.GetCurrentClassLogger();
 
+            demoMode = false;
             thankyou = false;
             groupName = null;
 
@@ -267,150 +269,152 @@ namespace FinalVersion
                 TechniqueEnabler();
             }
             imageAvailable = false;
-
-            if (!trainingMode)
+            if (!demoMode)
             {
-                if (task == 0)
+                if (!trainingMode)
                 {
-                    // ---> WRITE HERE!!
-                    if (highlightBoard.Strokes.Count() != 0)
+                    if (task == 0)
                     {
-                        switch (difficulty)
+                        // ---> WRITE HERE!!
+                        if (highlightBoard.Strokes.Count() != 0)
                         {
-                            case 0:
-                                {
-                                    foreach (System.Windows.Ink.Stroke strk in highlightBoard.Strokes)
-                                    {
-                                        if (!hlShort &&
-                                            Math.Abs(Canvas.GetTop(shortRect) - (strk.GetBounds().Top + Canvas.GetTop(highlightBoard))) < 22 &&
-                                            Math.Abs(Canvas.GetLeft(shortRect) - (strk.GetBounds().Left + Canvas.GetLeft(highlightBoard))) < 22 &&
-                                            Math.Abs((Canvas.GetLeft(shortRect) - Canvas.GetLeft(highlightBoard) + shortRect.Width) -
-                                                (strk.GetBounds().Left + strk.GetBounds().Width)) < 22 &&
-                                            Math.Abs((Canvas.GetTop(shortRect) - Canvas.GetTop(highlightBoard) + shortRect.Height) -
-                                                (strk.GetBounds().Top + strk.GetBounds().Height)) < 22)
-                                        {
-                                            hlShort = true;
-                                            Console.WriteLine("YES - 1");
-                                            stopLog = DateTime.Now;
-                                            epochStart = (long)(startLog - new DateTime(1970, 1, 1)).TotalMilliseconds;
-                                            epochStop = (long)(stopLog - new DateTime(1970, 1, 1)).TotalMilliseconds;
-                                            logger.Info("; {0} ; {1} ; {2} ; {3} ; {4} ; {5} ; {6} ; {7}", epochStart, userName, groupName, task, technique, difficulty, errors, epochStop);
-                                            //if (groupName != "T")
-                                            //{
-                                                ShowDoneTask();
-                                            //}
-                                        }
-                                        else
-                                        {
-                                            if (numberOfStrokes != highlightBoard.Strokes.Count())
-                                            {
-                                                errors++;
-                                                numberOfStrokes = highlightBoard.Strokes.Count();
-                                            }
-                                        }
-                                    }
-                                    break;
-                                }
-                            case 1:
-                                {
-                                    foreach (System.Windows.Ink.Stroke strk in highlightBoard.Strokes)
-                                    {
-                                        if (!hlMedium &&
-                                            Math.Abs(Canvas.GetTop(mediumRect) - (strk.GetBounds().Top + Canvas.GetTop(highlightBoard))) < 10 &&
-                                            Math.Abs(Canvas.GetLeft(mediumRect) - (strk.GetBounds().Left + Canvas.GetLeft(highlightBoard))) < 10 &&
-                                            Math.Abs((Canvas.GetLeft(mediumRect) - Canvas.GetLeft(highlightBoard) + mediumRect.Width) -
-                                                (strk.GetBounds().Left + strk.GetBounds().Width)) < 10 &&
-                                            Math.Abs((Canvas.GetTop(mediumRect) - Canvas.GetTop(highlightBoard) + mediumRect.Height) -
-                                                (strk.GetBounds().Top + strk.GetBounds().Height)) < 10)
-                                        {
-                                            hlMedium = true;
-                                            Console.WriteLine("YES - 2");
-                                            //send log
-                                            stopLog = DateTime.Now;
-                                            epochStart = (long)(startLog - new DateTime(1970, 1, 1)).TotalMilliseconds;
-                                            epochStop = (long)(stopLog - new DateTime(1970, 1, 1)).TotalMilliseconds;
-                                            logger.Info("; {0} ; {1} ; {2} ; {3} ; {4} ; {5} ; {6} ; {7}", epochStart, userName, groupName, task, technique, difficulty, errors, epochStop);
-                                            if (groupName != "T")
-                                            {
-                                                ShowDoneTask();
-                                            }
-                                        }
-                                        else
-                                        {
-                                            if (numberOfStrokes != highlightBoard.Strokes.Count())
-                                            {
-                                                errors++;
-                                                numberOfStrokes = highlightBoard.Strokes.Count();
-                                            }
-                                        }
-                                    }
-                                    break;
-                                }
-                            case 2:
-                                {
-                                    foreach (System.Windows.Ink.Stroke strk in highlightBoard.Strokes)
-                                    {
-                                        if (!hlLong &&
-                                            Math.Abs(Canvas.GetTop(longRect) - (strk.GetBounds().Top + Canvas.GetTop(highlightBoard))) < 3 &&
-                                            Math.Abs(Canvas.GetLeft(longRect) - (strk.GetBounds().Left + Canvas.GetLeft(highlightBoard))) < 5 &&
-                                            Math.Abs((Canvas.GetLeft(longRect) - Canvas.GetLeft(highlightBoard) + longRect.Width) -
-                                                (strk.GetBounds().Left + strk.GetBounds().Width)) < 5 &&
-                                            Math.Abs((Canvas.GetTop(longRect) - Canvas.GetTop(highlightBoard) + longRect.Height) -
-                                                (strk.GetBounds().Top + strk.GetBounds().Height)) < 3)
-                                        {
-                                            hlLong = true;
-                                            Console.WriteLine("YES - 3");
-                                            //send log
-                                            stopLog = DateTime.Now;
-                                            epochStart = (long)(startLog - new DateTime(1970, 1, 1)).TotalMilliseconds;
-                                            epochStop = (long)(stopLog - new DateTime(1970, 1, 1)).TotalMilliseconds;
-                                            logger.Info("; {0} ; {1} ; {2} ; {3} ; {4} ; {5} ; {6} ; {7}", epochStart, userName, groupName, task, technique, difficulty, errors, epochStop);
-                                            if (groupName != "T")
-                                            {
-                                                ShowDoneTask();
-                                            }
-                                        }
-                                        else
-                                        {
-                                            if (numberOfStrokes != highlightBoard.Strokes.Count())
-                                            {
-                                                errors++;
-                                                numberOfStrokes = highlightBoard.Strokes.Count();
-                                            }
-                                        }
-                                    }
-                                    break;
-                                }
-                        }
-                    }
-                }
-                if (task == 1)
-                {
-                    if (rectangleControlTouchDevice == null)
-                    {
-                        if (Canvas.GetTop(this.dragRectangle) > Canvas.GetTop(this.theBox) &&
-                            (Canvas.GetTop(this.dragRectangle) + dragRectangle.Height < Canvas.GetTop(theBox) + theBox.Height) &&
-                            Canvas.GetLeft(this.dragRectangle) > Canvas.GetLeft(this.theBox) &&
-                            (Canvas.GetLeft(this.dragRectangle) + dragRectangle.Width < Canvas.GetLeft(theBox) + theBox.Width))
-                        {
-                            if (!isInside)
+                            switch (difficulty)
                             {
-                                Console.WriteLine("YAY");
-                                //send log
-                                isInside = true;
-                                stopLog = DateTime.Now;
-                                epochStart = (long)(startLog - new DateTime(1970, 1, 1)).TotalMilliseconds;
-                                epochStop = (long)(stopLog - new DateTime(1970, 1, 1)).TotalMilliseconds;
-                                logger.Info("; {0} ; {1} ; {2} ; {3} ; {4} ; {5} ; {6} ; {7}", epochStart, userName, groupName, task, technique, difficulty, errors, epochStop);
-                                if (groupName != "T")
-                                {
-                                    ShowDoneTask();
-                                }
+                                case 0:
+                                    {
+                                        foreach (System.Windows.Ink.Stroke strk in highlightBoard.Strokes)
+                                        {
+                                            if (!hlShort &&
+                                                Math.Abs(Canvas.GetTop(shortRect) - (strk.GetBounds().Top + Canvas.GetTop(highlightBoard))) < 22 &&
+                                                Math.Abs(Canvas.GetLeft(shortRect) - (strk.GetBounds().Left + Canvas.GetLeft(highlightBoard))) < 22 &&
+                                                Math.Abs((Canvas.GetLeft(shortRect) - Canvas.GetLeft(highlightBoard) + shortRect.Width) -
+                                                    (strk.GetBounds().Left + strk.GetBounds().Width)) < 22 &&
+                                                Math.Abs((Canvas.GetTop(shortRect) - Canvas.GetTop(highlightBoard) + shortRect.Height) -
+                                                    (strk.GetBounds().Top + strk.GetBounds().Height)) < 22)
+                                            {
+                                                hlShort = true;
+                                                Console.WriteLine("YES - 1");
+                                                stopLog = DateTime.Now;
+                                                epochStart = (long)(startLog - new DateTime(1970, 1, 1)).TotalMilliseconds;
+                                                epochStop = (long)(stopLog - new DateTime(1970, 1, 1)).TotalMilliseconds;
+                                                logger.Info("; {0} ; {1} ; {2} ; {3} ; {4} ; {5} ; {6} ; {7}", epochStart, userName, groupName, task, technique, difficulty, errors, epochStop);
+                                                if (groupName != "T")
+                                                {
+                                                    ShowDoneTask();
+                                                }
+                                            }
+                                            else
+                                            {
+                                                if (numberOfStrokes != highlightBoard.Strokes.Count())
+                                                {
+                                                    errors++;
+                                                    numberOfStrokes = highlightBoard.Strokes.Count();
+                                                }
+                                            }
+                                        }
+                                        break;
+                                    }
+                                case 1:
+                                    {
+                                        foreach (System.Windows.Ink.Stroke strk in highlightBoard.Strokes)
+                                        {
+                                            if (!hlMedium &&
+                                                Math.Abs(Canvas.GetTop(mediumRect) - (strk.GetBounds().Top + Canvas.GetTop(highlightBoard))) < 10 &&
+                                                Math.Abs(Canvas.GetLeft(mediumRect) - (strk.GetBounds().Left + Canvas.GetLeft(highlightBoard))) < 10 &&
+                                                Math.Abs((Canvas.GetLeft(mediumRect) - Canvas.GetLeft(highlightBoard) + mediumRect.Width) -
+                                                    (strk.GetBounds().Left + strk.GetBounds().Width)) < 10 &&
+                                                Math.Abs((Canvas.GetTop(mediumRect) - Canvas.GetTop(highlightBoard) + mediumRect.Height) -
+                                                    (strk.GetBounds().Top + strk.GetBounds().Height)) < 10)
+                                            {
+                                                hlMedium = true;
+                                                Console.WriteLine("YES - 2");
+                                                //send log
+                                                stopLog = DateTime.Now;
+                                                epochStart = (long)(startLog - new DateTime(1970, 1, 1)).TotalMilliseconds;
+                                                epochStop = (long)(stopLog - new DateTime(1970, 1, 1)).TotalMilliseconds;
+                                                logger.Info("; {0} ; {1} ; {2} ; {3} ; {4} ; {5} ; {6} ; {7}", epochStart, userName, groupName, task, technique, difficulty, errors, epochStop);
+                                                if (groupName != "T")
+                                                {
+                                                    ShowDoneTask();
+                                                }
+                                            }
+                                            else
+                                            {
+                                                if (numberOfStrokes != highlightBoard.Strokes.Count())
+                                                {
+                                                    errors++;
+                                                    numberOfStrokes = highlightBoard.Strokes.Count();
+                                                }
+                                            }
+                                        }
+                                        break;
+                                    }
+                                case 2:
+                                    {
+                                        foreach (System.Windows.Ink.Stroke strk in highlightBoard.Strokes)
+                                        {
+                                            if (!hlLong &&
+                                                Math.Abs(Canvas.GetTop(longRect) - (strk.GetBounds().Top + Canvas.GetTop(highlightBoard))) < 3 &&
+                                                Math.Abs(Canvas.GetLeft(longRect) - (strk.GetBounds().Left + Canvas.GetLeft(highlightBoard))) < 5 &&
+                                                Math.Abs((Canvas.GetLeft(longRect) - Canvas.GetLeft(highlightBoard) + longRect.Width) -
+                                                    (strk.GetBounds().Left + strk.GetBounds().Width)) < 5 &&
+                                                Math.Abs((Canvas.GetTop(longRect) - Canvas.GetTop(highlightBoard) + longRect.Height) -
+                                                    (strk.GetBounds().Top + strk.GetBounds().Height)) < 3)
+                                            {
+                                                hlLong = true;
+                                                Console.WriteLine("YES - 3");
+                                                //send log
+                                                stopLog = DateTime.Now;
+                                                epochStart = (long)(startLog - new DateTime(1970, 1, 1)).TotalMilliseconds;
+                                                epochStop = (long)(stopLog - new DateTime(1970, 1, 1)).TotalMilliseconds;
+                                                logger.Info("; {0} ; {1} ; {2} ; {3} ; {4} ; {5} ; {6} ; {7}", epochStart, userName, groupName, task, technique, difficulty, errors, epochStop);
+                                                if (groupName != "T")
+                                                {
+                                                    ShowDoneTask();
+                                                }
+                                            }
+                                            else
+                                            {
+                                                if (numberOfStrokes != highlightBoard.Strokes.Count())
+                                                {
+                                                    errors++;
+                                                    numberOfStrokes = highlightBoard.Strokes.Count();
+                                                }
+                                            }
+                                        }
+                                        break;
+                                    }
                             }
                         }
-                        else
+                    }
+                    if (task == 1)
+                    {
+                        if (rectangleControlTouchDevice == null)
                         {
-                            isInside = false;
+                            if (Canvas.GetTop(this.dragRectangle) > Canvas.GetTop(this.theBox) &&
+                                (Canvas.GetTop(this.dragRectangle) + dragRectangle.Height < Canvas.GetTop(theBox) + theBox.Height) &&
+                                Canvas.GetLeft(this.dragRectangle) > Canvas.GetLeft(this.theBox) &&
+                                (Canvas.GetLeft(this.dragRectangle) + dragRectangle.Width < Canvas.GetLeft(theBox) + theBox.Width))
+                            {
+                                if (!isInside)
+                                {
+                                    Console.WriteLine("YAY");
+                                    //send log
+                                    isInside = true;
+                                    stopLog = DateTime.Now;
+                                    epochStart = (long)(startLog - new DateTime(1970, 1, 1)).TotalMilliseconds;
+                                    epochStop = (long)(stopLog - new DateTime(1970, 1, 1)).TotalMilliseconds;
+                                    logger.Info("; {0} ; {1} ; {2} ; {3} ; {4} ; {5} ; {6} ; {7}", epochStart, userName, groupName, task, technique, difficulty, errors, epochStop);
+                                    if (groupName != "T")
+                                    {
+                                        ShowDoneTask();
+                                    }
+                                }
+                            }
+                            else
+                            {
+                                isInside = false;
+                            }
                         }
                     }
                 }
@@ -896,7 +900,7 @@ namespace FinalVersion
             if (userTB.Text.Length != 0 && 
                 (groupTB.Text == "A" || groupTB.Text == "B" || 
                  groupTB.Text == "C" || groupTB.Text == "D" ||
-                 groupTB.Text == "T"))
+                 groupTB.Text == "T" || groupTB.Text == "P"))
             {
                 userName = userTB.Text;
                 groupName = groupTB.Text;
@@ -917,9 +921,12 @@ namespace FinalVersion
                     StartWith();
                 }
                 // Create a single-user Log file
-                FileTarget target = LogManager.Configuration.FindTargetByName("logFile") as FileTarget;
-                String logfile = "C:\\AndreaInternship\\FinalVersion\\Logs\\" + userName + "_Log.txt";
-                target.FileName = logfile; 
+                if (groupName != "P")
+                {
+                    FileTarget target = LogManager.Configuration.FindTargetByName("logFile") as FileTarget;
+                    String logfile = "C:\\AndreaInternship\\FinalVersion\\Logs\\" + userName + "_Log.txt";
+                    target.FileName = logfile;
+                }
             }
         }
 
@@ -937,19 +944,19 @@ namespace FinalVersion
                 {
                     case 0:
                         {
-                            modeButton.Content = "Pen Mode 1";
+                            modeButton.Content = "Always-On";
                             ShowTaskAndDifficulty();
                             break;
                         }
                     case 1:
                         {
-                            modeButton.Content = "Pen Mode 2";
+                            modeButton.Content = "Button";
                             ShowTaskAndDifficulty();
                             break;
                         }
                     case 2:
                         {
-                            modeButton.Content = "Pen Mode 3";
+                            modeButton.Content = "Tilt";
                             ShowTaskAndDifficulty();
                             break;
                         }
@@ -976,7 +983,7 @@ namespace FinalVersion
             {
                 case 0:
                     {
-                        taskButton.Content = "Task1 - HL";
+                        taskButton.Content = "Highlight";
                         highlightBoard.Visibility = System.Windows.Visibility.Visible;
                         textBoard.Visibility = System.Windows.Visibility.Visible;
                         ClearButton.Visibility = System.Windows.Visibility.Visible;
@@ -985,7 +992,7 @@ namespace FinalVersion
                         {
                             highlightButton.Visibility = System.Windows.Visibility.Visible;
                         }
-                        if (!trainingMode)
+                        if (!trainingMode && !demoMode)
                         {
                             highlightLabel.Visibility = System.Windows.Visibility.Visible;
                             switch (difficulty)
@@ -1014,19 +1021,20 @@ namespace FinalVersion
                         {
                             ShowTrainingLabel();
                             trainingLabel.Visibility = System.Windows.Visibility.Visible;
-                            trainigButton.Visibility = System.Windows.Visibility.Visible;
+                            if(!demoMode)
+                                trainigButton.Visibility = System.Windows.Visibility.Visible;
                         }
                         break;
                     }
                 case 1:
                     {
-                        taskButton.Content = "Task1 - DnD";
+                        taskButton.Content = "Drag 'n Drop";
                         dragRectangle.Visibility = System.Windows.Visibility.Visible;
                         if (technique == 0 || technique == 3)
                         {
                             selectButton.Visibility = System.Windows.Visibility.Visible; 
                         }
-                        if (!trainingMode)
+                        if (!trainingMode && !demoMode)
                         {
                             DragLabel.Visibility = System.Windows.Visibility.Visible;
                             theBox.Visibility = System.Windows.Visibility.Visible;
@@ -1067,13 +1075,14 @@ namespace FinalVersion
                             Canvas.SetTop(dragRectangle, 400);
                             Canvas.SetLeft(dragRectangle, 550);
                             trainingLabel.Visibility = System.Windows.Visibility.Visible;
-                            trainigButton.Visibility = System.Windows.Visibility.Visible;
+                            if (!demoMode)
+                                trainigButton.Visibility = System.Windows.Visibility.Visible;
                         }
                         break;
                     }
                 case 2:
                     {
-                        taskButton.Content = "Task3 - INK";
+                        taskButton.Content = "Write";
                         ClearButton.Visibility = System.Windows.Visibility.Visible;
                         drawBoard.Visibility = System.Windows.Visibility.Visible;
                         drawBoard.Background = System.Windows.Media.Brushes.Black;
@@ -1081,7 +1090,7 @@ namespace FinalVersion
                         {
                             drawButton.Visibility = System.Windows.Visibility.Visible;
                         }
-                        if (!trainingMode)
+                        if (!trainingMode && !demoMode)
                         {
                             drawBoard.Background = System.Windows.Media.Brushes.Transparent;
                             doneButton.Visibility = System.Windows.Visibility.Visible;
@@ -1120,7 +1129,8 @@ namespace FinalVersion
                         {
                             ShowTrainingLabel();
                             trainingLabel.Visibility = System.Windows.Visibility.Visible;
-                            trainigButton.Visibility = System.Windows.Visibility.Visible;
+                            if(!demoMode)
+                                trainigButton.Visibility = System.Windows.Visibility.Visible;
                         }
                         break;
                     }
@@ -1136,7 +1146,7 @@ namespace FinalVersion
             {
                 case 0:
                     {   
-                        if (!trainingMode)
+                        if (!trainingMode && !demoMode)
                         {
                             highlightLabel.Visibility = System.Windows.Visibility.Hidden;
                         }
@@ -1167,7 +1177,7 @@ namespace FinalVersion
                 case 1:
                     {
                         drag = false;
-                        if (!trainingMode)
+                        if (!trainingMode && !demoMode)
                         {
                             DragLabel.Visibility = System.Windows.Visibility.Hidden;
                         }
@@ -1192,7 +1202,7 @@ namespace FinalVersion
                         drawBoard.Visibility = System.Windows.Visibility.Hidden;
                         drawBoard.Strokes.Clear();
                         ClearButton.Visibility = System.Windows.Visibility.Hidden;
-                        if (!trainingMode)
+                        if (!trainingMode && !demoMode)
                         {
                             drawLable.Visibility = System.Windows.Visibility.Hidden;
                         }
@@ -1330,7 +1340,7 @@ namespace FinalVersion
                                 }
                             case 2:
                                 {
-                                    showTechnique.Content = "Light Pen";
+                                    showTechnique.Content = "Always-On Pen";
                                     technique = 0;
                                     break;
                                 }
@@ -1354,7 +1364,7 @@ namespace FinalVersion
                                 }
                             case 1:
                                 {
-                                    showTechnique.Content = "Light Pen";
+                                    showTechnique.Content = "Always-On Pen";
                                     technique = 0;
                                     break;
                                 }
@@ -1397,7 +1407,7 @@ namespace FinalVersion
                                 }
                             case 3:
                                 {
-                                    showTechnique.Content = "Light Pen";
+                                    showTechnique.Content = "Always-On Pen";
                                     technique = 0;
                                     break;
                                 }
@@ -1418,7 +1428,7 @@ namespace FinalVersion
                     {
                         // technique: 0-1-3-2
                         technique = 0;
-                        showTechnique.Content = "Light Pen";
+                        showTechnique.Content = "Always-On Pen";
                         trainingMode = true;
                         WhichDifficulty();
                         ShowContent();
@@ -1468,7 +1478,16 @@ namespace FinalVersion
                         ShowContent();
                         break;
                     }
-            }
+                case "P":
+                    {
+                        trainingMode = false;
+                        demoMode = true;
+                        taskButton.Visibility = System.Windows.Visibility.Visible;
+                        modeButton.Visibility = System.Windows.Visibility.Visible;
+                        ShowContent();
+                        break;
+                    }
+            } 
         }
 
         /// <summary>
@@ -1635,20 +1654,20 @@ namespace FinalVersion
                         {
                             case 0:
                                 {
-                                    trainingLabel.Content = "Try to highlight some words, with the pen, for training."+
-                                        " Use the button on your right (also with your finger) to activate highlight event.";
+                                    trainingLabel.Content = "Try to highlight some words, with the pen."+
+                                        " Click on the button on your bottom left (also with your finger) to activate highlight.";
                                     break;
                                 }
                             case 1:
                                 {
-                                    trainingLabel.Content = "Try to drag and drop the red square around, with the pen, for training." +
-                                        " Use the button on your bottom left (also with your finger) to activate drag 'n drop event.";
+                                    trainingLabel.Content = "Try to drag and drop the red square around, with the pen." +
+                                        " Click on the button on your bottom left (also with your finger) to activate drag 'n drop.";
                                     break;
                                 }
                             case 2:
                                 {
-                                    trainingLabel.Content = "Try to draw some words, with the pen, for training." +
-                                        " Use the button on your bottom left (also with your finger) to activate highlight event.";
+                                    trainingLabel.Content = "Try to draw some words, with the pen." +
+                                        " Click on the button on your bottom left (also with your finger) to activate ink.";
                                     break;
                                 }
                         }
@@ -1660,20 +1679,20 @@ namespace FinalVersion
                         {
                             case 0:
                                 {
-                                    trainingLabel.Content = "Try to highlight some words, with the pen, for training." +
-                                        " Use the button inside the pen to activate highlight event.";
+                                    trainingLabel.Content = "Try to highlight some words, with the pen." +
+                                        " Hold the button inside the pen to activate highlight.";
                                     break;
                                 }
                             case 1:
                                 {
-                                    trainingLabel.Content = "Try to drag and drop the red square around, with the pen, for training." +
-                                        " Use the button inside the pen to activate highlight event.";
+                                    trainingLabel.Content = "Try to drag and drop the red square around, with the pen." +
+                                        " Hold the button inside the pen to activate drag 'n drop.";
                                     break;
                                 }
                             case 2:
                                 {
-                                    trainingLabel.Content = "Try to draw some words, with the pen, for training." +
-                                        " Use the button inside the pen to activate highlight event.";
+                                    trainingLabel.Content = "Try to draw some words, with the pen." +
+                                        " Hold the button inside the pen to activate ink.";
                                     break;
                                 }
                         }
@@ -1685,20 +1704,20 @@ namespace FinalVersion
                         {
                             case 0:
                                 {
-                                    trainingLabel.Content = "Try to highlight some words, with the pen, for training." +
-                                        " Tilt the pen to activate highlight event.";
+                                    trainingLabel.Content = "Try to highlight some words, with the pen." +
+                                        " Tilt the pen to activate highlight.";
                                     break;
                                 }
                             case 1:
                                 {
-                                    trainingLabel.Content = "Try to drag and drop the red square around, with the pen, for training." +
-                                        " Tilt the pen to activate drag 'n drop event.";
+                                    trainingLabel.Content = "Try to drag and drop the red square around, with the pen." +
+                                        " Tilt the pen to activate drag 'n drop.";
                                     break;
                                 }
                             case 2:
                                 {
-                                    trainingLabel.Content = "Try to draw some words, with the pen, for training." +
-                                        " Tilt the pen to activate highlight event.";
+                                    trainingLabel.Content = "Try to draw some words, with the pen." +
+                                        " Tilt the pen to activate ink.";
                                     break;
                                 }
                         }
@@ -1710,20 +1729,20 @@ namespace FinalVersion
                         {
                             case 0:
                                 {
-                                    trainingLabel.Content = "Try to highlight some words, with the finger, for training." +
-                                        " Use the button on your bottom left to activate highlight event.";
+                                    trainingLabel.Content = "Try to highlight some words, with the finger." +
+                                        " Click on the button on your bottom left to activate highlight.";
                                     break;
                                 }
                             case 1:
                                 {
-                                    trainingLabel.Content = "Try to drag and drop the red square around, with the finger, for training." +
-                                        " Use the button on your bottom left to activate drag 'n drop event.";
+                                    trainingLabel.Content = "Try to drag and drop the red square around, with the finger." +
+                                        " Click on the button on your bottom left to activate drag 'n drop.";
                                     break;
                                 }
                             case 2:
                                 {
-                                    trainingLabel.Content = "Try to draw some words, with the finger, for training." +
-                                        " Use the button on your bottom left to activate highlight event.";
+                                    trainingLabel.Content = "Try to draw some words, with the finger." +
+                                        " Click on the button on your bottom left to activate ink.";
                                     break;
                                 }
                         }
