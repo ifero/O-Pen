@@ -14,3 +14,9 @@ In literature there are several researches on pens for tabletops, some of them a
 some others create their own pen and application and show how it can be used. But none of them is giving an open-source model to continue the work. 
 Thus, every project start over again to create a pen. Another important thing is that none of them also compare different techniques with each others. 
 that's why we want to put the first stone on open-source pens for tabletops.
+
+### Authors and contributors
+
+The idea of this project is from Aurelién Tabard (@aurelient) and has been done by Andrea Pacino (@ifero), 
+a bachelor student from the University of Pisa, by the supervision of Tabard (postDoc at ITU) and Jakob Bardram (Professor at ITU) for the IT University of Copenhagen 
+and the supervision of the Professor Maria Grazia Scutellà  for the University of Pisa.
